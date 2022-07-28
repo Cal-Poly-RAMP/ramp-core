@@ -1,9 +1,9 @@
 # Test in Python
-test :
-	python -m unittest tests/*.py
-
 format:
 	black src/*/*.py tests/*.py
+
+test:
+	python -m pytest
 
 # Test verilog source
 # test-verilog : synthesis

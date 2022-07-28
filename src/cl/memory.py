@@ -1,4 +1,5 @@
 from pymtl3 import *
+import numpy as np
 
 # A generic interface for memory. Variable address, data, word widths
 class Memory(Component):
@@ -7,14 +8,16 @@ class Memory(Component):
         s.addr_width = addr_width
         s.word_width = word_width
 
-        s.mem = [Bits(data_width) for _ in range(2**addr_width)] #TODO: implement as numpy array
+        # s.mem = [Bits(data_width) for _ in range(2**addr_width)] #TODO: implement as numpy array
+        s.mem = np.zeros(2**addr_width, dtype="i8")
 
     # Return the value of the memory at the given address
     def read_word(s, addr: int) -> Bits:
         dpw = s.word_width // s.data_width
         if addr < 0 or addr >= 2**s.addr_width - dpw:
             raise IndexError("Address out of range")
-        return concat(*s.mem[addr : addr + dpw])
+        # return concat(*s.mem[addr : addr + dpw])
+        return concat(*(Bits(s.data_width, x) for x in s.mem[addr : addr + dpw]))
 
     # Write the given value to the memory at the given address
     def write_word(s, addr: int, data: int) -> Bits:

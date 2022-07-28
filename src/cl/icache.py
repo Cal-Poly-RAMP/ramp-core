@@ -1,5 +1,5 @@
 from pymtl3 import *
-from src.fl.memory import Memory
+from src.cl.memory import Memory
 
 # Generic interface for an instruction cache. Variable address, data, word widths
 class ICache(Component):

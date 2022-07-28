@@ -1,6 +1,6 @@
 import unittest
 from pymtl3 import *
-from src.fl.fetch_stage import FetchStage
+from src.cl.fetch_stage import FetchStage
 
 
 class TestFetchStage(unittest.TestCase):

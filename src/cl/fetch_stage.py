@@ -2,7 +2,7 @@ from pymtl3 import *
 from pymtl3 import Bits32
 from pymtl3.stdlib import stream
 
-from src.fl.icache import ICache
+from src.cl.icache import ICache
 
 # The fetch stage of the pipeline, responsible for fetching instructions and
 # branch prediction.
@@ -19,9 +19,6 @@ class FetchStage(Component):
         # Queue Adaptor
         s.fetch_buffer = stream.SendQueueAdapter(FetchPacket)
         s.send //= s.fetch_buffer.send
-
-        s.fetch_packet_out = OutPort(64)
-        s.fetch_packet = Wire(64)
 
         @update_ff
         def on_tick():

@@ -1,7 +1,7 @@
 import unittest
 from hypothesis import given, strategies as st
 from pymtl3 import *
-from src.fl.icache import ICache
+from src.cl.icache import ICache
 
 
 class TestICache(unittest.TestCase):
