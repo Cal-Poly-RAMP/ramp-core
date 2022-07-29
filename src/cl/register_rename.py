@@ -41,65 +41,103 @@ class RegisterRename(Component):
         s.busy_table = OutPort(NUM_PHYS_REGS)
 
         # map tables
-        s.map_table = [0] * NUM_ISA_REGS
+        s._map_table = [0] * NUM_ISA_REGS
 
-        # internal freelist
-        s._free_list = Bits(NUM_PHYS_REGS, 0)  # implemented as bit vector 1 -> free
+        # internal freelist implemented as bit vector 1 -> free
+        s._free_list = Bits(NUM_PHYS_REGS, -1 << 1)
         s.free_list //= s._free_list
 
         # internal busy table
         s._busy_table = Bits(NUM_PHYS_REGS, 0)
         s.busy_table //= s._busy_table
 
-        s.pdst1 = 0
-        s.pdst2 = 0
-
         @update
         def rename_comb():
-            # rename inst1
-            s.inst1_pregs.prs1 @= s.map_table[s.inst1_lregs.lrs1]
-            s.inst1_pregs.prs2 @= s.map_table[s.inst1_lregs.lrs2]
+            if s.reset:
+                return
+            # Combinatorially getting physical source registers from map table
+            # and getting physical dest registers from free list
 
-            # rename inst2
-            s.inst2_pregs.prs1 @= s.map_table[s.inst2_lregs.lrs1]
-            s.inst2_pregs.prs2 @= s.map_table[s.inst2_lregs.lrs2]
+            # *combinatorially* getting dest registers, but not updating tables
+            pdst1, pdst2 = cascading_priority_encoder(2, s._free_list)
+            if s.inst1_lregs.lrd:
+                s.inst1_pregs.prd @= pdst1
+                s.inst2_pregs.prd @= pdst2 if s.inst2_lregs.lrd else 0
+            elif s.inst2_lregs.lrd:
+                s.inst1_pregs.prd @= 0
+                s.inst2_pregs.prd @= pdst1
+            else:
+                s.inst1_pregs.prd @= 0
+                s.inst2_pregs.prd @= 0
 
-        @update_once
-        def rename_once():
+            s.inst1_pregs.prs1 @= s._map_table[s.inst1_lregs.lrs1]
+            s.inst1_pregs.prs2 @= s._map_table[s.inst1_lregs.lrs2]
+            s.inst1_pregs.stale @= s._map_table[s.inst1_lregs.lrd]
+
+            # bypass network.
+            # forward dependent sources from inst2 to inst1. handle stale
+            if s.inst2_lregs.lrd == s.inst1_lregs.lrd and s.inst1_lregs.lrd != 0:
+                s.inst2_pregs.stale @= pdst1
+            else:
+                s.inst2_pregs.stale @= s._map_table[s.inst2_lregs.lrd]
+
+            if s.inst2_lregs.lrs1 == s.inst1_lregs.lrd and s.inst1_lregs.lrd != 0:
+                s.inst2_pregs.prs1 @= pdst1
+            else:
+                s.inst2_pregs.prs1 @= s._map_table[s.inst2_lregs.lrs1]
+
+            if s.inst2_lregs.lrs2 == s.inst1_lregs.lrd and s.inst1_lregs.lrd != 0:
+                s.inst2_pregs.prs2 @= pdst1
+            else:
+                s.inst2_pregs.prs2 @= s._map_table[s.inst2_lregs.lrs2]
+
+        @update_ff
+        def rename_ff():
             # resetting
-            if(s.reset == 1):
-                s._free_list @= -1 << 1 # for zero register
-                s._busy_table @= 0
+            if s.reset == 1:
+                s._free_list <<= -1 << 1  # for zero register
+                s._busy_table <<= 0
                 return
 
             # getting next two free registers
-            s.pdst1, s.pdst2 = cascading_priority_encoder(2, s._free_list)
+            pdst1, pdst2 = cascading_priority_encoder(2, s._free_list)
 
-            # exceptions
-            if (s.inst1_lregs.lrd != 0 ^ s.inst2_lregs.lrd != 0) and s._free_list == 0:
-                raise Exception(REG_RENAME_ERR)
-            if (s.inst1_lregs.lrd != 0 and s.inst2_lregs.lrd != 0) and s._free_list & ~(
-                Bits(NUM_PHYS_REGS, 1) << s.pdst1
-            ) == 0:
-                raise Exception(REG_RENAME_ERR)
+            # updating tables with newely allocated registers
+            ONE = Bits(NUM_PHYS_REGS, 1)
+            if s.inst1_lregs.lrd != 0 ^ s.inst2_lregs.lrd != 0:
+                # raising exception if not enough registers to allocate
+                # TODO: stall
+                if s._free_list == 0:
+                    raise Exception(REG_RENAME_ERR)
+                # updating with first pdst off free list
+                s._free_list @= s._free_list & ~(ONE << pdst1)
+                s._busy_table @= s._busy_table | (ONE << pdst1)
 
-            if s.inst1_lregs.lrd != 0:
-                s.inst1_pregs.prd @= s.pdst1
-                s._free_list = s._free_list & ~(Bits(NUM_PHYS_REGS, 1) << s.pdst1)
-                s.map_table[s.inst1_lregs.lrd] = s.pdst1
+                # updating map table with new register
+                if(s.inst1_lregs.lrd):
+                    s._map_table[s.inst1_lregs.lrd] = pdst1
+                elif(s.inst2_lregs.lrd):
+                    s._map_table[s.inst2_lregs.lrd] = pdst1
 
-            if s.inst2_lregs.lrd != 0:
-                s.inst2_pregs.prd @= s.pdst2
-                s._free_list @= s._free_list & ~(Bits(NUM_PHYS_REGS, 1) << s.pdst2)
-                s.map_table[s.inst2_lregs.lrd] = s.pdst2
+            if s.inst1_lregs.lrd != 0 and s.inst2_lregs.lrd != 0:
+                # raising exception if not enough registers to allocate
+                # TODO: stall
+                if s._free_list & ~(Bits(NUM_PHYS_REGS, 1) << pdst1) == 0:
+                    raise Exception(REG_RENAME_ERR)
+                # updating with second pdst off free list
+                s._free_list @= s._free_list & ~(ONE << pdst2)
+                s._busy_table @= s._busy_table | (ONE << pdst2)
 
-            print(s.line_trace())
+                # updating map table with new register
+                s._map_table[s.inst1_lregs.lrd] = pdst1
+                s._map_table[s.inst2_lregs.lrd] = pdst2
 
     def line_trace(s):
-        return "REG RENAME: " "inst1_lregs: {} inst2_lregs: {} ".format(
-            s.inst1_lregs, s.inst2_lregs
-        ) + "inst1_pregs: {} inst2_pregs: {} ".format(
-            s.inst1_pregs, s.inst2_pregs
-        ) + "free_list: 0x{} busy_table: 0x{} ".format(
-            s._free_list, s._busy_table
-        ) + "map_table: {}".format(s.map_table)
+        return (
+            "inst1_lregs: {} inst2_lregs: {} ".format(s.inst1_lregs, s.inst2_lregs)
+            + "inst1_pregs: {} inst2_pregs: {} ".format(s.inst1_pregs, s.inst2_pregs)
+            + "\n\tfree_list: 0x{} busy_table: 0x{} \n".format(
+                s.free_list, s.busy_table
+            )
+            + "\tmap_table: {}".format(s._map_table)
+        )
