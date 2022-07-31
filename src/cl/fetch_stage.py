@@ -38,6 +38,6 @@ class FetchStage(Component):
 
 
 @bitstruct
-class FetchPacket(Interface):
-    instr1: Bits32
-    instr2: Bits32
+class FetchPacket:
+    inst1: Bits32
+    inst2: Bits32

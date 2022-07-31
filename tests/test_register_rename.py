@@ -8,6 +8,7 @@ from src.cl.register_rename import (
     NUM_PHYS_REGS,
 )
 
+
 class TestRegisterRename(unittest.TestCase):
     def setUp(self) -> None:
         # runs before every test
@@ -195,7 +196,9 @@ class TestRegisterRename(unittest.TestCase):
         self.dut.sim_tick()
 
         self.assertEqual(self.dut.free_list, ALL_HIGH << 5)
-        self.assertTrue(self.dut.busy_table & (ONE << 1 | ONE << 2 | ONE << 3 | ONE << 4))
+        self.assertTrue(
+            self.dut.busy_table & (ONE << 1 | ONE << 2 | ONE << 3 | ONE << 4)
+        )
         # testing that logical x0 registers point to physical x0 registers
         self.assertEqual(self.dut.inst1_pregs.prs1, 0)
         self.assertEqual(self.dut.inst1_pregs.prs2, 0)
@@ -219,3 +222,5 @@ class TestRegisterRename(unittest.TestCase):
         self.assertEqual(self.dut.free_list, freelist)
         self.assertEqual(self.dut.busy_table, busytable)
         self.assertEqual(self.dut._map_table, map_table)
+
+    # TODO: test reset

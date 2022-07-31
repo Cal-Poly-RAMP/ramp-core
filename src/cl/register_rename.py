@@ -16,17 +16,19 @@ REG_RENAME_ERR = "Tried to rename a register when no physical registers are free
 
 @bitstruct
 class LogicalRegs:
-    lrd: Bits5  # logical destination register
-    lrs1: Bits5  # logical source register 1
-    lrs2: Bits5  # logical source register 2
+    lrd: mk_bits(ISA_REG_BITWIDTH)  # logical destination register
+    lrs1: mk_bits(ISA_REG_BITWIDTH)  # logical source register 1
+    lrs2: mk_bits(ISA_REG_BITWIDTH)  # logical source register 2
 
 
 @bitstruct
 class PhysicalRegs:
-    prd: Bits6  # physical dest register TODO: get bitwidth from phys reg file size
-    prs1: Bits6  # physical source register 1
-    prs2: Bits6  # physical source register 2
-    stale: Bits6  # stale physical register
+    prd: mk_bits(
+        PHYS_REG_BITWIDTH
+    )  # physical dest register TODO: get bitwidth from phys reg file size
+    prs1: mk_bits(PHYS_REG_BITWIDTH)  # physical source register 1
+    prs2: mk_bits(PHYS_REG_BITWIDTH)  # physical source register 2
+    stale: mk_bits(PHYS_REG_BITWIDTH)  # stale physical register
 
 
 class RegisterRename(Component):
@@ -114,9 +116,9 @@ class RegisterRename(Component):
                 s._busy_table @= s._busy_table | (ONE << pdst1)
 
                 # updating map table with new register
-                if(s.inst1_lregs.lrd):
+                if s.inst1_lregs.lrd:
                     s._map_table[s.inst1_lregs.lrd] = pdst1
-                elif(s.inst2_lregs.lrd):
+                elif s.inst2_lregs.lrd:
                     s._map_table[s.inst2_lregs.lrd] = pdst1
 
             if s.inst1_lregs.lrd != 0 and s.inst2_lregs.lrd != 0:
