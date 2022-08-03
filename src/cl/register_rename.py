@@ -31,13 +31,21 @@ class PhysicalRegs:
     stale: mk_bits(PHYS_REG_BITWIDTH)  # stale physical register
 
 
+@bitstruct
+class PRegBusy:
+    prs1: Bits1
+    prs2: Bits1
+
+
 class RegisterRename(Component):
     def construct(s):
         # interface
         s.inst1_lregs = InPort(LogicalRegs)
+        s.inst1_pregs = OutPort(PhysicalRegs)
+        s.inst1_pregs_busy = OutPort(PRegBusy)
         s.inst2_lregs = InPort(LogicalRegs)
         s.inst2_pregs = OutPort(PhysicalRegs)
-        s.inst1_pregs = OutPort(PhysicalRegs)
+        s.inst2_pregs_busy = OutPort(PRegBusy)
 
         s.free_list = OutPort(NUM_PHYS_REGS)
         s.busy_table = OutPort(NUM_PHYS_REGS)
@@ -75,30 +83,40 @@ class RegisterRename(Component):
             s.inst1_pregs.prs1 @= s._map_table[s.inst1_lregs.lrs1]
             s.inst1_pregs.prs2 @= s._map_table[s.inst1_lregs.lrs2]
             s.inst1_pregs.stale @= s._map_table[s.inst1_lregs.lrd]
+            s.inst1_pregs_busy.prs1 @= s._busy_table[s.inst1_pregs.prs1]
+            s.inst1_pregs_busy.prs2 @= s._busy_table[s.inst1_pregs.prs2]
 
             # bypass network.
             # forward dependent sources from inst2 to inst1. handle stale
             if s.inst2_lregs.lrd == s.inst1_lregs.lrd and s.inst1_lregs.lrd != 0:
+                # inst2 dependent on inst1.
                 s.inst2_pregs.stale @= pdst1
             else:
                 s.inst2_pregs.stale @= s._map_table[s.inst2_lregs.lrd]
 
             if s.inst2_lregs.lrs1 == s.inst1_lregs.lrd and s.inst1_lregs.lrd != 0:
+                # inst2 dependent on inst1. inst2 prs1 = pdst1 and is busy
                 s.inst2_pregs.prs1 @= pdst1
+                s.inst2_pregs_busy.prs1 @= 1
             else:
                 s.inst2_pregs.prs1 @= s._map_table[s.inst2_lregs.lrs1]
+                s.inst2_pregs_busy.prs1 @= s._busy_table[s.inst2_pregs.prs2]
 
             if s.inst2_lregs.lrs2 == s.inst1_lregs.lrd and s.inst1_lregs.lrd != 0:
+                # inst2 dependent on inst1. inst2 prs2 = pdst1 and is busy
                 s.inst2_pregs.prs2 @= pdst1
+                s.inst2_pregs_busy.prs2 @= 1
             else:
                 s.inst2_pregs.prs2 @= s._map_table[s.inst2_lregs.lrs2]
+                s.inst2_pregs_busy.prs2 @= s._busy_table[s.inst2_pregs.prs2]
 
         @update_ff
         def rename_ff():
             # resetting
             if s.reset == 1:
-                s._free_list <<= -1 << 1  # for zero register
-                s._busy_table <<= 0
+                s._free_list @= -1 << 1  # for zero register
+                s._busy_table @= 0
+                s._map_table = [0] * NUM_ISA_REGS
                 return
 
             # getting next two free registers

@@ -2,6 +2,7 @@ import unittest
 from pymtl3 import *
 
 from src.cl.register_rename import (
+    NUM_ISA_REGS,
     RegisterRename,
     LogicalRegs,
     PhysicalRegs,
@@ -12,8 +13,9 @@ from src.cl.register_rename import (
 class TestRegisterRename(unittest.TestCase):
     def setUp(self) -> None:
         # runs before every test
-        self.dut = RegisterRename()
-        self.dut.apply(DefaultPassGroup(textwave=True, linetrace=True))
+        if not hasattr(self, "dut"):
+            self.dut = RegisterRename()
+            self.dut.apply(DefaultPassGroup(textwave=True, linetrace=True))
         # vcdwave='RegRename'
         self.dut.sim_reset()
 
@@ -223,4 +225,9 @@ class TestRegisterRename(unittest.TestCase):
         self.assertEqual(self.dut.busy_table, busytable)
         self.assertEqual(self.dut._map_table, map_table)
 
-    # TODO: test reset
+    def test_reset(self):
+        self.test_dest_src_rename()
+        self.dut.sim_reset()
+        self.assertEqual(self.dut.free_list, Bits(NUM_PHYS_REGS, -1) << 1)
+        self.assertEqual(self.dut.busy_table, 0)
+        self.assertEqual(self.dut._map_table, [0] * NUM_ISA_REGS)
