@@ -1,2 +1,2 @@
-# pymtl-rv32i
-A pymtl implementation of a RISC-V RV32I processor.
+# ramp-core
+RAMP's out of order RV32G processor core.
