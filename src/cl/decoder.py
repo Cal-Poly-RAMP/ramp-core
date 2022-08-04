@@ -1,25 +1,58 @@
-from pymtl3 import *
+from ast import In
+from pymtl3 import (
+    Bits1,
+    Bits2,
+    Bits3,
+    Bits4,
+    Bits5,
+    Bits7,
+    Bits12,
+    Bits32,
+    Component,
+    InPort,
+    OutPort,
+    Wire,
+    bitstruct,
+    concat,
+    mk_bits,
+    sext,
+    update,
+    Bits,
+)
 from pymtl3.stdlib import stream
-
-from src.cl.fetch_stage import FetchPacket
+from src.cl.fetch_stage import FetchPacket, PC_WIDTH, INSTR_WIDTH
 from src.cl.register_rename import (
-    RegisterRename,
+    ISA_REG_BITWIDTH,
+    NUM_ISA_REGS,
+    NUM_PHYS_REGS,
+    PHYS_REG_BITWIDTH,
     LogicalRegs,
     PhysicalRegs,
     PRegBusy,
-    NUM_PHYS_REGS,
-    NUM_ISA_REGS,
-    PHYS_REG_BITWIDTH,
-    ISA_REG_BITWIDTH,
+    RegisterRename,
 )
 
 # Decoding consts
-RD_BEG = 7
-RD_END = 12
-RS1_BEG = 15
-RS1_END = 20
-RS2_BEG = 20
-RS2_END = 25
+OPCODE_SLICE = slice(0, 7)
+RD_SLICE = slice(7, 12)
+RS1_SLICE = slice(15, 20)
+RS2_SLICE = slice(20, 25)
+FUNCT3_SLICE = slice(12, 15)
+FUNCT7_SLICE = slice(25, 32)
+
+RTYPE_OPCODE = 0b0110011
+ITYPE_OPCODE1 = 0b0010011
+ITYPE_OPCODE2 = 0b0000011
+ITYPE_OPCODE3 = 0b1100111
+STYPE_OPCODE = 0b0100011
+BTYPE_OPCODE = 0b1100011
+UTYPE_OPCODE1 = 0b0110111
+UTYPE_OPCODE2 = 0b0010111
+JTYPE_OPCODE = 0b1101111
+CSRTYPE_OPCODE = 0b1110011
+
+INT_ISSUE_UNIT = 0b01
+MEM_ISSUE_UNIT = 0b10
 
 
 class Decode(Component):
@@ -37,12 +70,16 @@ class Decode(Component):
         s.d1 = SingleInstDecode()
         # instruction in
         s.d1.inst //= s.inst1
+        s.d1.pc //= s.fetch_packet.pc
+        s.d1.idx = 0
         # uop out...
         s.d1.uop //= s.dual_uop.uop1
 
         s.d2 = SingleInstDecode()
         # instruction in
         s.d2.inst //= s.inst2
+        s.d2.pc //= s.fetch_packet.pc
+        s.d2.idx = 1
         # uop out...
         s.d2.uop //= s.dual_uop.uop2
 
@@ -68,14 +105,6 @@ class Decode(Component):
         s.register_rename.inst1_pregs_busy //= s.d1.pregs_busy
         s.register_rename.inst2_pregs_busy //= s.d2.pregs_busy
 
-        # @update
-        # def decode_comb_i1():
-        #     pass
-
-        # @update_ff
-        # def decode_sync():
-        #     pass
-
     def line_trace(s):
         return (
             f"\tfetch packet:\t{s.fetch_packet}"
@@ -86,7 +115,9 @@ class Decode(Component):
 class SingleInstDecode(Component):
     # For decoding a single instruction into one micro-op, with info from register renaming
     def construct(s):
-        s.inst = InPort(32)  # instruction from fetch packet
+        s.inst = InPort(INSTR_WIDTH)  # instruction from fetch packet
+        s.pc = InPort(PC_WIDTH)  # pc from fetch packet
+        s.idx = InPort()  # index of instruction in fetch packet (0, 1)
         s.pregs = InPort(PhysicalRegs)  # physical registers from register rename
         s.pregs_busy = InPort(PRegBusy)  # busy table from register rename
         s.uop = OutPort(MicroOp)
@@ -96,36 +127,44 @@ class SingleInstDecode(Component):
             # For determining type
             opcode = s.inst[0:7]
 
-            Rtype = opcode == 0b0110011
+            Rtype = opcode == RTYPE_OPCODE
             Itype = (
-                (opcode == 0b0010011) | (opcode == 0b0000011) | (opcode == 0b1100111)
+                (opcode == ITYPE_OPCODE1)
+                | (opcode == ITYPE_OPCODE2)
+                | (opcode == ITYPE_OPCODE3)
             )
-            Stype = opcode == 0b0100011
-            Btype = opcode == 0b1100011
-            Utype = (opcode == 0b0110111) | (opcode == 0b0010111)
-            Jtype = opcode == 0b1101111
-            Csrtype = opcode == 0b1110011
+            Stype = opcode == STYPE_OPCODE
+            Btype = opcode == BTYPE_OPCODE
+            Utype = (opcode == UTYPE_OPCODE1) | (opcode == UTYPE_OPCODE2)
+            Jtype = opcode == JTYPE_OPCODE
+            Csrtype = opcode == CSRTYPE_OPCODE
+
+            # For determining issue unit
+            mem_issue = (opcode == ITYPE_OPCODE2) | (opcode == STYPE_OPCODE)
+            int_issue = ~mem_issue  # TODO: fpu issue
 
             # uop (hardcoded values)
             s.uop.inst @= s.inst
-            s.uop.pc @= 0  # TODO
+            s.uop.pc @= (s.pc + 4) if s.idx else (s.pc)
+            s.uop.valid @= 1
 
-            s.uop.lrd @= s.inst[RD_BEG:RD_END]
-            s.uop.lrs1 @= s.inst[RS1_BEG:RS1_END]
-            s.uop.lrs2 @= s.inst[RS2_BEG:RS2_END]
+            s.uop.lrd @= s.inst[RD_SLICE]
+            s.uop.lrs1 @= s.inst[RS1_SLICE]
+            s.uop.lrs2 @= s.inst[RS2_SLICE]
 
             s.uop.prd @= s.pregs.prd
             s.uop.prs1 @= s.pregs.prs1
             s.uop.prs2 @= s.pregs.prs2
             s.uop.stale @= s.pregs.stale
 
-            # s.uop.prd_busy @= s.register_rename.busy_table[
-            #     s.uop.prd
-            # ]  # should always be true, do i need this?
             s.uop.prs1_busy @= s.pregs_busy.prs1
             s.uop.prs2_busy @= s.pregs_busy.prs2
 
-            # immediates
+            s.uop.issue_unit @= (
+                INT_ISSUE_UNIT if int_issue else MEM_ISSUE_UNIT if mem_issue else 0
+            )
+
+            # immediates TODO: update with slices
             if Rtype:
                 s.uop.imm @= 0
             elif Itype:
@@ -168,8 +207,9 @@ class SingleInstDecode(Component):
 @bitstruct
 class MicroOp:
     uop_code: Bits4  # micro-op type
-    inst: Bits32  # instruction
-    pc: Bits32  # program counter
+    inst: mk_bits(INSTR_WIDTH)  # instruction
+    pc: mk_bits(PC_WIDTH)  # program counter
+    valid: mk_bits(1)  # whether this is a valid uop (not noop)
 
     lrd: mk_bits(ISA_REG_BITWIDTH)  # logical destination register
     lrs1: mk_bits(ISA_REG_BITWIDTH)  # logical source register 1
@@ -192,25 +232,18 @@ class MicroOp:
 
     # TODO: branch prediction fields
     def __str__(s):
-        return "uop_code: {} inst: {} pc: {} imm: {} issue_unit: {} fu_unit: {} fu_op: {} \n\t\tlrd: x{:02d} lrs1: x{:02d} lrs2: x{:02d} prd: x{:02d} prs1: x{:02d} prs2: x{:02d} stale: x{:02d} prs1_busy: {} prs2_busy: {}".format(
-            s.uop_code,
-            s.inst,
-            s.pc,
-            s.imm,
-            s.issue_unit,
-            s.fu_unit,
-            s.fu_op,
-            s.lrd.uint(),
-            s.lrs1.uint(),
-            s.lrs2.uint(),
-            s.prd.uint(),
-            s.prs1.uint(),
-            s.prs2.uint(),
-            s.stale.uint(),
-            # s.prd_busy,
-            s.prs1_busy,
-            s.prs2_busy,
+        return (
+            f"uop_code: {s.uop_code} inst: {s.inst} pc: {s.pc}"
+            f" valid: {s.valid} imm: {s.imm}"
+            f" issue_unit: {s.issue_unit} fu_unit: {s.fu_unit} fu_op: {s.fu_op}"
+            f"\n\t\tlrd: x{s.lrd.uint():02d} lrs1: x{s.lrs1.uint():02d} lrs2: x{s.lrs2.uint():02d}"
+            f" prd: x{s.prd.uint():02d} prs1: x{s.prs1.uint():02d} prs2: x{s.prs2.uint():02d}"
+            f" stale: x{s.stale.uint():02d} prs1_busy: {s.prs1_busy} prs2_busy: {s.prs2_busy}"
         )
+
+
+NO_OP = MicroOp()  # no-op uop, invalid bit is automatically set to zero
+NO_OP.valid = 0
 
 
 @bitstruct

@@ -28,8 +28,3 @@ def cascading_priority_encoder(n: int, word: Bits) -> List[int]:
                 break
 
     return encoded
-
-
-if __name__ == "__main__":
-    a = Bits(8, 0b01010000)
-    print(cascading_priority_encoder(3, a))

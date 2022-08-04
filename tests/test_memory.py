@@ -31,6 +31,7 @@ class TestMemory(unittest.TestCase):
         self.assertEqual(self.mem.read_word(addr), data)
 
     def test_load_save_file(self):
+        # TODO: change JSON or use CSV module
         with TemporaryDirectory() as tmpdir:
             tmpfilepath = os.path.join(tmpdir, "test.csv")
 
@@ -38,12 +39,12 @@ class TestMemory(unittest.TestCase):
             self.mem.save_file(tmpfilepath)
 
             with open("tests/input_files/test_mem256.csv", "r") as f1:
-                with open(tmpfilepath) as f2:
-                    d1 = f1.read().replace("\n", "").replace(" ", "").split(",")[:-1]
-                    d2 = f2.read().replace("\n", "").replace(" ", "").split(",")[:-1]
+                d1 = f1.read().replace("\n", "").replace(" ", "").split(",")[:-1]
+            with open(tmpfilepath) as f2:
+                d2 = f2.read().replace("\n", "").replace(" ", "").split(",")[:-1]
 
-                    self.assertEqual(d1, d2)
-                    self.assertEqual(len(d1), len(self.mem.mem))
+        self.assertEqual(d1, d2)
+        self.assertEqual(len(d1), len(self.mem.mem))
 
     def test_load_exception(self):
         with self.assertRaises(ValueError):
