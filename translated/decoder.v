@@ -19,7 +19,7 @@ typedef struct packed {
 
 // PyMTL BitStruct MicroOp__32db6ace22edd734 Definition
 typedef struct packed {
-  logic [3:0] uop_code;
+  logic [3:0] uop_type;
   logic [31:0] inst;
   logic [31:0] pc;
   logic [4:0] lrd;
@@ -48,7 +48,7 @@ module SingleInstDecode
   input  PhysicalRegs__prd_6__prs1_6__prs2_6__stale_6 pregs ,
   input  PRegBusy__prs1_1__prs2_1 pregs_busy ,
   input  logic [0:0] reset ,
-  output MicroOp__32db6ace22edd734 uop 
+  output MicroOp__32db6ace22edd734 uop
 );
   localparam logic [2:0] __const__RD_BEG  = 3'd7;
   localparam logic [3:0] __const__RD_END  = 4'd12;
@@ -71,7 +71,7 @@ module SingleInstDecode
   // def decode_comb():
   //     # For determining type
   //     opcode = s.inst[0:7]
-  // 
+  //
   //     Rtype = opcode == 0b0110011
   //     Itype = (
   //         (opcode == 0b0010011) | (opcode == 0b0000011) | (opcode == 0b1100111)
@@ -81,26 +81,26 @@ module SingleInstDecode
   //     Utype = (opcode == 0b0110111) | (opcode == 0b0010111)
   //     Jtype = opcode == 0b1101111
   //     Csrtype = opcode == 0b1110011
-  // 
+  //
   //     # uop (hardcoded values)
   //     s.uop.inst @= s.inst
   //     s.uop.pc @= 0  # TODO
-  // 
+  //
   //     s.uop.lrd @= s.inst[RD_BEG:RD_END]
   //     s.uop.lrs1 @= s.inst[RS1_BEG:RS1_END]
   //     s.uop.lrs2 @= s.inst[RS2_BEG:RS2_END]
-  // 
+  //
   //     s.uop.prd @= s.pregs.prd
   //     s.uop.prs1 @= s.pregs.prs1
   //     s.uop.prs2 @= s.pregs.prs2
   //     s.uop.stale @= s.pregs.stale
-  // 
+  //
   //     # s.uop.prd_busy @= s.register_rename.busy_table[
   //     #     s.uop.prd
   //     # ]  # should always be true, do i need this?
   //     s.uop.prs1_busy @= s.pregs_busy.prs1
   //     s.uop.prs2_busy @= s.pregs_busy.prs2
-  // 
+  //
   //     # immediates
   //     if Rtype:
   //         s.uop.imm @= 0
@@ -139,7 +139,7 @@ module SingleInstDecode
   //     elif Csrtype:
   //         s.uop.imm @= 0
   //         s.uop.lrs2 @= 0
-  
+
   always_comb begin : decode_comb
     __tmpvar__decode_comb_opcode = inst[5'd6:5'd0];
     __tmpvar__decode_comb_Rtype = __tmpvar__decode_comb_opcode == 7'd51;

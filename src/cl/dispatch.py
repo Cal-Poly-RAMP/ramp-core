@@ -1,11 +1,19 @@
 from pymtl3 import Component, InPort, OutPort, bitstruct, update, mk_bits
-from src.cl.decoder import DualMicroOp, MicroOp, NO_OP, INT_ISSUE_UNIT, MEM_ISSUE_UNIT
+from src.cl.decoder import (
+    DualMicroOp,
+    MicroOp,
+    NO_OP,
+    INT_ISSUE_UNIT,
+    MEM_ISSUE_UNIT,
+    ROB_ADDR_WIDTH,
+)
 
 
 class Dispatch(Component):
     def construct(s):
         # Interface (dual uops in, dual uops out)
         s.in_ = InPort(DualMicroOp)
+        s.rob_idx = InPort(ROB_ADDR_WIDTH)  # for updating uops with ROB index
         s.to_rob = OutPort(DualMicroOp)  # for adding microops to ROB
 
         s.to_int_issue = OutPort(DualMicroOp)  # for adding microops to int issue queue
@@ -23,6 +31,11 @@ class Dispatch(Component):
         s.to_int_issue.uop2 //= s.uop2_dispatch.to_int_issue
         s.to_mem_issue.uop2 //= s.uop2_dispatch.to_mem_issue
 
+        @update
+        def update_rob_idx():
+            s.uop1_dispatch.rob_idx @= s.rob_idx
+            s.uop2_dispatch.rob_idx @= s.rob_idx + 1
+
     def line_trace(s):
         return (
             f"in: {s.in_}\n"
@@ -35,6 +48,7 @@ class SingleDispatch(Component):
     def construct(s):
         # Interface (dual uops in, dual uops out)
         s.in_ = InPort(MicroOp)
+        s.rob_idx = InPort(ROB_ADDR_WIDTH)  # for updating uops with ROB index
         s.to_rob = OutPort(MicroOp)  # for adding microops to ROB
         s.to_rob //= s.in_
 
@@ -45,9 +59,11 @@ class SingleDispatch(Component):
         def issue():
             if s.in_.issue_unit == INT_ISSUE_UNIT:
                 s.to_int_issue @= s.in_
+                s.to_int_issue.rob_idx @= s.rob_idx
             else:
                 s.to_int_issue @= NO_OP
             if s.in_.issue_unit == MEM_ISSUE_UNIT:
                 s.to_mem_issue @= s.in_
+                s.to_mem_issue.rob_idx @= s.rob_idx
             else:
                 s.to_mem_issue @= NO_OP

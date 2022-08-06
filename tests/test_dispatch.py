@@ -13,6 +13,7 @@ from src.cl.decoder import (
     MEM_ISSUE_UNIT,
 )
 
+
 class TestDispatch(unittest.TestCase):
     def setUp(self) -> None:
         # runs before each test
@@ -39,11 +40,13 @@ class TestDispatch(unittest.TestCase):
 
     def test_both_to_int(self):
         uop1, uop2 = MicroOp(), MicroOp()
-        uop1.issue_unit = INT_ISSUE_UNIT
-        uop2.issue_unit = INT_ISSUE_UNIT
+        uop1.issue_unit @= INT_ISSUE_UNIT
+        uop2.issue_unit @= INT_ISSUE_UNIT
+        uop2.rob_idx @= 1
 
         duop = DualMicroOp(uop1, uop2)
         self.dut.in_ @= duop
+        self.dut.rob_idx @= 0
         self.dut.sim_eval_combinational()
 
         self.assertEqual(self.dut.to_int_issue, duop)
@@ -51,11 +54,14 @@ class TestDispatch(unittest.TestCase):
 
     def test_both_to_mem(self):
         uop1, uop2 = MicroOp(), MicroOp()
-        uop1.issue_unit = MEM_ISSUE_UNIT
-        uop2.issue_unit = MEM_ISSUE_UNIT
+        uop1.issue_unit @= MEM_ISSUE_UNIT
+        uop1.rob_idx @= 8
+        uop2.issue_unit @= MEM_ISSUE_UNIT
+        uop2.rob_idx @= 9
 
         duop = DualMicroOp(uop1, uop2)
         self.dut.in_ @= duop
+        self.dut.rob_idx @= 8
         self.dut.sim_eval_combinational()
 
         self.assertEqual(self.dut.to_mem_issue, duop)
@@ -63,11 +69,14 @@ class TestDispatch(unittest.TestCase):
 
     def test_mem_and_int(self):
         uop1, uop2 = MicroOp(), MicroOp()
-        uop1.issue_unit = INT_ISSUE_UNIT
-        uop2.issue_unit = MEM_ISSUE_UNIT
+        uop1.issue_unit @= INT_ISSUE_UNIT
+        uop1.rob_idx @= 3
+        uop2.issue_unit @= MEM_ISSUE_UNIT
+        uop2.rob_idx @= 4
 
         duop = DualMicroOp(uop1, uop2)
         self.dut.in_ @= duop
+        self.dut.rob_idx @= 3
         self.dut.sim_eval_combinational()
 
         self.assertEqual(self.dut.to_int_issue, DualMicroOp(uop1, NO_OP))

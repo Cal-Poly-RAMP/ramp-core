@@ -54,6 +54,10 @@ CSRTYPE_OPCODE = 0b1110011
 INT_ISSUE_UNIT = 0b01
 MEM_ISSUE_UNIT = 0b10
 
+# TODO: move to a file that makes sense, (circular import)
+ROB_ADDR_WIDTH = 5
+ROB_SIZE = 2**ROB_ADDR_WIDTH
+
 
 class Decode(Component):
     # For decoding fetch packet into two micro-ops
@@ -144,6 +148,7 @@ class SingleInstDecode(Component):
             int_issue = ~mem_issue  # TODO: fpu issue
 
             # uop (hardcoded values)
+            # TODO: uopcode
             s.uop.inst @= s.inst
             s.uop.pc @= (s.pc + 4) if s.idx else (s.pc)
             s.uop.valid @= 1
@@ -206,9 +211,9 @@ class SingleInstDecode(Component):
 
 @bitstruct
 class MicroOp:
-    uop_code: Bits4  # micro-op type
+    uop_type: mk_bits(6)  # micro-op type
     inst: mk_bits(INSTR_WIDTH)  # instruction
-    pc: mk_bits(PC_WIDTH)  # program counter
+    pc: mk_bits(PC_WIDTH)  # program counter TODO: just forward to ROB?
     valid: mk_bits(1)  # whether this is a valid uop (not noop)
 
     lrd: mk_bits(ISA_REG_BITWIDTH)  # logical destination register
@@ -230,26 +235,30 @@ class MicroOp:
     fu_unit: Bits2  # functional unit
     fu_op: Bits2  # functional unit operation
 
-    # TODO: branch prediction fields
+    rob_idx: mk_bits(ROB_ADDR_WIDTH)  # index of instruction in ROB
+
     def __str__(s):
         return (
-            f"uop_code: {s.uop_code} inst: {s.inst} pc: {s.pc}"
+            f"uop_type: {s.uop_type} inst: {s.inst} pc: {s.pc}"
             f" valid: {s.valid} imm: {s.imm}"
             f" issue_unit: {s.issue_unit} fu_unit: {s.fu_unit} fu_op: {s.fu_op}"
             f"\n\t\tlrd: x{s.lrd.uint():02d} lrs1: x{s.lrs1.uint():02d} lrs2: x{s.lrs2.uint():02d}"
             f" prd: x{s.prd.uint():02d} prs1: x{s.prs1.uint():02d} prs2: x{s.prs2.uint():02d}"
             f" stale: x{s.stale.uint():02d} prs1_busy: {s.prs1_busy} prs2_busy: {s.prs2_busy}"
+            # f" rob_idx: {s.rob_idx}"
         )
 
 
-NO_OP = MicroOp()  # no-op uop, invalid bit is automatically set to zero
-NO_OP.valid = 0
+NO_OP = Bits(MicroOp.nbits, 0)  # no-op uop, invalid bit is automatically set to zero
 
 
 @bitstruct
 class DualMicroOp:
     uop1: MicroOp
     uop2: MicroOp
+
+    def __str__(s):
+        return f"{s.uop1}\n{s.uop2}"
 
 
 # Used for deriving data from instructions
