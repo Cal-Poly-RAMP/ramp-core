@@ -19,7 +19,7 @@ from src.cl.decoder import NO_OP, ROB_ADDR_WIDTH, ROB_SIZE, DualMicroOp, MicroOp
 from src.cl.fetch_stage import PC_WIDTH
 from src.cl.register_rename import ISA_REG_BITWIDTH, PHYS_REG_BITWIDTH
 
-## TODO NOW: make it so that `valid` is only a flag, not set by the ROB. `Busy` the only one set by RO
+## TODO NOW: make it so that `valid` is only a flag, not set by the ROB. `Busy` the only one set by ROB
 class ReorderBuffer(Component):
     def construct(s):
         # Interface (dual uops in, dual uops out)
@@ -52,14 +52,14 @@ class ReorderBuffer(Component):
             # bank full if head == tail and value is busy
             s.bank_full @= (
                 (s.internal_rob_head == s.internal_rob_tail)
-                & s.instr_bank[s.internal_rob_tail].uop1_entry.valid
-                & s.instr_bank[s.internal_rob_tail].uop2_entry.valid
+                & s.instr_bank[s.internal_rob_tail].uop1_entry.busy
+                & s.instr_bank[s.internal_rob_tail].uop2_entry.busy
             )
 
             # bank empty if head == tail and value is invalid(TODO: ?)
             s.bank_empty @= (s.internal_rob_head == s.internal_rob_tail) & ~(
-                s.instr_bank[s.internal_rob_tail].uop1_entry.valid
-                | s.instr_bank[s.internal_rob_tail].uop2_entry.valid
+                s.instr_bank[s.internal_rob_tail].uop1_entry.busy
+                | s.instr_bank[s.internal_rob_tail].uop2_entry.busy
             )
 
         @update_ff
@@ -71,6 +71,8 @@ class ReorderBuffer(Component):
                 for entry in s.instr_bank:
                     entry.uop1_entry.valid <<= 0
                     entry.uop2_entry.valid <<= 0
+                    entry.uop1_entry.busy <<= 0
+                    entry.uop2_entry.busy <<= 0
                 return
 
             # WRITING TO ROB
@@ -107,17 +109,25 @@ class ReorderBuffer(Component):
             if s.op_complete.int_rob_complete:
                 if s.op_complete.int_rob_idx % 2 == 0:
                     # even index, uop1 is completed
-                    s.instr_bank[s.op_complete.int_rob_idx >> 1].uop1_entry.busy = Bits1(0)
+                    s.instr_bank[
+                        s.op_complete.int_rob_idx >> 1
+                    ].uop1_entry.busy = Bits1(0)
                 else:
                     # odd index, uop2 is completed
-                    s.instr_bank[s.op_complete.int_rob_idx >> 1].uop2_entry.busy = Bits1(0)
+                    s.instr_bank[
+                        s.op_complete.int_rob_idx >> 1
+                    ].uop2_entry.busy = Bits1(0)
             if s.op_complete.mem_rob_complete:
                 if s.op_complete.mem_rob_idx % 2 == 0:
                     # even index, uop1 is completed
-                    s.instr_bank[s.op_complete.mem_rob_idx >> 1].uop1_entry.busy = Bits1(0)
+                    s.instr_bank[
+                        s.op_complete.mem_rob_idx >> 1
+                    ].uop1_entry.busy = Bits1(0)
                 else:
                     # odd index, uop2 is completed
-                    s.instr_bank[s.op_complete.mem_rob_idx >> 1].uop2_entry.busy = Bits1(0)
+                    s.instr_bank[
+                        s.op_complete.mem_rob_idx >> 1
+                    ].uop2_entry.busy = Bits1(0)
 
             # COMMITTING
             # committed store instructions write to memory
@@ -144,10 +154,10 @@ class ReorderBuffer(Component):
             else:
                 s.uop2_entry <<= ROBEntryUop(0, 0, 0)
 
-            # if the ROB's head entry is invalid (committed), deallocate it
+            # if the ROB's head entry is not busy (committed), deallocate it
             if (
-                ~s.instr_bank[s.internal_rob_head].uop1_entry.valid
-                & ~s.instr_bank[s.internal_rob_head].uop2_entry.valid
+                ~s.instr_bank[s.internal_rob_head].uop1_entry.busy
+                & ~s.instr_bank[s.internal_rob_head].uop2_entry.busy
             ):
                 # if the circular buffer is not empty
                 if ~s.bank_empty:

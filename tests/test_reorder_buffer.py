@@ -100,10 +100,12 @@ class TestReorderBuffer(unittest.TestCase):
         s.assertEqual(s.dut.commit_out.uop1_entry.type, 2)
         s.assertEqual(s.dut.commit_out.uop1_entry.lrd, 1)
         s.assertEqual(s.dut.commit_out.uop1_entry.stale, 1)
+        s.assertEqual(s.dut.commit_out.uop1_entry.valid, 1)
         s.assertEqual(s.dut.commit_out.uop2_entry.busy, 0)
         s.assertEqual(s.dut.commit_out.uop2_entry.type, 0)
         s.assertEqual(s.dut.commit_out.uop2_entry.lrd, 0)
         s.assertEqual(s.dut.commit_out.uop2_entry.stale, 0)
+        s.assertEqual(s.dut.commit_out.uop2_entry.valid, 0)
 
         # uop2 execution complete
         s.dut.op_complete @= ExecToROB(
@@ -119,10 +121,12 @@ class TestReorderBuffer(unittest.TestCase):
         s.assertEqual(s.dut.commit_out.uop1_entry.type, 0)
         s.assertEqual(s.dut.commit_out.uop1_entry.lrd, 0)
         s.assertEqual(s.dut.commit_out.uop1_entry.stale, 0)
+        s.assertEqual(s.dut.commit_out.uop1_entry.valid, 0)
         s.assertEqual(s.dut.commit_out.uop2_entry.busy, 0)
         s.assertEqual(s.dut.commit_out.uop2_entry.type, 3)
         s.assertEqual(s.dut.commit_out.uop2_entry.lrd, 2)
         s.assertEqual(s.dut.commit_out.uop2_entry.stale, 2)
+        s.assertEqual(s.dut.commit_out.uop2_entry.valid, 1)
 
     def test_overflow(s):
         duop1 = DualMicroOp.from_bits(Bits(DualMicroOp.nbits, 0))
@@ -139,7 +143,7 @@ class TestReorderBuffer(unittest.TestCase):
         s.dut.write_in @= duop1
 
         # filling rob
-        for x in range(ROB_SIZE//2):
+        for x in range(ROB_SIZE // 2):
             s.assertEqual(s.dut.rob_tail, 2 * x)
             s.assertEqual(s.dut.internal_rob_head, 0)
             s.assertFalse(s.dut.bank_full)
@@ -156,9 +160,13 @@ class TestReorderBuffer(unittest.TestCase):
         s.dut.write_in @= DualMicroOp.from_bits(Bits(DualMicroOp.nbits, 0))
         for x in range(ROB_SIZE):
             s.assertFalse(s.dut.bank_empty)
-            s.dut.op_complete @= ExecToROB(int_rob_idx=x, mem_rob_idx=0, int_rob_complete=1, mem_rob_complete=0)
+            s.dut.op_complete @= ExecToROB(
+                int_rob_idx=x, mem_rob_idx=0, int_rob_complete=1, mem_rob_complete=0
+            )
             s.dut.sim_tick()
 
         s.assertEqual(s.dut.internal_rob_head, s.dut.internal_rob_tail)
         s.assertFalse(s.dut.bank_full)
         s.assertTrue(s.dut.bank_empty)
+
+        # TODO: test reset
