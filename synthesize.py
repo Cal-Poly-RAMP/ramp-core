@@ -1,33 +1,75 @@
+import traceback
+
 from pymtl3 import *
 from pymtl3.passes.backends.verilog import *
-from src.cl import decoder, fetch_stage, icache, memory, register_rename
 
+from src.cl import (
+    decoder,
+    dispatch,
+    fetch_stage,
+    front_end,
+    icache,
+    memory,
+    ramp_core,
+    register_rename,
+    reorder_buffer,
+)
+
+import os
+
+GREEN = "\x1B[32m"
+RED = "\x1B[31m"
+END = "\u001b[0m"
 
 # Synthesize a model
 def synthesize(model):
     # Set metadata
+    filename = "./translated/" + model.__module__.split(".")[-1]
     model.set_metadata(VerilogTranslationPass.enable, True)
-    model.set_metadata(VerilogTranslationPass.explicit_file_name, "./translated/" + model.__module__.split(".")[-1])
-    model.set_metadata(VerilogTranslationPass.explicit_module_name, model.__class__.__name__)
+    model.set_metadata(
+        VerilogTranslationPass.explicit_file_name,
+        filename,
+    )
+    model.set_metadata(
+        VerilogTranslationPass.explicit_module_name, model.__class__.__name__
+    )
 
     # Generate Verilog
-    model.apply( VerilogTranslationPass() )
+    model.apply(VerilogTranslationPass())
+
+    return  filename
 
 if __name__ == "__main__":
-    models = [decoder.SingleInstDecode(),
-                decoder.Decode(),
-                icache.ICache(),
-                # memory.Memory(),
-                register_rename.RegisterRename()
-              ]
+    models = [
+        ramp_core.RampCore(),
+        decoder.Decode(),
+        dispatch.Dispatch(),
+        fetch_stage.FetchStage(),
+        front_end.FrontEnd(),
+        # icache.ICache(),
+        # memory.Memory(),
+        register_rename.RegisterRename(),
+    ]
+    failed = []
+    size = os.get_terminal_size().columns
+
+    msg = "Synthesizing"
+    print(f"{'='*((size-len(msg)-1)//2)} {msg} {'='*((size-len(msg)-1)//2)}")
 
     for model in models:
         try:
             model.elaborate()
-            synthesize(model)
-            print(model.__class__.__name__, "synthesized successfully")
+            filename = synthesize(model)
+            print(GREEN, model.__class__.__name__, "synthesized successfully:", filename + ".v", END)
         except Exception as e:
-            print(model.__class__.__name__, "synthesizing failed:", e)
-            # if not str(e):
-            #     raise(e)
+            print(RED, model.__class__.__name__, "synthesizing failed:", END)
+            failed.append((model.__class__.__name__, traceback.format_exc(limit=-1)))
             continue
+
+    msg = "Failures"
+    print(f"{'='*((size-len(msg)-1)//2)} {msg} {'='*((size-len(msg)-1)//2)}")
+
+    for f in failed:
+        name, err = f
+        print(f"{RED}{'_'*((size-len(name)-1)//2)} {name} {'_'*((size-len(name)-1)//2)}{END}")
+        print(err)

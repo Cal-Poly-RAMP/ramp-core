@@ -214,7 +214,7 @@ class TestRegisterRename(unittest.TestCase):
         self.dut.sim_eval_combinational()
         freelist = self.dut.free_list
         busytable = self.dut.busy_table
-        map_table = self.dut._map_table
+        map_table = self.dut.map_table
 
         for _ in range(5):
             self.dut.inst1_lregs @= noop
@@ -223,11 +223,11 @@ class TestRegisterRename(unittest.TestCase):
 
         self.assertEqual(self.dut.free_list, freelist)
         self.assertEqual(self.dut.busy_table, busytable)
-        self.assertEqual(self.dut._map_table, map_table)
+        self.assertEqual(self.dut.map_table, map_table)
 
     def test_reset(self):
         self.test_dest_src_rename()
         self.dut.sim_reset()
         self.assertEqual(self.dut.free_list, Bits(NUM_PHYS_REGS, -1) << 1)
         self.assertEqual(self.dut.busy_table, 0)
-        self.assertEqual(self.dut._map_table, [0] * NUM_ISA_REGS)
+        self.assertEqual(self.dut.map_table, [0] * NUM_ISA_REGS)

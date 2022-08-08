@@ -17,11 +17,12 @@ typedef struct packed {
   logic [0:0] prs2;
 } PRegBusy__prs1_1__prs2_1;
 
-// PyMTL BitStruct MicroOp__32db6ace22edd734 Definition
+// PyMTL BitStruct MicroOp__c9b3dc01a081cc30 Definition
 typedef struct packed {
-  logic [3:0] uop_type;
+  logic [5:0] uop_type;
   logic [31:0] inst;
-  logic [31:0] pc;
+  logic [7:0] pc;
+  logic [0:0] valid;
   logic [4:0] lrd;
   logic [4:0] lrs1;
   logic [4:0] lrs2;
@@ -35,7 +36,8 @@ typedef struct packed {
   logic [1:0] issue_unit;
   logic [1:0] fu_unit;
   logic [1:0] fu_op;
-} MicroOp__32db6ace22edd734;
+  logic [4:0] rob_idx;
+} MicroOp__c9b3dc01a081cc30;
 
 // PyMTL Component SingleInstDecode Definition
 // Full name: SingleInstDecode_noparam
@@ -44,18 +46,26 @@ typedef struct packed {
 module SingleInstDecode
 (
   input  logic [0:0] clk ,
+  input  logic [0:0] idx ,
   input  logic [31:0] inst ,
+  input  logic [7:0] pc ,
   input  PhysicalRegs__prd_6__prs1_6__prs2_6__stale_6 pregs ,
   input  PRegBusy__prs1_1__prs2_1 pregs_busy ,
   input  logic [0:0] reset ,
-  output MicroOp__32db6ace22edd734 uop
+  output MicroOp__c9b3dc01a081cc30 uop 
 );
-  localparam logic [2:0] __const__RD_BEG  = 3'd7;
-  localparam logic [3:0] __const__RD_END  = 4'd12;
-  localparam logic [3:0] __const__RS1_BEG  = 4'd15;
-  localparam logic [4:0] __const__RS1_END  = 5'd20;
-  localparam logic [4:0] __const__RS2_BEG  = 5'd20;
-  localparam logic [4:0] __const__RS2_END  = 5'd25;
+  localparam logic [5:0] __const__RTYPE_OPCODE  = 6'd51;
+  localparam logic [4:0] __const__ITYPE_OPCODE1  = 5'd19;
+  localparam logic [1:0] __const__ITYPE_OPCODE2  = 2'd3;
+  localparam logic [6:0] __const__ITYPE_OPCODE3  = 7'd103;
+  localparam logic [5:0] __const__STYPE_OPCODE  = 6'd35;
+  localparam logic [6:0] __const__BTYPE_OPCODE  = 7'd99;
+  localparam logic [5:0] __const__UTYPE_OPCODE1  = 6'd55;
+  localparam logic [4:0] __const__UTYPE_OPCODE2  = 5'd23;
+  localparam logic [6:0] __const__JTYPE_OPCODE  = 7'd111;
+  localparam logic [6:0] __const__CSRTYPE_OPCODE  = 7'd115;
+  localparam logic [0:0] __const__INT_ISSUE_UNIT  = 1'd1;
+  localparam logic [1:0] __const__MEM_ISSUE_UNIT  = 2'd2;
   logic [6:0] __tmpvar__decode_comb_opcode;
   logic [0:0] __tmpvar__decode_comb_Rtype;
   logic [0:0] __tmpvar__decode_comb_Itype;
@@ -64,44 +74,55 @@ module SingleInstDecode
   logic [0:0] __tmpvar__decode_comb_Utype;
   logic [0:0] __tmpvar__decode_comb_Jtype;
   logic [0:0] __tmpvar__decode_comb_Csrtype;
+  logic [0:0] __tmpvar__decode_comb_mem_issue;
+  logic [0:0] __tmpvar__decode_comb_int_issue;
 
   // PyMTL Update Block Source
-  // At /Users/curtisbucher/Desktop/ramp-core/src/cl/decoder.py:94
+  // At /Users/curtisbucher/Desktop/ramp-core/src/cl/decoder.py:129
   // @update
   // def decode_comb():
   //     # For determining type
   //     opcode = s.inst[0:7]
-  //
-  //     Rtype = opcode == 0b0110011
+  // 
+  //     Rtype = opcode == RTYPE_OPCODE
   //     Itype = (
-  //         (opcode == 0b0010011) | (opcode == 0b0000011) | (opcode == 0b1100111)
+  //         (opcode == ITYPE_OPCODE1)
+  //         | (opcode == ITYPE_OPCODE2)
+  //         | (opcode == ITYPE_OPCODE3)
   //     )
-  //     Stype = opcode == 0b0100011
-  //     Btype = opcode == 0b1100011
-  //     Utype = (opcode == 0b0110111) | (opcode == 0b0010111)
-  //     Jtype = opcode == 0b1101111
-  //     Csrtype = opcode == 0b1110011
-  //
+  //     Stype = opcode == STYPE_OPCODE
+  //     Btype = opcode == BTYPE_OPCODE
+  //     Utype = (opcode == UTYPE_OPCODE1) | (opcode == UTYPE_OPCODE2)
+  //     Jtype = opcode == JTYPE_OPCODE
+  //     Csrtype = opcode == CSRTYPE_OPCODE
+  // 
+  //     # For determining issue unit
+  //     mem_issue = (opcode == ITYPE_OPCODE2) | (opcode == STYPE_OPCODE)
+  //     int_issue = ~mem_issue  # TODO: fpu issue
+  // 
   //     # uop (hardcoded values)
+  //     # TODO: uopcode
   //     s.uop.inst @= s.inst
-  //     s.uop.pc @= 0  # TODO
-  //
-  //     s.uop.lrd @= s.inst[RD_BEG:RD_END]
-  //     s.uop.lrs1 @= s.inst[RS1_BEG:RS1_END]
-  //     s.uop.lrs2 @= s.inst[RS2_BEG:RS2_END]
-  //
+  //     s.uop.pc @= (s.pc + 4) if s.idx else (s.pc)
+  //     s.uop.valid @= 1
+  // 
+  //     s.uop.lrd @= s.inst[RD_SLICE]
+  //     s.uop.lrs1 @= s.inst[RS1_SLICE]
+  //     s.uop.lrs2 @= s.inst[RS2_SLICE]
+  // 
   //     s.uop.prd @= s.pregs.prd
   //     s.uop.prs1 @= s.pregs.prs1
   //     s.uop.prs2 @= s.pregs.prs2
   //     s.uop.stale @= s.pregs.stale
-  //
-  //     # s.uop.prd_busy @= s.register_rename.busy_table[
-  //     #     s.uop.prd
-  //     # ]  # should always be true, do i need this?
+  // 
   //     s.uop.prs1_busy @= s.pregs_busy.prs1
   //     s.uop.prs2_busy @= s.pregs_busy.prs2
-  //
-  //     # immediates
+  // 
+  //     s.uop.issue_unit @= (
+  //         INT_ISSUE_UNIT if int_issue else MEM_ISSUE_UNIT if mem_issue else 0
+  //     )
+  // 
+  //     # immediates TODO: update with slices
   //     if Rtype:
   //         s.uop.imm @= 0
   //     elif Itype:
@@ -139,27 +160,31 @@ module SingleInstDecode
   //     elif Csrtype:
   //         s.uop.imm @= 0
   //         s.uop.lrs2 @= 0
-
+  
   always_comb begin : decode_comb
     __tmpvar__decode_comb_opcode = inst[5'd6:5'd0];
-    __tmpvar__decode_comb_Rtype = __tmpvar__decode_comb_opcode == 7'd51;
-    __tmpvar__decode_comb_Itype = ( ( __tmpvar__decode_comb_opcode == 7'd19 ) | ( __tmpvar__decode_comb_opcode == 7'd3 ) ) | ( __tmpvar__decode_comb_opcode == 7'd103 );
-    __tmpvar__decode_comb_Stype = __tmpvar__decode_comb_opcode == 7'd35;
-    __tmpvar__decode_comb_Btype = __tmpvar__decode_comb_opcode == 7'd99;
-    __tmpvar__decode_comb_Utype = ( __tmpvar__decode_comb_opcode == 7'd55 ) | ( __tmpvar__decode_comb_opcode == 7'd23 );
-    __tmpvar__decode_comb_Jtype = __tmpvar__decode_comb_opcode == 7'd111;
-    __tmpvar__decode_comb_Csrtype = __tmpvar__decode_comb_opcode == 7'd115;
+    __tmpvar__decode_comb_Rtype = __tmpvar__decode_comb_opcode == 7'( __const__RTYPE_OPCODE );
+    __tmpvar__decode_comb_Itype = ( ( __tmpvar__decode_comb_opcode == 7'( __const__ITYPE_OPCODE1 ) ) | ( __tmpvar__decode_comb_opcode == 7'( __const__ITYPE_OPCODE2 ) ) ) | ( __tmpvar__decode_comb_opcode == 7'( __const__ITYPE_OPCODE3 ) );
+    __tmpvar__decode_comb_Stype = __tmpvar__decode_comb_opcode == 7'( __const__STYPE_OPCODE );
+    __tmpvar__decode_comb_Btype = __tmpvar__decode_comb_opcode == 7'( __const__BTYPE_OPCODE );
+    __tmpvar__decode_comb_Utype = ( __tmpvar__decode_comb_opcode == 7'( __const__UTYPE_OPCODE1 ) ) | ( __tmpvar__decode_comb_opcode == 7'( __const__UTYPE_OPCODE2 ) );
+    __tmpvar__decode_comb_Jtype = __tmpvar__decode_comb_opcode == 7'( __const__JTYPE_OPCODE );
+    __tmpvar__decode_comb_Csrtype = __tmpvar__decode_comb_opcode == 7'( __const__CSRTYPE_OPCODE );
+    __tmpvar__decode_comb_mem_issue = ( __tmpvar__decode_comb_opcode == 7'( __const__ITYPE_OPCODE2 ) ) | ( __tmpvar__decode_comb_opcode == 7'( __const__STYPE_OPCODE ) );
+    __tmpvar__decode_comb_int_issue = ~__tmpvar__decode_comb_mem_issue;
     uop.inst = inst;
-    uop.pc = 32'd0;
-    uop.lrd = inst[5'd11:5'( __const__RD_BEG )];
-    uop.lrs1 = inst[5'd19:5'( __const__RS1_BEG )];
-    uop.lrs2 = inst[5'd24:5'( __const__RS2_BEG )];
+    uop.pc = idx ? pc + 8'd4 : pc;
+    uop.valid = 1'd1;
+    uop.lrd = inst[5'd11:5'd7];
+    uop.lrs1 = inst[5'd19:5'd15];
+    uop.lrs2 = inst[5'd24:5'd20];
     uop.prd = pregs.prd;
     uop.prs1 = pregs.prs1;
     uop.prs2 = pregs.prs2;
     uop.stale = pregs.stale;
     uop.prs1_busy = pregs_busy.prs1;
     uop.prs2_busy = pregs_busy.prs2;
+    uop.issue_unit = __tmpvar__decode_comb_int_issue ? 2'( __const__INT_ISSUE_UNIT ) : __tmpvar__decode_comb_mem_issue ? 2'( __const__MEM_ISSUE_UNIT ) : 2'd0;
     if ( __tmpvar__decode_comb_Rtype ) begin
       uop.imm = 32'd0;
     end

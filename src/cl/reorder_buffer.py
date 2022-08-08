@@ -68,11 +68,11 @@ class ReorderBuffer(Component):
             if s.reset:
                 s.internal_rob_head <<= 0
                 s.internal_rob_tail <<= 0
-                for entry in s.instr_bank:
-                    entry.uop1_entry.valid <<= 0
-                    entry.uop2_entry.valid <<= 0
-                    entry.uop1_entry.busy <<= 0
-                    entry.uop2_entry.busy <<= 0
+                for i in range(ROB_SIZE >> 1):
+                    s.instr_bank[i].uop1_entry.valid <<= 0
+                    s.instr_bank[i].uop2_entry.valid <<= 0
+                    s.instr_bank[i].uop1_entry.busy <<= 0
+                    s.instr_bank[i].uop2_entry.busy <<= 0
                 return
 
             # WRITING TO ROB

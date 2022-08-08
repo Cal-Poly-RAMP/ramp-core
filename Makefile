@@ -11,7 +11,6 @@ format:
 # 	verilator -cc
 
 synthesis:
-	mkdir translated
 	python synthesize.py
 
 .PHONY: test test-verilog synthesis
