@@ -53,13 +53,13 @@ class RegisterRename(Component):
         # map tables
         s.map_table = [Bits(PHYS_REG_BITWIDTH, 0) for _ in range(NUM_ISA_REGS)]
 
+        s.map_table_next = [Wire(PHYS_REG_BITWIDTH) for _ in range(NUM_ISA_REGS)]
+
         # internal freelist implemented as bit vector 1 -> free
-        s._free_list = Bits(NUM_PHYS_REGS, -1 << 1)
-        s.free_list //= s._free_list
+        s.free_list_next = Wire(NUM_PHYS_REGS)  # -1 << 1
 
         # internal busy table
-        s._busy_table = Bits(NUM_PHYS_REGS, 0)
-        s.busy_table //= s._busy_table
+        s.busy_table_next = Wire(NUM_PHYS_REGS)
 
         s.pdst1 = Wire(PHYS_REG_BITWIDTH)
         s.pdst2 = Wire(PHYS_REG_BITWIDTH)
@@ -72,7 +72,7 @@ class RegisterRename(Component):
             # and getting physical dest registers from free list
 
             # *combinatorially* getting dest registers, but not updating tables
-            # pdst1, pdst2 = cascading_priority_encoder(2, s._free_list)
+            # pdst1, pdst2 = cascading_priority_encoder(2, s.free_list_next)
             s.pdst1 @= 0
             s.pdst2 @= 0
             for i in range(PHYS_REG_BITWIDTH):
@@ -95,8 +95,8 @@ class RegisterRename(Component):
             s.inst1_pregs.prs1 @= s.map_table[s.inst1_lregs.lrs1]
             s.inst1_pregs.prs2 @= s.map_table[s.inst1_lregs.lrs2]
             s.inst1_pregs.stale @= s.map_table[s.inst1_lregs.lrd]
-            s.inst1_pregs_busy.prs1 @= s._busy_table[s.inst1_pregs.prs1]
-            s.inst1_pregs_busy.prs2 @= s._busy_table[s.inst1_pregs.prs2]
+            s.inst1_pregs_busy.prs1 @= s.busy_table[s.inst1_pregs.prs1]
+            s.inst1_pregs_busy.prs2 @= s.busy_table[s.inst1_pregs.prs2]
 
             # bypass network.
             # forward dependent sources from inst2 to inst1. handle stale
@@ -112,7 +112,7 @@ class RegisterRename(Component):
                 s.inst2_pregs_busy.prs1 @= 1
             else:
                 s.inst2_pregs.prs1 @= s.map_table[s.inst2_lregs.lrs1]
-                s.inst2_pregs_busy.prs1 @= s._busy_table[s.inst2_pregs.prs2]
+                s.inst2_pregs_busy.prs1 @= s.busy_table[s.inst2_pregs.prs2]
 
             if (s.inst2_lregs.lrs2 == s.inst1_lregs.lrd) & (s.inst1_lregs.lrd != 0):
                 # inst2 dependent on inst1. inst2 prs2 = pdst1 and is busy
@@ -120,30 +120,52 @@ class RegisterRename(Component):
                 s.inst2_pregs_busy.prs2 @= 1
             else:
                 s.inst2_pregs.prs2 @= s.map_table[s.inst2_lregs.lrs2]
-                s.inst2_pregs_busy.prs2 @= s._busy_table[s.inst2_pregs.prs2]
+                s.inst2_pregs_busy.prs2 @= s.busy_table[s.inst2_pregs.prs2]
+
+            # update free list
+            if s.reset:
+                s.free_list_next @= -1 << 1
+                s.busy_table_next @= 0
+            else:
+                # updating tables with newely allocated registers
+                if (s.inst1_lregs.lrd != 0) ^ (s.inst2_lregs.lrd != 0):
+                    s.free_list_next @= s.free_list_next & ~(
+                        s.ONE << zext(s.pdst1, NUM_PHYS_REGS)
+                    )
+                    s.busy_table_next @= s.busy_table | (
+                        s.ONE << zext(s.pdst1, NUM_PHYS_REGS)
+                    )
+
+
+                elif (s.inst1_lregs.lrd != 0) & (s.inst2_lregs.lrd != 0):
+                    s.free_list_next @= (
+                        s.free_list_next
+                        & ~(s.ONE << zext(s.pdst1, NUM_PHYS_REGS))
+                        & ~(s.ONE << zext(s.pdst2, NUM_PHYS_REGS))
+                    )
+                    s.busy_table_next @= (
+                        s.busy_table
+                        | s.ONE << zext(s.pdst1, NUM_PHYS_REGS)
+                        | s.ONE << zext(s.pdst2, NUM_PHYS_REGS)
+                    )
 
         @update_ff
         def rename_ff():
+            s.free_list <<= s.free_list_next
+            s.busy_table <<= s.busy_table_next
+
             # resetting
             if s.reset == 1:
-                s._free_list @= -1 << 1  # for zero register
-                s._busy_table @= 0
+                # s.free_list_next @= -1 << 1  # for zero register
+                # s._busy_table @= 0
                 for x in range(NUM_ISA_REGS):
                     s.map_table[x] @= 0
             else:
-                # getting next two free registers
-                # pdst1, pdst2 = cascading_priority_encoder(2, s._free_list)
+                # # getting next two free registers
+                # # pdst1, pdst2 = cascading_priority_encoder(2, s.free_list_next)
 
-                # updating tables with newely allocated registers
+                # # updating tables with newely allocated registers
                 if (s.inst1_lregs.lrd != 0) | (s.inst2_lregs.lrd != 0):
-                    # raising exception if not enough registers to allocate
-                    # TODO: stall
-                    # if s._free_list == 0:
-                    #     raise Exception(REG_RENAME_ERR)
-                    # updating with first pdst off free list
-                    s._free_list @= s._free_list & ~(s.ONE << zext(s.pdst1, NUM_PHYS_REGS))
-                    s._busy_table @= s._busy_table | (s.ONE << zext(s.pdst1, NUM_PHYS_REGS))
-
                     # updating map table with new register
                     if s.inst1_lregs.lrd:
                         s.map_table[s.inst1_lregs.lrd] @= s.pdst1
@@ -151,14 +173,6 @@ class RegisterRename(Component):
                         s.map_table[s.inst2_lregs.lrd] @= s.pdst1
 
                 if (s.inst1_lregs.lrd != 0) & (s.inst2_lregs.lrd != 0):
-                    # raising exception if not enough registers to allocate
-                    # TODO: stall
-                    # if s._free_list & ~(Bits(NUM_PHYS_REGS, 1) << zext(s.pdst1, NUM_PHYS_REGS)) == 0:
-                    #     raise Exception(REG_RENAME_ERR)
-                    # updating with second pdst off free list
-                    s._free_list @= s._free_list & ~(s.ONE << zext(s.pdst2, NUM_PHYS_REGS))
-                    s._busy_table @= s._busy_table | (s.ONE << zext(s.pdst2, NUM_PHYS_REGS))
-
                     # updating map table with new register
                     s.map_table[s.inst1_lregs.lrd] @= s.pdst1
                     s.map_table[s.inst2_lregs.lrd] @= s.pdst2
@@ -167,8 +181,8 @@ class RegisterRename(Component):
         return (
             "inst1_lregs: {} inst2_lregs: {} ".format(s.inst1_lregs, s.inst2_lregs)
             + "inst1_pregs: {} inst2_pregs: {} ".format(s.inst1_pregs, s.inst2_pregs)
-            + "\n\tfree_list: 0x{} busy_table: 0x{} \n".format(
-                s.free_list, s.busy_table
+            + "\n\tfree_list: 0x{} free_list_next: 0x{} busy_table: 0x{} busy_table_next: 0x{}\n".format(
+                s.free_list, s.free_list_next, s.busy_table, s.busy_table_next
             )
-            + "\tmap_table: {}".format(s.map_table)
+            + "\tmap_table: {}".format([x.uint() for x in s.map_table])
         )
