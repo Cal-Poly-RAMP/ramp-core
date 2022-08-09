@@ -1,22 +1,16 @@
-Welcome to Lumache's documentation!
+ramp-core Documentation
 ===================================
 
-**Lumache** (/lu'make/) is a Python library for cooks and food lovers
-that creates recipes mixing random ingredients.
-It pulls data from the `Open Food Facts database <https://world.openfoodfacts.org/>`_
-and offers a *simple* and *intuitive* API.
-
-Check out the :doc:`usage` section for further information, including
-how to :ref:`installation` the project.
+**ramp-core** is an out-of-order, synthesizeable RISC-V processor core written `pymtl3 <https://pymtl.github.io>`_. It will be a building block of the RAMP framework.
 
 .. note::
 
    This project is under active development.
 
-Contents
---------
+Table of Contents
+-----------------
 
 .. toctree::
 
-   usage
-   api
+   pymtl
+   architecture
