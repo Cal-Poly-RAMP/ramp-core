@@ -13,6 +13,7 @@ from src.cl import (
     ramp_core,
     register_rename,
     reorder_buffer,
+    issue_queue
 )
 
 import os
@@ -49,6 +50,8 @@ if __name__ == "__main__":
         # icache.ICache(),
         # memory.Memory(),
         register_rename.RegisterRename(),
+        reorder_buffer.ReorderBuffer(),
+        issue_queue.IssueQueue(),
     ]
     failed = []
     size = os.get_terminal_size().columns

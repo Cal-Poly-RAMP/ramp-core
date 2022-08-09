@@ -1,5 +1,6 @@
 from pymtl3 import Component, OutPort, update
 from pymtl3.stdlib.basic_rtl.registers import RegEnRst
+from src.cl.register_rename import NUM_PHYS_REGS
 from src.cl.decoder import Decode, DualMicroOp
 from src.cl.fetch_stage import FetchStage, FetchPacket
 
@@ -21,6 +22,9 @@ class FrontEnd(Component):
 
         s.dual_uop = OutPort(DualMicroOp)
         s.dual_uop //= s.decoder.dual_uop
+
+        s.busy_table = OutPort(NUM_PHYS_REGS)
+        s.busy_table //= s.decoder.busy_table
 
         @update
         def update_cntrl():

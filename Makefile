@@ -13,4 +13,12 @@ format:
 synthesis:
 	python synthesize.py
 
+test-synthesis:
+	make synthesis
+	make clean
+
+clean:
+	rm translated/*
+	rm vcd/*
+
 .PHONY: test test-verilog synthesis

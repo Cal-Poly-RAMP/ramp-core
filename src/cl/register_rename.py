@@ -78,6 +78,7 @@ class RegisterRename(Component):
         def rename_comb():
             # Combinatorially getting physical source registers from map table
             # and getting physical dest registers from free list
+            # TODO: add assert statements for when physical registers are full
 
             # *combinatorially* getting dest registers, but not updating tables
             # pdst1, pdst2 = cascading_priority_encoder(2, s.free_list_next)
@@ -89,6 +90,8 @@ class RegisterRename(Component):
                         s.pdst1 @= i
                     elif s.pdst2 == 0:
                         s.pdst2 @= i
+            # making sure that there are free registers
+            # assert s.pdst1 != 0 or s.pdst2 != 0
 
             if s.inst1_lregs.lrd:
                 s.inst1_pregs.prd @= s.pdst1
@@ -130,7 +133,7 @@ class RegisterRename(Component):
                 s.inst2_pregs.prs2 @= s.map_table[s.inst2_lregs.lrs2]
                 s.inst2_pregs_busy.prs2 @= s.busy_table[s.inst2_pregs.prs2]
 
-            # update free list
+            # nextstate for updating free_list, map_table, busy_table
             if s.reset:
                 s.free_list_next @= s.free_list_reset
                 s.busy_table_next @= 0
@@ -149,6 +152,7 @@ class RegisterRename(Component):
                         s.map_table_wr2 @= s.pdst1
 
                 elif (s.inst1_lregs.lrd != 0) & (s.inst2_lregs.lrd != 0):
+                    # ensuring there are registers to allocate
                     s.free_list_next @= (
                         s.free_list_next
                         & ~(s.ONE << zext(s.pdst1, NUM_PHYS_REGS))

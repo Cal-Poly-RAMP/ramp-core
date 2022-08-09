@@ -70,6 +70,7 @@ class Decode(Component):
         s.inst2 //= s.fetch_packet.inst2
 
         s.dual_uop = OutPort(DualMicroOp)
+        s.busy_table = OutPort(NUM_PHYS_REGS)
 
         s.d1 = SingleInstDecode()
         # instruction in
@@ -108,6 +109,9 @@ class Decode(Component):
         # pregs busy status out...
         s.register_rename.inst1_pregs_busy //= s.d1.pregs_busy
         s.register_rename.inst2_pregs_busy //= s.d2.pregs_busy
+
+        # busy table
+        s.busy_table //= s.register_rename.busy_table
 
     def line_trace(s):
         return (

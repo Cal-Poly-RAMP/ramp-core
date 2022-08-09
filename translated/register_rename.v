@@ -52,11 +52,12 @@ module RegisterRename
   logic [5:0] pdst2;
 
   // PyMTL Update Block Source
-  // At /Users/curtisbucher/Desktop/ramp-core/src/cl/register_rename.py:70
+  // At /Users/curtisbucher/Desktop/ramp-core/src/cl/register_rename.py:77
   // @update
   // def rename_comb():
   //     # Combinatorially getting physical source registers from map table
   //     # and getting physical dest registers from free list
+  //     # TODO: add assert statements for when physical registers are full
   // 
   //     # *combinatorially* getting dest registers, but not updating tables
   //     # pdst1, pdst2 = cascading_priority_encoder(2, s.free_list_next)
@@ -68,6 +69,8 @@ module RegisterRename
   //                 s.pdst1 @= i
   //             elif s.pdst2 == 0:
   //                 s.pdst2 @= i
+  //     # making sure that there are free registers
+  //     # assert s.pdst1 != 0 or s.pdst2 != 0
   // 
   //     if s.inst1_lregs.lrd:
   //         s.inst1_pregs.prd @= s.pdst1
@@ -109,7 +112,7 @@ module RegisterRename
   //         s.inst2_pregs.prs2 @= s.map_table[s.inst2_lregs.lrs2]
   //         s.inst2_pregs_busy.prs2 @= s.busy_table[s.inst2_pregs.prs2]
   // 
-  //     # update free list
+  //     # nextstate for updating free_list, map_table, busy_table
   //     if s.reset:
   //         s.free_list_next @= s.free_list_reset
   //         s.busy_table_next @= 0
@@ -127,8 +130,8 @@ module RegisterRename
   //             elif s.inst2_lregs.lrd:
   //                 s.map_table_wr2 @= s.pdst1
   // 
-  // 
   //         elif (s.inst1_lregs.lrd != 0) & (s.inst2_lregs.lrd != 0):
+  //             # ensuring there are registers to allocate
   //             s.free_list_next @= (
   //                 s.free_list_next
   //                 & ~(s.ONE << zext(s.pdst1, NUM_PHYS_REGS))
@@ -215,7 +218,7 @@ module RegisterRename
   end
 
   // PyMTL Update Block Source
-  // At /Users/curtisbucher/Desktop/ramp-core/src/cl/register_rename.py:159
+  // At /Users/curtisbucher/Desktop/ramp-core/src/cl/register_rename.py:169
   // @update_ff
   // def rename_ff():
   //     s.free_list <<= s.free_list_next
