@@ -1,10 +1,16 @@
-from pymtl3 import *
-from pymtl3 import Bits5, Bits6
-from pymtl3.stdlib.basic_rtl.encoders import Encoder
-from src.fl.util import cascading_priority_encoder
+from pymtl3 import (
+    Bits,
+    Component,
+    InPort,
+    OutPort,
+    Wire,
+    bitstruct,
+    mk_bits,
+    update,
+    update_ff,
+    zext,
+)
 
-# from src.cl.fetch_stage import FetchPacket
-# from src.cl.decoder import DualMicroOp
 NUM_ISA_REGS = 32
 ISA_REG_BITWIDTH = 5
 
@@ -33,8 +39,8 @@ class PhysicalRegs:
 
 @bitstruct
 class PRegBusy:
-    prs1: Bits1
-    prs2: Bits1
+    prs1: mk_bits(1)
+    prs2: mk_bits(1)
 
 
 class RegisterRename(Component):
@@ -51,12 +57,14 @@ class RegisterRename(Component):
         s.busy_table = OutPort(NUM_PHYS_REGS)
 
         # map tables
-        s.map_table = [Bits(PHYS_REG_BITWIDTH, 0) for _ in range(NUM_ISA_REGS)]
+        s.map_table = [Wire(PHYS_REG_BITWIDTH) for _ in range(NUM_ISA_REGS)]
 
-        s.map_table_next = [Wire(PHYS_REG_BITWIDTH) for _ in range(NUM_ISA_REGS)]
+        s.map_table_wr1 = Wire(PHYS_REG_BITWIDTH)
+        s.map_table_wr2 = Wire(PHYS_REG_BITWIDTH)
 
         # internal freelist implemented as bit vector 1 -> free
         s.free_list_next = Wire(NUM_PHYS_REGS)  # -1 << 1
+        s.free_list_reset = Bits(NUM_PHYS_REGS, -1 << 1)
 
         # internal busy table
         s.busy_table_next = Wire(NUM_PHYS_REGS)
@@ -124,7 +132,7 @@ class RegisterRename(Component):
 
             # update free list
             if s.reset:
-                s.free_list_next @= -1 << 1
+                s.free_list_next @= s.free_list_reset
                 s.busy_table_next @= 0
             else:
                 # updating tables with newely allocated registers
@@ -135,7 +143,10 @@ class RegisterRename(Component):
                     s.busy_table_next @= s.busy_table | (
                         s.ONE << zext(s.pdst1, NUM_PHYS_REGS)
                     )
-
+                    if s.inst1_lregs.lrd:
+                        s.map_table_wr1 @= s.pdst1
+                    elif s.inst2_lregs.lrd:
+                        s.map_table_wr2 @= s.pdst1
 
                 elif (s.inst1_lregs.lrd != 0) & (s.inst2_lregs.lrd != 0):
                     s.free_list_next @= (
@@ -148,34 +159,20 @@ class RegisterRename(Component):
                         | s.ONE << zext(s.pdst1, NUM_PHYS_REGS)
                         | s.ONE << zext(s.pdst2, NUM_PHYS_REGS)
                     )
+                    s.map_table_wr1 @= s.pdst1
+                    s.map_table_wr2 @= s.pdst2
 
         @update_ff
         def rename_ff():
             s.free_list <<= s.free_list_next
             s.busy_table <<= s.busy_table_next
+            s.map_table[s.inst1_lregs.lrd] <<= s.map_table_wr1
+            s.map_table[s.inst2_lregs.lrd] <<= s.map_table_wr2
 
-            # resetting
+            # # resetting
             if s.reset == 1:
-                # s.free_list_next @= -1 << 1  # for zero register
-                # s._busy_table @= 0
                 for x in range(NUM_ISA_REGS):
-                    s.map_table[x] @= 0
-            else:
-                # # getting next two free registers
-                # # pdst1, pdst2 = cascading_priority_encoder(2, s.free_list_next)
-
-                # # updating tables with newely allocated registers
-                if (s.inst1_lregs.lrd != 0) | (s.inst2_lregs.lrd != 0):
-                    # updating map table with new register
-                    if s.inst1_lregs.lrd:
-                        s.map_table[s.inst1_lregs.lrd] @= s.pdst1
-                    elif s.inst2_lregs.lrd:
-                        s.map_table[s.inst2_lregs.lrd] @= s.pdst1
-
-                if (s.inst1_lregs.lrd != 0) & (s.inst2_lregs.lrd != 0):
-                    # updating map table with new register
-                    s.map_table[s.inst1_lregs.lrd] @= s.pdst1
-                    s.map_table[s.inst2_lregs.lrd] @= s.pdst2
+                    s.map_table[x] <<= 0
 
     def line_trace(s):
         return (
@@ -185,4 +182,7 @@ class RegisterRename(Component):
                 s.free_list, s.free_list_next, s.busy_table, s.busy_table_next
             )
             + "\tmap_table: {}".format([x.uint() for x in s.map_table])
+            + "\n\tmap_table_wr1: {} map_table_wr2: {}".format(
+                s.map_table_wr1, s.map_table_wr2
+            )
         )
