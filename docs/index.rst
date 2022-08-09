@@ -10,7 +10,7 @@ Welcome to ramp-core's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-
+   sections/pymtl
 
 Indices and tables
 ==================
