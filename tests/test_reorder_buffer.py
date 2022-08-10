@@ -51,8 +51,8 @@ class TestReorderBuffer(unittest.TestCase):
             s.dut.instr_bank[0],
             ROBEntry(
                 pc=0,
-                uop1_entry=ROBEntryUop(valid=1, busy=1, type=0),
-                uop2_entry=ROBEntryUop(valid=1, busy=1, type=0),
+                uop1_entry=ROBEntryUop(valid=1, busy=1, optype=0),
+                uop2_entry=ROBEntryUop(valid=1, busy=1, optype=0),
             ),
         )
 
@@ -62,12 +62,12 @@ class TestReorderBuffer(unittest.TestCase):
         # write to rob
         duop1 = DualMicroOp.from_bits(Bits(DualMicroOp.nbits, 0))
         duop1.uop1.valid @= 1
-        duop1.uop1.type @= 2
+        duop1.uop1.optype @= 2
         duop1.uop1.lrd @= 1
         duop1.uop1.stale @= 1
 
         duop1.uop2.valid @= 1
-        duop1.uop2.type @= 3
+        duop1.uop2.optype @= 3
         duop1.uop2.lrd @= 2
         duop1.uop2.stale @= 2
 
@@ -97,12 +97,12 @@ class TestReorderBuffer(unittest.TestCase):
         s.assertEqual(s.dut.internal_rob_tail, 1)
 
         s.assertEqual(s.dut.commit_out.uop1_entry.busy, 0)
-        s.assertEqual(s.dut.commit_out.uop1_entry.type, 2)
+        s.assertEqual(s.dut.commit_out.uop1_entry.optype, 2)
         s.assertEqual(s.dut.commit_out.uop1_entry.lrd, 1)
         s.assertEqual(s.dut.commit_out.uop1_entry.stale, 1)
         s.assertEqual(s.dut.commit_out.uop1_entry.valid, 1)
         s.assertEqual(s.dut.commit_out.uop2_entry.busy, 0)
-        s.assertEqual(s.dut.commit_out.uop2_entry.type, 0)
+        s.assertEqual(s.dut.commit_out.uop2_entry.optype, 0)
         s.assertEqual(s.dut.commit_out.uop2_entry.lrd, 0)
         s.assertEqual(s.dut.commit_out.uop2_entry.stale, 0)
         s.assertEqual(s.dut.commit_out.uop2_entry.valid, 0)
@@ -118,12 +118,12 @@ class TestReorderBuffer(unittest.TestCase):
         s.assertEqual(s.dut.internal_rob_tail, 1)
 
         s.assertEqual(s.dut.commit_out.uop1_entry.busy, 0)
-        s.assertEqual(s.dut.commit_out.uop1_entry.type, 0)
+        s.assertEqual(s.dut.commit_out.uop1_entry.optype, 0)
         s.assertEqual(s.dut.commit_out.uop1_entry.lrd, 0)
         s.assertEqual(s.dut.commit_out.uop1_entry.stale, 0)
         s.assertEqual(s.dut.commit_out.uop1_entry.valid, 0)
         s.assertEqual(s.dut.commit_out.uop2_entry.busy, 0)
-        s.assertEqual(s.dut.commit_out.uop2_entry.type, 3)
+        s.assertEqual(s.dut.commit_out.uop2_entry.optype, 3)
         s.assertEqual(s.dut.commit_out.uop2_entry.lrd, 2)
         s.assertEqual(s.dut.commit_out.uop2_entry.stale, 2)
         s.assertEqual(s.dut.commit_out.uop2_entry.valid, 1)
@@ -131,12 +131,12 @@ class TestReorderBuffer(unittest.TestCase):
     def test_overflow(s):
         duop1 = DualMicroOp.from_bits(Bits(DualMicroOp.nbits, 0))
         duop1.uop1.valid @= 1
-        duop1.uop1.type @= 2
+        duop1.uop1.optype @= 2
         duop1.uop1.lrd @= 1
         duop1.uop1.stale @= 1
 
         duop1.uop2.valid @= 1
-        duop1.uop2.type @= 3
+        duop1.uop2.optype @= 3
         duop1.uop2.lrd @= 2
         duop1.uop2.stale @= 2
 

@@ -97,25 +97,25 @@ class TestIssueQueue(unittest.TestCase):
     def test_issue_rsb_type(s):
         # prs1 and prs2 must be ready
         uop1 = MicroOp.from_bits(Bits(MicroOp.nbits, 0x2468ACE0))
-        uop1.type @= R_TYPE
+        uop1.optype @= R_TYPE
         uop1.valid @= 1
         uop1.prs1 @= 1
         uop1.prs2 @= 2
 
         uop2 = MicroOp.from_bits(Bits(MicroOp.nbits, 0x13579BDF))
-        uop2.type @= R_TYPE
+        uop2.optype @= R_TYPE
         uop2.valid @= 1
         uop2.prs1 @= 3
         uop2.prs2 @= 4
 
         uop3 = MicroOp.from_bits(Bits(MicroOp.nbits, 0xDEADBEEF))
-        uop3.type @= S_TYPE
+        uop3.optype @= S_TYPE
         uop3.valid @= 1
         uop3.prs1 @= 5
         uop3.prs2 @= 6
 
         uop4 = MicroOp.from_bits(Bits(MicroOp.nbits, 0xBEEFDEAD))
-        uop4.type @= B_TYPE
+        uop4.optype @= B_TYPE
         uop4.valid @= 1
         uop4.prs1 @= 7
         uop4.prs2 @= 8
@@ -154,23 +154,23 @@ class TestIssueQueue(unittest.TestCase):
     def test_issue_i_type(s):
         # prs1 must be ready
         uop1 = MicroOp.from_bits(Bits(MicroOp.nbits, 0x2468ACE0))
-        uop1.type @= I_TYPE
+        uop1.optype @= I_TYPE
         uop1.valid @= 1
         uop1.prs1 @= 1
 
         uop2 = MicroOp.from_bits(Bits(MicroOp.nbits, 0x13579BDF))
-        uop2.type @= I_TYPE
+        uop2.optype @= I_TYPE
         uop2.valid @= 1
         uop2.prs1 @= 3
 
         uop3 = MicroOp.from_bits(Bits(MicroOp.nbits, 0xDEADBEEF))
-        uop3.type @= I_TYPE
+        uop3.optype @= I_TYPE
         uop3.valid @= 1
         uop3.prs1 @= 5
 
 
         uop4 = MicroOp.from_bits(Bits(MicroOp.nbits, 0xBEEFDEAD))
-        uop4.type @= I_TYPE
+        uop4.optype @= I_TYPE
         uop4.valid @= 1
         uop4.prs1 @= 7
 
@@ -206,19 +206,19 @@ class TestIssueQueue(unittest.TestCase):
     def test_issue_uj_type(s):
         # mem must be ready?
         uop1 = MicroOp.from_bits(Bits(MicroOp.nbits, 0x2468ACE0))
-        uop1.type @= U_TYPE
+        uop1.optype @= U_TYPE
         uop1.valid @= 1
 
         uop2 = MicroOp.from_bits(Bits(MicroOp.nbits, 0x13579BDF))
-        uop2.type @= U_TYPE
+        uop2.optype @= U_TYPE
         uop2.valid @= 1
 
         uop3 = MicroOp.from_bits(Bits(MicroOp.nbits, 0xDEADBEEF))
-        uop3.type @= J_TYPE
+        uop3.optype @= J_TYPE
         uop3.valid @= 0
 
         uop4 = MicroOp.from_bits(Bits(MicroOp.nbits, 0xBEEFDEAD))
-        uop4.type @= J_TYPE
+        uop4.optype @= J_TYPE
         uop4.valid @= 1
 
         # adding uops to queues while simultaneously executing

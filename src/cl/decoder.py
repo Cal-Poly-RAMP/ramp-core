@@ -225,7 +225,7 @@ class SingleInstDecode(Component):
 
 @bitstruct
 class MicroOp:
-    type: mk_bits(3)  # micro-op type
+    optype: mk_bits(3)  # micro-op type
     inst: mk_bits(INSTR_WIDTH)  # instruction
     pc: mk_bits(PC_WIDTH)  # program counter TODO: just forward to ROB?
     valid: mk_bits(1)  # whether this is a valid uop (not noop)
@@ -253,7 +253,7 @@ class MicroOp:
 
     def __str__(s):
         return (
-            f"type: {s.type} inst: {s.inst} pc: {s.pc}"
+            f"type: {s.optype} inst: {s.inst} pc: {s.pc}"
             f" valid: {s.valid} imm: {s.imm}"
             f" issue_unit: {s.issue_unit} fu_unit: {s.fu_unit} fu_op: {s.fu_op}"
             f"\n\t\tlrd: x{s.lrd.uint():02d} lrs1: x{s.lrs1.uint():02d} lrs2: x{s.lrs2.uint():02d}"

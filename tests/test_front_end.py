@@ -44,7 +44,7 @@ class TestFrontEnd(unittest.TestCase):
 
         # fp1
         uop1a = MicroOp(
-            type=0b0000,  # not set yet
+            optype=0b0000,  # not set yet
             inst=fp1.inst1,
             pc=0,
             valid=1,
@@ -63,7 +63,7 @@ class TestFrontEnd(unittest.TestCase):
             fu_op=0b00,  # functional unit operation is not set yet
         )
         uop1b = MicroOp(
-            type=0b0000,  # not set yet
+            optype=0b0000,  # not set yet
             inst=fp1.inst2,
             pc=4,
             valid=1,
@@ -83,7 +83,7 @@ class TestFrontEnd(unittest.TestCase):
         )
         # fp2
         uop2a = MicroOp(
-            type=0b0000,  # not set yet
+            optype=0b0000,  # not set yet
             inst=fp2.inst1,
             pc=8,
             valid=1,
@@ -102,7 +102,7 @@ class TestFrontEnd(unittest.TestCase):
             fu_op=0b00,  # functional unit operation is not set yet
         )
         uop2b = MicroOp(
-            type=0b0000,  # not set yet
+            optype=0b0000,  # not set yet
             inst=fp2.inst2,
             pc=12,
             valid=1,
@@ -122,7 +122,7 @@ class TestFrontEnd(unittest.TestCase):
         )
         # fp3
         uop3a = MicroOp(
-            type=0b0000,  # not set yet
+            optype=0b0000,  # not set yet
             inst=fp3.inst1,
             pc=16,
             valid=1,
@@ -141,7 +141,7 @@ class TestFrontEnd(unittest.TestCase):
             fu_op=0b00,  # functional unit operation is not set yet
         )
         uop3b = MicroOp(
-            type=0b0000,  # not set yet
+            optype=0b0000,  # not set yet
             inst=fp3.inst2,
             pc=20,
             valid=1,

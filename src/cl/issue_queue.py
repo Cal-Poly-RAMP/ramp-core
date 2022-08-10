@@ -66,9 +66,9 @@ class IssueQueue(Component):
                 elif s.queue[i].valid:
                     # r,s,b type: need rs1, rs2 to be not busy
                     if (
-                        (s.queue[i].type == R_TYPE)
-                        | (s.queue[i].type == S_TYPE)
-                        | (s.queue[i].type == B_TYPE)
+                        (s.queue[i].optype == R_TYPE)
+                        | (s.queue[i].optype == S_TYPE)
+                        | (s.queue[i].optype == B_TYPE)
                     ):
                         if (
                             ~s.busy_table[s.queue[i].prs1]
@@ -80,7 +80,7 @@ class IssueQueue(Component):
                             collapse = 1
 
                     # i type: need rs1 to be not busy
-                    elif s.queue[i].type == I_TYPE:
+                    elif s.queue[i].optype == I_TYPE:
                         if ~s.busy_table[s.queue[i].prs1]:
                             s.uop_out <<= s.queue[i]
                             s.tail <<= s.tail - 1
@@ -88,7 +88,7 @@ class IssueQueue(Component):
                             collapse = 1
 
                     # u,b,j type: ready to issue
-                    elif (s.queue[i].type == U_TYPE) | (s.queue[i].type == J_TYPE):
+                    elif (s.queue[i].optype == U_TYPE) | (s.queue[i].optype == J_TYPE):
                         s.uop_out <<= s.queue[i]
                         s.tail <<= s.tail - 1
                         s.queue_full <<= 0
@@ -96,9 +96,7 @@ class IssueQueue(Component):
 
             if collapse:
                 s.queue_empty <<= (s.tail - 1) == 0
-                s.queue[ISSUE_QUEUE_DEPTH - 1] <<= MicroOp.from_bits(
-                    Bits(MicroOp.nbits, 0)
-                )
+                s.queue[ISSUE_QUEUE_DEPTH - 1] <<= MicroOp(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,)
 
             # APPENDING new uops to queue, if valid
             if s.duop_in.uop1.valid & s.duop_in.uop2.valid & (s.tail < (ISSUE_QUEUE_DEPTH - 1)):
