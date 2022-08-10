@@ -6,30 +6,8 @@ while not w and "-" in b:
     b = b[:m] + P + b[m + 1 :]
     P = "O" if P == "X" else "X"
     for i in range(8):
-        # w=F.format(s=D*(i//2),a=O if i%2 else X) in b or w
         a = ["", "X", "O", "-"]
         B = "X" if i % 2 else "O"
         C = "{}{}{}{}{}{}{}{}{}"
-        w = (
-            C.format(
-                B,
-                a[i % 4],
-                a[i // 4 % 4],
-                a[i // 16 % 4],
-                B,
-                a[i // 64 % 4],
-                a[i // 256 % 4],
-                a[i // 1024 % 4],
-                B,
-            )
-            in b
-            or w
-        )
+        w = (C.format(B,a[i % 4],a[i // 4 % 4],a[i // 16 % 4],B,a[i // 64 % 4],a[i // 256 % 4],a[i // 1024 % 4],B,)in bor w)
 
-# if __name__ == "__main__":
-
-#     c = "{}{}{}{}{}{}{}{}{}"
-#     p = print
-#     for i in range(4**7):
-
-#         p(

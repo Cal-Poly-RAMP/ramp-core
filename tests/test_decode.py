@@ -52,8 +52,8 @@ class TestDecode(unittest.TestCase):
             prs2_busy=0,
             imm=0x0BEEF000,
             issue_unit=INT_ISSUE_UNIT,
-            fu_unit=0b00,  # functional unit is not set yet
-            fu_op=0b00,  # functional unit operation is not set yet
+            fu_unit=s.dut.dual_uop.uop1.fu_unit.uint(),  # functional unit is not set yet
+            fu_op=s.dut.dual_uop.uop1.fu_op.uint(),  # functional unit operation is not set yet
         )
         exp_uop2 = MicroOp(
             optype=0b0000,  # not set yet
@@ -71,8 +71,8 @@ class TestDecode(unittest.TestCase):
             prs2_busy=1,
             imm=0,
             issue_unit=INT_ISSUE_UNIT,
-            fu_unit=0b00,  # functional unit is not set yet
-            fu_op=0b00,  # functional unit operation is not set yet
+            fu_unit=s.dut.dual_uop.uop2.fu_unit.uint(),  # functional unit is not set yet
+            fu_op=s.dut.dual_uop.uop2.fu_op.uint(),  # functional unit operation is not set yet
         )
 
         s.assertEqual(str(s.dut.dual_uop.uop1), str(exp_uop1))
@@ -105,8 +105,8 @@ class TestDecode(unittest.TestCase):
             prs2_busy=0,
             imm=0x020,
             issue_unit=MEM_ISSUE_UNIT,
-            fu_unit=0b00,  # functional unit is not set yet
-            fu_op=0b00,  # functional unit operation is not set yet
+            fu_unit=s.dut.dual_uop.uop1.fu_unit.uint(),  # functional unit is not set yet
+            fu_op=s.dut.dual_uop.uop1.fu_op.uint(),  # functional unit operation is not set yet
         )
         exp_uop2 = MicroOp(
             optype=0b0000,  # not set yet
@@ -124,8 +124,8 @@ class TestDecode(unittest.TestCase):
             prs2_busy=0,
             imm=0x040,
             issue_unit=MEM_ISSUE_UNIT,
-            fu_unit=0b00,  # functional unit is not set yet
-            fu_op=0b00,  # functional unit operation is not set yet
+            fu_unit=s.dut.dual_uop.uop2.fu_unit.uint(),  # functional unit is not set yet
+            fu_op=s.dut.dual_uop.uop2.fu_op.uint(),  # functional unit operation is not set yet
         )
 
         s.assertEqual(str(s.dut.dual_uop.uop1), str(exp_uop1))

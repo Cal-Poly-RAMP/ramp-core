@@ -1,6 +1,16 @@
 import unittest
 from pymtl3 import *
-from src.cl.decoder import B_TYPE, I_TYPE, J_TYPE, NO_OP, R_TYPE, S_TYPE, U_TYPE, DualMicroOp, MicroOp
+from src.cl.decoder import (
+    B_TYPE,
+    I_TYPE,
+    J_TYPE,
+    NO_OP,
+    R_TYPE,
+    S_TYPE,
+    U_TYPE,
+    DualMicroOp,
+    MicroOp,
+)
 from src.cl.register_rename import NUM_PHYS_REGS
 from src.cl.issue_queue import ISSUE_QUEUE_DEPTH, IssueQueue
 from src.fl.util import one_hot
@@ -168,7 +178,6 @@ class TestIssueQueue(unittest.TestCase):
         uop3.valid @= 1
         uop3.prs1 @= 5
 
-
         uop4 = MicroOp.from_bits(Bits(MicroOp.nbits, 0xBEEFDEAD))
         uop4.optype @= I_TYPE
         uop4.valid @= 1
@@ -240,7 +249,7 @@ class TestIssueQueue(unittest.TestCase):
         s.assertEqual(s.dut.uop_out, uop4)
 
     def test_reset(s):
-        s.dut.duop_in @= DualMicroOp.from_bits(Bits(DualMicroOp.nbits, 0xdead))
+        s.dut.duop_in @= DualMicroOp.from_bits(Bits(DualMicroOp.nbits, 0xDEAD))
         s.dut.sim_tick()
         s.dut.sim_reset()
         s.assertEqual(s.dut.tail, 0)

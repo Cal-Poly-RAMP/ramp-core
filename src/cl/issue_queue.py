@@ -96,17 +96,40 @@ class IssueQueue(Component):
 
             if collapse:
                 s.queue_empty <<= (s.tail - 1) == 0
-                s.queue[ISSUE_QUEUE_DEPTH - 1] <<= MicroOp(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,)
+                s.queue[ISSUE_QUEUE_DEPTH - 1] <<= MicroOp(
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                )
 
             # APPENDING new uops to queue, if valid
-            if s.duop_in.uop1.valid & s.duop_in.uop2.valid & (s.tail < (ISSUE_QUEUE_DEPTH - 1)):
+            if (
+                s.duop_in.uop1.valid
+                & s.duop_in.uop2.valid
+                & (s.tail < (ISSUE_QUEUE_DEPTH - 1))
+            ):
                 s.queue[s.tail] <<= s.duop_in.uop1
                 s.queue[s.tail + 1] <<= s.duop_in.uop2
 
                 #  if overflow, no wrap around
                 s.queue_empty <<= 0
                 s.tail <<= s.tail + 2
-                if(s.tail + 2 == 0):
+                if s.tail + 2 == 0:
                     s.queue_full <<= 1
 
             elif s.duop_in.uop1.valid & ~s.queue_full:
@@ -114,7 +137,7 @@ class IssueQueue(Component):
 
                 s.queue_empty <<= 0
                 s.tail <<= s.tail + 1
-                if(s.tail + 1 == 0):
+                if s.tail + 1 == 0:
                     s.queue_full <<= 1
 
             elif s.duop_in.uop2.valid & ~s.queue_full:
@@ -122,8 +145,9 @@ class IssueQueue(Component):
 
                 s.queue_empty <<= 0
                 s.tail <<= s.tail + 1
-                if(s.tail + 1 == 0):
+                if s.tail + 1 == 0:
                     s.queue_full <<= 1
+
     def line_trace(s):
         return (
             f"Issue Queue: {[i.to_bits().uint() for i in s.queue]}\n"

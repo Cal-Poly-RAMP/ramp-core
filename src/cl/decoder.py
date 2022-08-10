@@ -52,10 +52,17 @@ JTYPE_OPCODE = 0b1101111
 CSRTYPE_OPCODE = 0b1110011
 
 # enumerations
+# issue units
 NA_ISSUE_UNIT = 0b00
 INT_ISSUE_UNIT = 0b01
 MEM_ISSUE_UNIT = 0b10
 
+# functional units
+NA_FUNCTIONAL_UNIT = 0b00
+ALU_FUNCTIONAL_UNIT = 0b01
+MEM_FUNCTIONAL_UNIT = 0b10
+
+# instruction types
 R_TYPE = 0b000
 I_TYPE = 0b001
 S_TYPE = 0b010
@@ -63,6 +70,19 @@ B_TYPE = 0b011
 U_TYPE = 0b100
 J_TYPE = 0b101
 CSR_TYPE = 0b110
+
+# ALU functions [funct7[5], funct3]
+ALU_ADD = Bits(4, 0b0000)
+ALU_SUB = Bits(4, 0b1000)
+ALU_OR = Bits(4, 0b0110)
+ALU_AND = Bits(4, 0b0111)
+ALU_XOR = Bits(4, 0b0100)
+ALU_SRL = Bits(4, 0b0101)
+ALU_SLL = Bits(4, 0b0001)
+ALU_SRA = Bits(4, 0b1101)
+ALU_SLT = Bits(4, 0b0010)
+ALU_SLTU = Bits(4, 0b0011)
+ALU_LUI_COPY = Bits(4, 0b1001)
 
 # TODO: move to a file that makes sense, (circular import)
 ROB_ADDR_WIDTH = 5
@@ -186,6 +206,7 @@ class SingleInstDecode(Component):
             # immediates TODO: update with slices
             if Rtype:
                 s.uop.imm @= 0
+                s.uop.fu_op @= concat(s.inst[30], s.inst[FUNCT3_SLICE])  # alu function
             elif Itype:
                 s.uop.imm @= sext(s.inst[20:32], 32)
                 s.uop.lrs2 @= 0
@@ -204,6 +225,7 @@ class SingleInstDecode(Component):
                 s.uop.imm @= concat(s.inst[12:32], Bits12(0))
                 s.uop.lrs1 @= 0
                 s.uop.lrs2 @= 0
+                s.uop.fu_op @= Bits(4, 0b1001)  # alu lui-copy TODO: auipc
             elif Jtype:
                 s.uop.imm @= sext(
                     concat(
@@ -247,7 +269,7 @@ class MicroOp:
 
     issue_unit: Bits2  # issue unit
     fu_unit: Bits2  # functional unit
-    fu_op: Bits2  # functional unit operation
+    fu_op: mk_bits(4)  # functional unit operation
 
     rob_idx: mk_bits(ROB_ADDR_WIDTH)  # index of instruction in ROB
 
