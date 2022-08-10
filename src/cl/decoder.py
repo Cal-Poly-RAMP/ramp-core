@@ -51,8 +51,18 @@ UTYPE_OPCODE2 = 0b0010111
 JTYPE_OPCODE = 0b1101111
 CSRTYPE_OPCODE = 0b1110011
 
+# enumerations
+NA_ISSUE_UNIT = 0b00
 INT_ISSUE_UNIT = 0b01
 MEM_ISSUE_UNIT = 0b10
+
+R_TYPE = 0b000
+I_TYPE = 0b001
+S_TYPE = 0b010
+B_TYPE = 0b011
+U_TYPE = 0b100
+J_TYPE = 0b101
+CSR_TYPE = 0b110
 
 # TODO: move to a file that makes sense, (circular import)
 ROB_ADDR_WIDTH = 5
@@ -215,7 +225,7 @@ class SingleInstDecode(Component):
 
 @bitstruct
 class MicroOp:
-    uop_type: mk_bits(6)  # micro-op type
+    type: mk_bits(3)  # micro-op type
     inst: mk_bits(INSTR_WIDTH)  # instruction
     pc: mk_bits(PC_WIDTH)  # program counter TODO: just forward to ROB?
     valid: mk_bits(1)  # whether this is a valid uop (not noop)
@@ -243,7 +253,7 @@ class MicroOp:
 
     def __str__(s):
         return (
-            f"uop_type: {s.uop_type} inst: {s.inst} pc: {s.pc}"
+            f"type: {s.type} inst: {s.inst} pc: {s.pc}"
             f" valid: {s.valid} imm: {s.imm}"
             f" issue_unit: {s.issue_unit} fu_unit: {s.fu_unit} fu_op: {s.fu_op}"
             f"\n\t\tlrd: x{s.lrd.uint():02d} lrs1: x{s.lrs1.uint():02d} lrs2: x{s.lrs2.uint():02d}"

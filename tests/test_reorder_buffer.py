@@ -62,12 +62,12 @@ class TestReorderBuffer(unittest.TestCase):
         # write to rob
         duop1 = DualMicroOp.from_bits(Bits(DualMicroOp.nbits, 0))
         duop1.uop1.valid @= 1
-        duop1.uop1.uop_type @= 2
+        duop1.uop1.type @= 2
         duop1.uop1.lrd @= 1
         duop1.uop1.stale @= 1
 
         duop1.uop2.valid @= 1
-        duop1.uop2.uop_type @= 3
+        duop1.uop2.type @= 3
         duop1.uop2.lrd @= 2
         duop1.uop2.stale @= 2
 
@@ -131,12 +131,12 @@ class TestReorderBuffer(unittest.TestCase):
     def test_overflow(s):
         duop1 = DualMicroOp.from_bits(Bits(DualMicroOp.nbits, 0))
         duop1.uop1.valid @= 1
-        duop1.uop1.uop_type @= 2
+        duop1.uop1.type @= 2
         duop1.uop1.lrd @= 1
         duop1.uop1.stale @= 1
 
         duop1.uop2.valid @= 1
-        duop1.uop2.uop_type @= 3
+        duop1.uop2.type @= 3
         duop1.uop2.lrd @= 2
         duop1.uop2.stale @= 2
 

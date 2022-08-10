@@ -1,5 +1,6 @@
 # The ReOrder Buffer
 # TODO: there can be much optimization to make smaller.
+# TODO: NOT SYNTHESIZEABLE
 # We are going to store full microops in the ROB, but for synthesis, only certain
 # fields are needed.
 from pymtl3 import (
@@ -41,8 +42,8 @@ class ReorderBuffer(Component):
 
         # a circular buffer of entries
         s.instr_bank = [ROBEntry() for _ in range(ROB_SIZE // 2)]
-        s.bank_full = Wire(1)
-        s.bank_empty = Wire(1)
+        s.bank_full = OutPort(1)
+        s.bank_empty = OutPort(1)
 
         @update
         def comb_():
@@ -86,14 +87,14 @@ class ReorderBuffer(Component):
                         uop1_entry=ROBEntryUop(
                             valid=s.write_in.uop1.valid,
                             busy=s.write_in.uop1.valid,  # busy if valid
-                            type=s.write_in.uop1.uop_type,
+                            type=s.write_in.uop1.type,
                             lrd=s.write_in.uop1.lrd,
                             stale=s.write_in.uop1.stale,
                         ),
                         uop2_entry=ROBEntryUop(
                             valid=s.write_in.uop2.valid,
                             busy=s.write_in.uop1.valid,  # busy if valid
-                            type=s.write_in.uop2.uop_type,
+                            type=s.write_in.uop2.type,
                             lrd=s.write_in.uop2.lrd,
                             stale=s.write_in.uop2.stale,
                         ),
@@ -178,7 +179,7 @@ class ReorderBuffer(Component):
 class ROBEntryUop:
     valid: mk_bits(1)
     busy: mk_bits(1)
-    type: mk_bits(6)
+    type: mk_bits(3)
     lrd: mk_bits(ISA_REG_BITWIDTH)
     stale: mk_bits(PHYS_REG_BITWIDTH)
 

@@ -37,7 +37,7 @@ class TestDecode(unittest.TestCase):
         s.dut.sim_eval_combinational()
 
         exp_uop1 = MicroOp(
-            uop_type=0b0000,  # not set yet
+            type=0b0000,  # not set yet
             inst=inst1,
             pc=0,
             valid=1,
@@ -56,7 +56,7 @@ class TestDecode(unittest.TestCase):
             fu_op=0b00,  # functional unit operation is not set yet
         )
         exp_uop2 = MicroOp(
-            uop_type=0b0000,  # not set yet
+            type=0b0000,  # not set yet
             inst=inst2,
             pc=4,
             valid=1,
@@ -90,7 +90,7 @@ class TestDecode(unittest.TestCase):
         s.dut.sim_eval_combinational()
 
         exp_uop1 = MicroOp(
-            uop_type=0b0000,  # not set yet
+            type=0b0000,  # not set yet
             inst=inst1,
             pc=8,
             valid=1,
@@ -109,7 +109,7 @@ class TestDecode(unittest.TestCase):
             fu_op=0b00,  # functional unit operation is not set yet
         )
         exp_uop2 = MicroOp(
-            uop_type=0b0000,  # not set yet
+            type=0b0000,  # not set yet
             inst=inst2,
             pc=12,
             valid=1,
@@ -143,7 +143,7 @@ class TestDecode(unittest.TestCase):
         s.dut.sim_eval_combinational()
 
         exp_uop1 = MicroOp(
-            uop_type=0b0000,  # not set yet
+            type=0b0000,  # not set yet
             inst=inst1,
             pc=12,
             valid=1,
@@ -162,7 +162,7 @@ class TestDecode(unittest.TestCase):
             fu_op=0b00,  # functional unit operation is not set yet
         )
         exp_uop2 = MicroOp(
-            uop_type=0b0000,  # not set yet
+            type=0b0000,  # not set yet
             inst=inst2,
             pc=16,
             valid=1,
@@ -192,7 +192,7 @@ class TestDecode(unittest.TestCase):
 
         # fp1
         uop1a = MicroOp(
-            uop_type=0b0000,  # not set yet
+            type=0b0000,  # not set yet
             inst=fp1.inst1,
             pc=0,
             valid=1,
@@ -211,7 +211,7 @@ class TestDecode(unittest.TestCase):
             fu_op=0b00,  # functional unit operation is not set yet
         )
         uop1b = MicroOp(
-            uop_type=0b0000,  # not set yet
+            type=0b0000,  # not set yet
             inst=fp1.inst2,
             pc=4,
             valid=1,
@@ -231,7 +231,7 @@ class TestDecode(unittest.TestCase):
         )
         # fp2
         uop2a = MicroOp(
-            uop_type=0b0000,  # not set yet
+            type=0b0000,  # not set yet
             inst=fp2.inst1,
             pc=8,
             valid=1,
@@ -250,7 +250,7 @@ class TestDecode(unittest.TestCase):
             fu_op=0b00,  # functional unit operation is not set yet
         )
         uop2b = MicroOp(
-            uop_type=0b0000,  # not set yet
+            type=0b0000,  # not set yet
             inst=fp2.inst2,
             pc=12,
             valid=1,
@@ -270,7 +270,7 @@ class TestDecode(unittest.TestCase):
         )
         # fp3
         uop3a = MicroOp(
-            uop_type=0b0000,  # not set yet
+            type=0b0000,  # not set yet
             inst=fp3.inst1,
             pc=16,
             valid=1,
@@ -289,7 +289,7 @@ class TestDecode(unittest.TestCase):
             fu_op=0b00,  # functional unit operation is not set yet
         )
         uop3b = MicroOp(
-            uop_type=0b0000,  # not set yet
+            type=0b0000,  # not set yet
             inst=fp3.inst2,
             pc=20,
             valid=1,
