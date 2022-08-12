@@ -8,6 +8,19 @@ from src.cl.decode import (
     NO_OP,
     INT_ISSUE_UNIT,
     MEM_ISSUE_UNIT,
+    NA_FUNCTIONAL_UNIT,
+    ALU_FUNCT_UNIT,
+    MEM_FUNCT_UNIT,
+    NA_TYPE,
+    R_TYPE,
+    I_TYPE,
+    S_TYPE,
+    B_TYPE,
+    U_TYPE,
+    J_TYPE,
+    CSR_TYPE,
+    ALU_ADD,
+    ALU_SUB,
 )
 
 
@@ -19,6 +32,7 @@ class TestDecode(unittest.TestCase):
             DefaultPassGroup(textwave=True, linetrace=True, vcdwave="vcd/test_decode")
         )
         s.dut.sim_reset()
+        s.maxDiff = None
 
     def tearDown(s) -> None:
         # runs after every test
@@ -37,7 +51,7 @@ class TestDecode(unittest.TestCase):
         s.dut.sim_eval_combinational()
 
         exp_uop1 = MicroOp(
-            optype=0b0000,  # not set yet
+            optype=U_TYPE,
             inst=inst1,
             pc=0,
             valid=1,
@@ -52,11 +66,11 @@ class TestDecode(unittest.TestCase):
             prs2_busy=0,
             imm=0x0BEEF000,
             issue_unit=INT_ISSUE_UNIT,
-            funct_unit=s.dut.dual_uop.uop1.funct_unit.uint(),  # functional unit is not set yet
+            funct_unit=ALU_FUNCT_UNIT,
             funct_op=s.dut.dual_uop.uop1.funct_op.uint(),  # functional unit operation is not set yet
         )
         exp_uop2 = MicroOp(
-            optype=0b0000,  # not set yet
+            optype=R_TYPE,
             inst=inst2,
             pc=4,
             valid=1,
@@ -71,7 +85,7 @@ class TestDecode(unittest.TestCase):
             prs2_busy=1,
             imm=0,
             issue_unit=INT_ISSUE_UNIT,
-            funct_unit=s.dut.dual_uop.uop2.funct_unit.uint(),  # functional unit is not set yet
+            funct_unit=ALU_FUNCT_UNIT,
             funct_op=s.dut.dual_uop.uop2.funct_op.uint(),  # functional unit operation is not set yet
         )
 
@@ -90,7 +104,7 @@ class TestDecode(unittest.TestCase):
         s.dut.sim_eval_combinational()
 
         exp_uop1 = MicroOp(
-            optype=0b0000,  # not set yet
+            optype=I_TYPE,
             inst=inst1,
             pc=8,
             valid=1,
@@ -105,11 +119,11 @@ class TestDecode(unittest.TestCase):
             prs2_busy=0,
             imm=0x020,
             issue_unit=MEM_ISSUE_UNIT,
-            funct_unit=s.dut.dual_uop.uop1.funct_unit.uint(),  # functional unit is not set yet
+            funct_unit=MEM_FUNCT_UNIT,  # functional unit is not set yet
             funct_op=s.dut.dual_uop.uop1.funct_op.uint(),  # functional unit operation is not set yet
         )
         exp_uop2 = MicroOp(
-            optype=0b0000,  # not set yet
+            optype=S_TYPE,
             inst=inst2,
             pc=12,
             valid=1,
@@ -124,7 +138,7 @@ class TestDecode(unittest.TestCase):
             prs2_busy=0,
             imm=0x040,
             issue_unit=MEM_ISSUE_UNIT,
-            funct_unit=s.dut.dual_uop.uop2.funct_unit.uint(),  # functional unit is not set yet
+            funct_unit=MEM_FUNCT_UNIT,  # functional unit is not set yet
             funct_op=s.dut.dual_uop.uop2.funct_op.uint(),  # functional unit operation is not set yet
         )
 
@@ -143,13 +157,13 @@ class TestDecode(unittest.TestCase):
         s.dut.sim_eval_combinational()
 
         exp_uop1 = MicroOp(
-            optype=0b0000,  # not set yet
+            optype=J_TYPE,
             inst=inst1,
             pc=12,
             valid=1,
-            lrd=1,  # invalid for this instr
-            lrs1=0,  # invalid for this instr
-            lrs2=0,  # invalid for this instr
+            lrd=1,
+            lrs1=0,
+            lrs2=0,
             prd=1,
             prs1=0,
             prs2=0,
@@ -158,11 +172,11 @@ class TestDecode(unittest.TestCase):
             prs2_busy=0,
             imm=0x00000004,
             issue_unit=INT_ISSUE_UNIT,
-            funct_unit=0b00,  # functional unit is not set yet
+            funct_unit=ALU_FUNCT_UNIT,
             funct_op=0b00,  # functional unit operation is not set yet
         )
         exp_uop2 = MicroOp(
-            optype=0b0000,  # not set yet
+            optype=B_TYPE,
             inst=inst2,
             pc=16,
             valid=1,
@@ -177,7 +191,7 @@ class TestDecode(unittest.TestCase):
             prs2_busy=0,
             imm=-4,
             issue_unit=INT_ISSUE_UNIT,
-            funct_unit=0b00,  # functional unit is not set yet
+            funct_unit=ALU_FUNCT_UNIT,
             funct_op=0b00,  # functional unit operation is not set yet
         )
 
@@ -186,19 +200,16 @@ class TestDecode(unittest.TestCase):
 
     def test_multiple_decode(s):
         # tests multiple decode back-to-back
-        fp1 = FetchPacket(
-            inst1=0x0200A103, inst2=0x00211193, pc=0, valid=1
-        )  # lw x2,0x20(x1) : slli x3,x2,2
-        fp2 = FetchPacket(
-            inst1=0x00111213, inst2=0x00320233, pc=8, valid=1
-        )  # slli x4,x2,1 : add x4,x4,x3
-        fp3 = FetchPacket(
-            inst1=0x0440A023, inst2=0x0, pc=16, valid=1
-        )  # sw x4,0x40(x1) : noop
+        # lw x2,0x20(x1) : slli x3,x2,2
+        fp1 = FetchPacket(inst1=0x0200A103, inst2=0x00211193, pc=0, valid=1)
+        # slli x4,x2,1 : add x4,x4,x3
+        fp2 = FetchPacket(inst1=0x00111213, inst2=0x00320233, pc=8, valid=1)
+        # sw x4,0x40(x1) : noop
+        fp3 = FetchPacket(inst1=0x0440A023, inst2=0x0, pc=16, valid=1)
 
         # fp1
         uop1a = MicroOp(
-            optype=0b0000,  # not set yet
+            optype=I_TYPE,
             inst=fp1.inst1,
             pc=0,
             valid=1,
@@ -213,11 +224,11 @@ class TestDecode(unittest.TestCase):
             prs2_busy=0,
             imm=0x00000020,
             issue_unit=MEM_ISSUE_UNIT,
-            funct_unit=0b00,  # functional unit is not set yet
+            funct_unit=MEM_FUNCT_UNIT,
             funct_op=0b00,  # functional unit operation is not set yet
         )
         uop1b = MicroOp(
-            optype=0b0000,  # not set yet
+            optype=I_TYPE,  # not set yet
             inst=fp1.inst2,
             pc=4,
             valid=1,
@@ -232,12 +243,12 @@ class TestDecode(unittest.TestCase):
             prs2_busy=0,
             imm=0x00000002,
             issue_unit=INT_ISSUE_UNIT,
-            funct_unit=0b00,  # functional unit is not set yet
+            funct_unit=ALU_FUNCT_UNIT,
             funct_op=0b00,  # functional unit operation is not set yet
         )
         # fp2
         uop2a = MicroOp(
-            optype=0b0000,  # not set yet
+            optype=I_TYPE,  # not set yet
             inst=fp2.inst1,
             pc=8,
             valid=1,
@@ -252,11 +263,11 @@ class TestDecode(unittest.TestCase):
             prs2_busy=0,
             imm=0x00000001,
             issue_unit=INT_ISSUE_UNIT,
-            funct_unit=0b00,  # functional unit is not set yet
+            funct_unit=ALU_FUNCT_UNIT,  # functional unit is not set yet
             funct_op=0b00,  # functional unit operation is not set yet
         )
         uop2b = MicroOp(
-            optype=0b0000,  # not set yet
+            optype=R_TYPE,  # not set yet
             inst=fp2.inst2,
             pc=12,
             valid=1,
@@ -271,12 +282,12 @@ class TestDecode(unittest.TestCase):
             prs2_busy=1,
             imm=0x00000000,
             issue_unit=INT_ISSUE_UNIT,
-            funct_unit=0b00,  # functional unit is not set yet
+            funct_unit=ALU_FUNCT_UNIT,  # functional unit is not set yet
             funct_op=0b00,  # functional unit operation is not set yet
         )
         # fp3
         uop3a = MicroOp(
-            optype=0b0000,  # not set yet
+            optype=S_TYPE,  # not set yet
             inst=fp3.inst1,
             pc=16,
             valid=1,
@@ -291,11 +302,11 @@ class TestDecode(unittest.TestCase):
             prs2_busy=1,
             imm=0x00000040,
             issue_unit=MEM_ISSUE_UNIT,
-            funct_unit=0b00,  # functional unit is not set yet
+            funct_unit=MEM_FUNCT_UNIT,  # functional unit is not set yet
             funct_op=0b00,  # functional unit operation is not set yet
         )
         uop3b = MicroOp(
-            optype=0b0000,  # not set yet
+            optype=NA_TYPE,
             inst=fp3.inst2,
             pc=20,
             valid=1,
@@ -310,7 +321,7 @@ class TestDecode(unittest.TestCase):
             prs2_busy=0,
             imm=0x00000000,
             issue_unit=INT_ISSUE_UNIT,
-            funct_unit=0b00,  # functional unit is not set yet
+            funct_unit=ALU_FUNCT_UNIT,  # functional unit is not set yet
             funct_op=0b00,  # functional unit operation is not set yet
         )
 
@@ -338,3 +349,50 @@ class TestDecode(unittest.TestCase):
         s.test_decode_i_s_regs_imm()
         s.dut.sim_reset()
         s.test_decode_j_b_regs_imm
+
+    def test_decode_r_type(s):
+        fp = FetchPacket(inst1=0x001101B3, inst2=0x40B606B3, pc=0, valid=1)
+        uop1 = MicroOp(
+            optype=R_TYPE,
+            inst=0x001101B3,
+            pc=0,
+            valid=1,
+            lrd=3,
+            lrs1=2,
+            lrs2=1,
+            prd=1,
+            prs1=0,
+            prs2=0,
+            stale=0,
+            prs1_busy=0,
+            prs2_busy=0,
+            imm=0,
+            issue_unit=INT_ISSUE_UNIT,
+            funct_unit=ALU_FUNCT_UNIT,
+            funct_op=ALU_ADD,
+            rob_idx=0,
+        )
+        uop2 = MicroOp(
+            optype=R_TYPE,
+            inst=0x40B606B3,
+            pc=4,
+            valid=1,
+            lrd=13,
+            lrs1=12,
+            lrs2=11,
+            prd=2,
+            prs1=0,
+            prs2=0,
+            stale=0,
+            prs1_busy=0,
+            prs2_busy=0,
+            imm=0,
+            issue_unit=INT_ISSUE_UNIT,
+            funct_unit=ALU_FUNCT_UNIT,
+            funct_op=ALU_SUB,
+            rob_idx=0,
+        )
+        s.dut.fetch_packet @= fp
+        s.dut.sim_eval_combinational()
+        s.assertEqual(str(s.dut.dual_uop.uop1), str(uop1))
+        s.assertEqual(str(s.dut.dual_uop.uop2), str(uop2))

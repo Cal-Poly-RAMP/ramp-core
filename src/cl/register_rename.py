@@ -84,7 +84,7 @@ class RegisterRename(Component):
             # pdst1, pdst2 = cascading_priority_encoder(2, s.free_list_next)
             s.pdst1 @= 0
             s.pdst2 @= 0
-            for i in range(PHYS_REG_BITWIDTH):
+            for i in range(NUM_PHYS_REGS):
                 if s.free_list[i]:
                     if s.pdst1 == 0:
                         s.pdst1 @= i

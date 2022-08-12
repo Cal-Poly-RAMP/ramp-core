@@ -84,7 +84,7 @@ class RampCore(Component):
         s.reorder_buffer.op_complete.int_rob_idx //= s.pr3.out.rob_idx
         s.reorder_buffer.op_complete.int_data //= s.alu.out
 
-        # MEMORY
+        # commit unit - commit the changes
         # ...
 
         @update
@@ -102,8 +102,13 @@ class RampCore(Component):
 
     def line_trace(s):
         return (
-            f"\npr1: {s.pr1.line_trace()}\n"
-            f"pr2: {s.pr2.line_trace()}\n"
-            f"pr3: {s.pr3.line_trace()}\n"
-            f"register_file: {[r.uint() for r in s.register_file.regs]}\n"
+            f"\npr1: {s.pr1.line_trace()}\n\n"
+            f"pr2: {s.pr2.line_trace()}\n\n"
+            f"pr3: {s.pr3.line_trace()}\n\n"
+            f"register_file: {[r.uint() for r in s.register_file.regs]}\n\n"
+            f"busy_table: {[b.uint() for b in s.busy_table]}\n\n"
+            f"map_table: {[b.uint() for b in s.decode.register_rename.map_table]}\n\n"
+            f"int_issue_queue: {s.int_issue_queue.line_trace()}\n\n"
+            f"commit out uop1: 0x{s.reorder_buffer.commit_out.uop1_entry.data}\n\n"
+            f"commit out uop2: 0x{s.reorder_buffer.commit_out.uop2_entry.data}\n\n"
         )

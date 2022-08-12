@@ -35,7 +35,7 @@ module ALU
   // @update
   // def updt():
   //     # s.b[4:0] (for 32 bit) s.b[7:0] (for 64 bit)
-  //     s.b_sub @= ( s.b & (Type.nbits - 1) )
+  //     s.b_sub @= s.b & (Type.nbits - 1)
   // 
   //     # ADD
   //     if s.op == ALU_ADD:

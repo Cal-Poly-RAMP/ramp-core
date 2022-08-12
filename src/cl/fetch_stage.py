@@ -42,7 +42,7 @@ class FetchStage(Component):
                 inst1=s.icache_data[INSTR_WIDTH : 2 * INSTR_WIDTH],
                 inst2=s.icache_data[0:INSTR_WIDTH],
                 pc=s.pc,
-                valid=Bits(1, 1),
+                valid=1,
             )
 
     def line_trace(s):

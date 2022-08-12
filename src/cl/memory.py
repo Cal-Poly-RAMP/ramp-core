@@ -9,7 +9,7 @@ class Memory(Component):
         s.word_width = word_width
 
         # s.mem = [Bits(data_width) for _ in range(2**addr_width)] #TODO: implement as numpy array
-        s.mem = np.zeros(2**addr_width, dtype="i8")
+        s.mem = np.zeros(2**addr_width, dtype="u1")
 
     # Return the value of the memory at the given address
     def read_word(s, addr: int) -> Bits:
@@ -17,7 +17,13 @@ class Memory(Component):
         if addr < 0 or addr >= 2**s.addr_width - dpw:
             raise IndexError("Address out of range")
         # return concat(*s.mem[addr : addr + dpw])
-        return concat(*(Bits(s.data_width, x) for x in s.mem[addr : addr + dpw]))
+        return concat(
+            *(Bits(s.data_width, x) for x in list(s.mem[addr : addr + dpw // 2])[::-1]),
+            *(
+                Bits(s.data_width, x)
+                for x in list(s.mem[addr + dpw // 2 : addr + dpw])[::-1]
+            )
+        )
 
     # Write the given value to the memory at the given address
     def write_word(s, addr: int, data: int) -> Bits:
@@ -39,7 +45,7 @@ class Memory(Component):
     # Load a .bin file to memory
     def load_bin_file(s, filename: str):
         with open(filename, "rb") as f:
-            s.mem = np.fromfile(f, dtype=np.uint8, count=2**s.addr_width)
+            s.mem = np.fromfile(f, dtype="u1", count=2**s.addr_width)
         s.mem = np.pad(
             s.mem, (0, 2**s.addr_width - s.mem.size), "constant", constant_values=(0)
         )
