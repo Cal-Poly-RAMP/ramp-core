@@ -1,13 +1,6 @@
-from ast import In
+from enum import IntEnum
 from pymtl3 import (
-    Bits1,
-    Bits2,
-    Bits3,
-    Bits4,
-    Bits5,
-    Bits7,
-    Bits12,
-    Bits32,
+    Bits,
     Component,
     InPort,
     OutPort,
@@ -17,7 +10,6 @@ from pymtl3 import (
     mk_bits,
     sext,
     update,
-    Bits,
 )
 from pymtl3.stdlib import stream
 from src.cl.fetch_stage import FetchPacket, PC_WIDTH, INSTR_WIDTH
@@ -59,8 +51,8 @@ MEM_ISSUE_UNIT = 0b10
 
 # functional units
 NA_FUNCTIONAL_UNIT = 0b00
-ALU_FUNCTIONAL_UNIT = 0b01
-MEM_FUNCTIONAL_UNIT = 0b10
+ALU_FUNCT_UNIT = 0b01
+MEM_FUNCT_UNIT = 0b10
 
 # instruction types
 R_TYPE = 0b000
@@ -88,7 +80,6 @@ ALU_LUI_COPY = Bits(4, 0b1001)
 ROB_ADDR_WIDTH = 5
 ROB_SIZE = 2**ROB_ADDR_WIDTH
 
-
 class Decode(Component):
     # For decoding fetch packet into two micro-ops
     def construct(s):
@@ -109,6 +100,7 @@ class Decode(Component):
         s.d1.idx = 0
         # uop out...
         s.d1.uop //= s.dual_uop.uop1
+        s.d1.valid //= s.fetch_packet.valid
 
         s.d2 = SingleInstDecode()
         # instruction in
@@ -117,6 +109,7 @@ class Decode(Component):
         s.d2.idx = 1
         # uop out...
         s.d2.uop //= s.dual_uop.uop2
+        s.d2.valid //= s.fetch_packet.valid
 
         s.register_rename = RegisterRename()
         # logical registers in...
@@ -158,6 +151,7 @@ class SingleInstDecode(Component):
         s.idx = InPort()  # index of instruction in fetch packet (0, 1)
         s.pregs = InPort(PhysicalRegs)  # physical registers from register rename
         s.pregs_busy = InPort(PRegBusy)  # busy table from register rename
+        s.valid = InPort()  # valid bit from fetch packet
         s.uop = OutPort(MicroOp)
 
         @update
@@ -185,7 +179,7 @@ class SingleInstDecode(Component):
             # TODO: uopcode
             s.uop.inst @= s.inst
             s.uop.pc @= (s.pc + 4) if s.idx else (s.pc)
-            s.uop.valid @= 1
+            s.uop.valid @= s.valid
 
             s.uop.lrd @= s.inst[RD_SLICE]
             s.uop.lrs1 @= s.inst[RS1_SLICE]
@@ -206,7 +200,9 @@ class SingleInstDecode(Component):
             # immediates TODO: update with slices
             if Rtype:
                 s.uop.imm @= 0
-                s.uop.fu_op @= concat(s.inst[30], s.inst[FUNCT3_SLICE])  # alu function
+                s.uop.funct_op @= concat(
+                    s.inst[30], s.inst[FUNCT3_SLICE]
+                )  # alu function
             elif Itype:
                 s.uop.imm @= sext(s.inst[20:32], 32)
                 s.uop.lrs2 @= 0
@@ -216,16 +212,16 @@ class SingleInstDecode(Component):
             elif Btype:
                 s.uop.imm @= sext(
                     concat(
-                        s.inst[31], s.inst[7], s.inst[25:31], s.inst[8:12], Bits1(0)
+                        s.inst[31], s.inst[7], s.inst[25:31], s.inst[8:12], Bits(1, 0)
                     ),
                     32,
                 )
                 s.uop.lrd @= 0
             elif Utype:
-                s.uop.imm @= concat(s.inst[12:32], Bits12(0))
+                s.uop.imm @= concat(s.inst[12:32], Bits(12, 0))
                 s.uop.lrs1 @= 0
                 s.uop.lrs2 @= 0
-                s.uop.fu_op @= Bits(4, 0b1001)  # alu lui-copy TODO: auipc
+                s.uop.funct_op @= Bits(4, 0b1001)  # alu lui-copy TODO: auipc
             elif Jtype:
                 s.uop.imm @= sext(
                     concat(
@@ -234,7 +230,7 @@ class SingleInstDecode(Component):
                         s.inst[20],
                         s.inst[25:31],
                         s.inst[21:25],
-                        Bits1(0),
+                        Bits(1, 0),
                     ),
                     32,
                 )
@@ -261,28 +257,30 @@ class MicroOp:
     prs2: mk_bits(PHYS_REG_BITWIDTH)  # physical source register 2
     stale: mk_bits(PHYS_REG_BITWIDTH)  # stale physical register
 
-    # prd_busy: Bits1  # physical destination register busy
-    prs1_busy: Bits1  # physical source register 1 busy
-    prs2_busy: Bits1  # physical source register 2 busy
+    prs1_busy: mk_bits(1)  # physical source register 1 busy
+    prs2_busy: mk_bits(1)  # physical source register 2 busy
 
-    imm: Bits32  # immediate TODO: encode to be smaller, and use sign extension TODO: 64 bit?
+    imm: mk_bits(32)  # immediate TODO: encode to be smaller, and use sign extension TODO: 64 bit?
 
-    issue_unit: Bits2  # issue unit
-    fu_unit: Bits2  # functional unit
-    fu_op: mk_bits(4)  # functional unit operation
+    issue_unit: mk_bits(2)  # issue unit
+    funct_unit: mk_bits(2)  # functional unit
+    funct_op: mk_bits(4)  # functional unit operation
 
     rob_idx: mk_bits(ROB_ADDR_WIDTH)  # index of instruction in ROB
 
     def __str__(s):
         return (
-            f"type: {s.optype} inst: {s.inst} pc: {s.pc}"
+            f" type: {s.optype} inst: {s.inst} pc: {s.pc}"
             f" valid: {s.valid} imm: {s.imm}"
-            f" issue_unit: {s.issue_unit} fu_unit: {s.fu_unit} fu_op: {s.fu_op}"
-            f"\n\t\tlrd: x{s.lrd.uint():02d} lrs1: x{s.lrs1.uint():02d} lrs2: x{s.lrs2.uint():02d}"
+            f" issue_unit: {s.issue_unit} funct_unit: {s.funct_unit} funct_op: {s.funct_op}"
+            f" lrd: x{s.lrd.uint():02d} lrs1: x{s.lrs1.uint():02d} lrs2: x{s.lrs2.uint():02d}"
             f" prd: x{s.prd.uint():02d} prs1: x{s.prs1.uint():02d} prs2: x{s.prs2.uint():02d}"
             f" stale: x{s.stale.uint():02d} prs1_busy: {s.prs1_busy} prs2_busy: {s.prs2_busy}"
             # f" rob_idx: {s.rob_idx}"
         )
+
+    def __bool__(self):
+        return bool(self.valid)
 
 
 NO_OP = Bits(MicroOp.nbits, 0)  # no-op uop, invalid bit is automatically set to zero
@@ -296,13 +294,16 @@ class DualMicroOp:
     def __str__(s):
         return f"{s.uop1}\n{s.uop2}"
 
+    def __bool__(self):
+        return bool(self.uop1) or bool(self.uop2)
+
 
 # Used for deriving data from instructions
 @bitstruct
 class GenericInstPattern:
-    funct7: Bits7
-    rs2: Bits5
-    rs1: Bits5
-    funct3: Bits3
-    rd: Bits5
-    opcode: Bits7
+    funct7: mk_bits(7)
+    rs2: mk_bits(5)
+    rs1: mk_bits(5)
+    funct3: mk_bits(5)
+    rd: mk_bits(5)
+    opcode: mk_bits(7)

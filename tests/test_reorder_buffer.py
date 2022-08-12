@@ -2,7 +2,7 @@ import unittest
 from pymtl3 import *
 
 from src.cl.reorder_buffer import ROBEntryUop, ReorderBuffer, ROBEntry, ExecToROB
-from src.cl.decoder import (
+from src.cl.decode import (
     DualMicroOp,
     ROB_SIZE,
 )

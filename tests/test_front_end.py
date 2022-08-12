@@ -1,7 +1,7 @@
 import unittest
 from pymtl3 import DefaultPassGroup, concat
 from src.cl.front_end import FrontEnd
-from src.cl.decoder import (
+from src.cl.decode import (
     Decode,
     DualMicroOp,
     MicroOp,
@@ -33,9 +33,15 @@ class TestFrontEnd(unittest.TestCase):
 
     def test_multiple(s):
         # tests multiple decode back-to-back
-        fp1 = FetchPacket(0x0200A103, 0x00211193)  # lw x2,0x20(x1) : slli x3,x2,2
-        fp2 = FetchPacket(0x00111213, 0x00320233)  # slli x4,x2,1 : add x4,x4,x3
-        fp3 = FetchPacket(0x0440A023, 0x0)  # sw x4,0x40(x1) : noop
+        fp1 = FetchPacket(
+            inst1=0x0200A103, inst2=0x00211193, pc=0, valid=1
+        )  # lw x2,0x20(x1) : slli x3,x2,2
+        fp2 = FetchPacket(
+            inst1=0x00111213, inst2=0x00320233, pc=8, valid=1
+        )  # slli x4,x2,1 : add x4,x4,x3
+        fp3 = FetchPacket(
+            inst1=0x0440A023, inst2=0x0, pc=12, valid=1
+        )  # sw x4,0x40(x1) : noop
 
         # loading the instructions into memory
         s.dut.fetch_stage.icache.write_word(0, concat(fp1.inst1, fp1.inst2))
@@ -59,8 +65,8 @@ class TestFrontEnd(unittest.TestCase):
             prs2_busy=0,
             imm=0x00000020,
             issue_unit=MEM_ISSUE_UNIT,
-            fu_unit=0b00,  # functional unit is not set yet
-            fu_op=0b00,  # functional unit operation is not set yet
+            funct_unit=0b00,  # functional unit is not set yet
+            funct_op=0b00,  # functional unit operation is not set yet
         )
         uop1b = MicroOp(
             optype=0b0000,  # not set yet
@@ -78,8 +84,8 @@ class TestFrontEnd(unittest.TestCase):
             prs2_busy=0,
             imm=0x00000002,
             issue_unit=INT_ISSUE_UNIT,
-            fu_unit=0b00,  # functional unit is not set yet
-            fu_op=0b00,  # functional unit operation is not set yet
+            funct_unit=0b00,  # functional unit is not set yet
+            funct_op=0b00,  # functional unit operation is not set yet
         )
         # fp2
         uop2a = MicroOp(
@@ -98,8 +104,8 @@ class TestFrontEnd(unittest.TestCase):
             prs2_busy=0,
             imm=0x00000001,
             issue_unit=INT_ISSUE_UNIT,
-            fu_unit=0b00,  # functional unit is not set yet
-            fu_op=0b00,  # functional unit operation is not set yet
+            funct_unit=0b00,  # functional unit is not set yet
+            funct_op=0b00,  # functional unit operation is not set yet
         )
         uop2b = MicroOp(
             optype=0b0000,  # not set yet
@@ -117,8 +123,8 @@ class TestFrontEnd(unittest.TestCase):
             prs2_busy=1,
             imm=0x00000000,
             issue_unit=INT_ISSUE_UNIT,
-            fu_unit=0b00,  # functional unit is not set yet
-            fu_op=0b00,  # functional unit operation is not set yet
+            funct_unit=0b00,  # functional unit is not set yet
+            funct_op=0b00,  # functional unit operation is not set yet
         )
         # fp3
         uop3a = MicroOp(
@@ -137,8 +143,8 @@ class TestFrontEnd(unittest.TestCase):
             prs2_busy=1,
             imm=0x00000040,
             issue_unit=MEM_ISSUE_UNIT,
-            fu_unit=0b00,  # functional unit is not set yet
-            fu_op=0b00,  # functional unit operation is not set yet
+            funct_unit=0b00,  # functional unit is not set yet
+            funct_op=0b00,  # functional unit operation is not set yet
         )
         uop3b = MicroOp(
             optype=0b0000,  # not set yet
@@ -156,8 +162,8 @@ class TestFrontEnd(unittest.TestCase):
             prs2_busy=0,
             imm=0x00000000,
             issue_unit=INT_ISSUE_UNIT,
-            fu_unit=0b00,  # functional unit is not set yet
-            fu_op=0b00,  # functional unit operation is not set yet
+            funct_unit=0b00,  # functional unit is not set yet
+            funct_op=0b00,  # functional unit operation is not set yet
         )
 
         s.dut.sim_tick()  # fetch 1,2 -> reg 1,2 -> decode

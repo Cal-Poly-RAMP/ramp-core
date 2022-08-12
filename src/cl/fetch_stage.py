@@ -1,5 +1,5 @@
 from pymtl3 import (
-    Bits32,
+    Bits,
     Component,
     OutPort,
     Wire,
@@ -8,7 +8,6 @@ from pymtl3 import (
     update_ff,
     mk_bits,
 )
-from pymtl3.stdlib import stream
 from src.cl.icache import ICache
 
 PC_WIDTH = 8
@@ -21,7 +20,7 @@ class FetchStage(Component):
         # Defining ICache Components
         s.icache = ICache(addr_width=PC_WIDTH, word_width=2 * INSTR_WIDTH)
         s.icache_data = Wire(s.icache.word_width)
-        s.pc = Wire(PC_WIDTH)  # program counter
+        s.pc = OutPort(PC_WIDTH)  # program counter
         s.pc_next = Wire(PC_WIDTH)  # program counter next mux
 
         # Interface (fetch packet)
@@ -43,6 +42,7 @@ class FetchStage(Component):
                 inst1=s.icache_data[INSTR_WIDTH : 2 * INSTR_WIDTH],
                 inst2=s.icache_data[0:INSTR_WIDTH],
                 pc=s.pc,
+                valid=Bits(1, 1),
             )
 
     def line_trace(s):
@@ -51,6 +51,7 @@ class FetchStage(Component):
 
 @bitstruct
 class FetchPacket:
-    inst1: Bits32
-    inst2: Bits32
     pc: mk_bits(PC_WIDTH)
+    inst1: mk_bits(32)
+    inst2: mk_bits(32)
+    valid: mk_bits(1)

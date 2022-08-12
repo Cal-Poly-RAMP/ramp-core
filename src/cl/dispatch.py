@@ -1,5 +1,5 @@
 from pymtl3 import Component, InPort, OutPort, bitstruct, update, mk_bits
-from src.cl.decoder import (
+from src.cl.decode import (
     DualMicroOp,
     MicroOp,
     NO_OP,

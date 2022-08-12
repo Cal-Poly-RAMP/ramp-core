@@ -9,16 +9,17 @@ from pymtl3 import (
     Component,
     InPort,
     OutPort,
+    Wire,
     bitstruct,
     mk_bits,
+    sext,
     update,
     update_ff,
-    Wire,
-    sext,
 )
-from src.cl.decoder import NO_OP, ROB_ADDR_WIDTH, ROB_SIZE, DualMicroOp, MicroOp
+from src.cl.decode import ROB_ADDR_WIDTH, ROB_SIZE, DualMicroOp
 from src.cl.fetch_stage import PC_WIDTH
 from src.cl.register_rename import ISA_REG_BITWIDTH, PHYS_REG_BITWIDTH
+
 
 ## TODO NOW: make it so that `valid` is only a flag, not set by the ROB. `Busy` the only one set by ROB
 class ReorderBuffer(Component):
@@ -113,22 +114,35 @@ class ReorderBuffer(Component):
                     s.instr_bank[
                         s.op_complete.int_rob_idx >> 1
                     ].uop1_entry.busy = Bits1(0)
+                    s.instr_bank[
+                        s.op_complete.int_rob_idx >> 1
+                    ].uop1_entry.data = s.op_complete.int_data
                 else:
                     # odd index, uop2 is completed
                     s.instr_bank[
                         s.op_complete.int_rob_idx >> 1
                     ].uop2_entry.busy = Bits1(0)
+                    s.instr_bank[
+                        s.op_complete.int_rob_idx >> 1
+                    ].uop2_entry.data = s.op_complete.int_data
+
             if s.op_complete.mem_rob_complete:
                 if s.op_complete.mem_rob_idx % 2 == 0:
                     # even index, uop1 is completed
                     s.instr_bank[
                         s.op_complete.mem_rob_idx >> 1
                     ].uop1_entry.busy = Bits1(0)
+                    s.instr_bank[
+                        s.op_complete.mem_rob_idx >> 1
+                    ].uop1_entry.data = s.op_complete.int_data
                 else:
                     # odd index, uop2 is completed
                     s.instr_bank[
                         s.op_complete.mem_rob_idx >> 1
                     ].uop2_entry.busy = Bits1(0)
+                    s.instr_bank[
+                        s.op_complete.mem_rob_idx >> 1
+                    ].uop2_entry.data = s.op_complete.int_data
 
             # COMMITTING
             # committed store instructions write to memory
@@ -163,8 +177,8 @@ class ReorderBuffer(Component):
                 # if the circular buffer is not empty
                 if ~s.bank_empty:
                     s.internal_rob_head <<= s.internal_rob_head + 1
-                else:
-                    raise Exception("ROB is empty, and tried to deallocate")
+                # else:
+                #     raise Exception("ROB is empty, and tried to deallocate")
 
     def line_trace(s):
         return (
@@ -182,6 +196,7 @@ class ROBEntryUop:
     optype: mk_bits(3)
     lrd: mk_bits(ISA_REG_BITWIDTH)
     stale: mk_bits(PHYS_REG_BITWIDTH)
+    data: mk_bits(32)
 
 
 @bitstruct
@@ -197,6 +212,8 @@ class ExecToROB:
     # index of the operation just completed by int alu, and whether it is valid
     int_rob_idx: mk_bits(ROB_ADDR_WIDTH)
     int_rob_complete: mk_bits(1)
+    int_data: mk_bits(32)
     # index of the operation just completed by mem unit, and whether it is valid
     mem_rob_idx: mk_bits(ROB_ADDR_WIDTH)
     mem_rob_complete: mk_bits(1)
+    mem_data: mk_bits(32)

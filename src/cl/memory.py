@@ -27,8 +27,25 @@ class Memory(Component):
             for i in range(dpw - 1, -1, -1)
         ]
 
-    # Load a .csv file to memory
+    # Load a file to memory
     def load_file(s, filename: str):
+        if filename.endswith(".bin"):
+            s.load_bin_file(filename)
+        elif filename.endswith(".csv"):
+            s.load_csv_file(filename)
+        else:
+            raise ValueError("File type not supported")
+
+    # Load a .bin file to memory
+    def load_bin_file(s, filename: str):
+        with open(filename, "rb") as f:
+            s.mem = np.fromfile(f, dtype=np.uint8, count=2**s.addr_width)
+        s.mem = np.pad(
+            s.mem, (0, 2**s.addr_width - s.mem.size), "constant", constant_values=(0)
+        )
+
+    # Load a .csv file to memory
+    def load_csv_file(s, filename: str):
         with open(filename, "r") as f:
             d = f.read().replace("\n", "").replace(" ", "").split(",")
             d = [Bits(s.data_width, x) for x in d if x]

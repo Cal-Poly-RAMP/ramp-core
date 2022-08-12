@@ -4,7 +4,7 @@ from pymtl3 import *
 from pymtl3.passes.backends.verilog import *
 
 from src.cl import (
-    decoder,
+    decode,
     dispatch,
     fetch_stage,
     front_end,
@@ -44,7 +44,7 @@ def synthesize(model):
 if __name__ == "__main__":
     models = [
         ramp_core.RampCore(),
-        decoder.Decode(),
+        decode.Decode(),
         dispatch.Dispatch(),
         fetch_stage.FetchStage(),
         front_end.FrontEnd(),

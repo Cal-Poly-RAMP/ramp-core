@@ -1,6 +1,6 @@
 import unittest
 from pymtl3 import *
-from src.cl.decoder import (
+from src.cl.decode import (
     B_TYPE,
     I_TYPE,
     J_TYPE,

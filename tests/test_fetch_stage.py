@@ -20,12 +20,21 @@ class TestFetchStage(unittest.TestCase):
         print(self.dut.icache.memory)
         print(self.dut.icache_data)
         print(self.dut.icache_data[0:32], self.dut.icache_data[32 : 2 * 32])
-        self.assertEqual(self.dut.fetch_packet, FetchPacket(0x00010203, 0x04050607, 0))
+        self.assertEqual(
+            self.dut.fetch_packet,
+            FetchPacket(inst1=0x00010203, inst2=0x04050607, pc=0, valid=1),
+        )
 
         self.dut.sim_tick()
-        self.assertEqual(self.dut.fetch_packet, FetchPacket(0x08090A0B, 0x0C0D0E0F, 8))
+        self.assertEqual(
+            self.dut.fetch_packet,
+            FetchPacket(inst1=0x08090A0B, inst2=0x0C0D0E0F, pc=8, valid=1),
+        )
 
         self.dut.sim_tick()
-        self.assertEqual(self.dut.fetch_packet, FetchPacket(0x10111213, 0x14151617, 16))
+        self.assertEqual(
+            self.dut.fetch_packet,
+            FetchPacket(inst1=0x10111213, inst2=0x14151617, pc=16, valid=1),
+        )
 
     # TODO: create a test using hypothesis for random testing of different sizes

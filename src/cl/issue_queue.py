@@ -10,7 +10,7 @@ from pymtl3 import (
     Bits,
 )
 from src.cl.register_rename import NUM_PHYS_REGS
-from src.cl.decoder import (
+from src.cl.decode import (
     B_TYPE,
     I_TYPE,
     INT_ISSUE_UNIT,

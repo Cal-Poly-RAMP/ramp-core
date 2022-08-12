@@ -60,7 +60,7 @@ typedef struct packed {
 } LogicalRegs__lrd_5__lrs1_5__lrs2_5;
 
 // PyMTL Component SingleInstDecode Definition
-// At /Users/curtisbucher/Desktop/ramp-core/src/cl/decoder.py
+// At /Users/curtisbucher/Desktop/ramp-core/src/cl/decode.py
 
 module SingleInstDecode_noparam
 (
@@ -70,7 +70,7 @@ module SingleInstDecode_noparam
   input  PhysicalRegs__prd_6__prs1_6__prs2_6__stale_6 pregs ,
   input  PRegBusy__prs1_1__prs2_1 pregs_busy ,
   input  logic [0:0] reset ,
-  output MicroOp__910830ccb99b096f uop 
+  output MicroOp__910830ccb99b096f uop
 );
   localparam logic [5:0] __const__RTYPE_OPCODE  = 6'd51;
   localparam logic [4:0] __const__ITYPE_OPCODE1  = 5'd19;
@@ -96,12 +96,12 @@ module SingleInstDecode_noparam
   logic [0:0] __tmpvar__decode_comb_int_issue;
 
   // PyMTL Update Block Source
-  // At /Users/curtisbucher/Desktop/ramp-core/src/cl/decoder.py:143
+  // At /Users/curtisbucher/Desktop/ramp-core/src/cl/decode.py:143
   // @update
   // def decode_comb():
   //     # For determining type
   //     opcode = s.inst[0:7]
-  // 
+  //
   //     Rtype = opcode == RTYPE_OPCODE
   //     Itype = (
   //         (opcode == ITYPE_OPCODE1)
@@ -113,33 +113,33 @@ module SingleInstDecode_noparam
   //     Utype = (opcode == UTYPE_OPCODE1) | (opcode == UTYPE_OPCODE2)
   //     Jtype = opcode == JTYPE_OPCODE
   //     Csrtype = opcode == CSRTYPE_OPCODE
-  // 
+  //
   //     # For determining issue unit
   //     mem_issue = (opcode == ITYPE_OPCODE2) | (opcode == STYPE_OPCODE)
   //     int_issue = ~mem_issue  # TODO: fpu issue
-  // 
+  //
   //     # uop (hardcoded values)
   //     # TODO: uopcode
   //     s.uop.inst @= s.inst
   //     s.uop.pc @= (s.pc + 4) if s.idx else (s.pc)
   //     s.uop.valid @= 1
-  // 
+  //
   //     s.uop.lrd @= s.inst[RD_SLICE]
   //     s.uop.lrs1 @= s.inst[RS1_SLICE]
   //     s.uop.lrs2 @= s.inst[RS2_SLICE]
-  // 
+  //
   //     s.uop.prd @= s.pregs.prd
   //     s.uop.prs1 @= s.pregs.prs1
   //     s.uop.prs2 @= s.pregs.prs2
   //     s.uop.stale @= s.pregs.stale
-  // 
+  //
   //     s.uop.prs1_busy @= s.pregs_busy.prs1
   //     s.uop.prs2_busy @= s.pregs_busy.prs2
-  // 
+  //
   //     s.uop.issue_unit @= (
   //         INT_ISSUE_UNIT if int_issue else MEM_ISSUE_UNIT if mem_issue else 0
   //     )
-  // 
+  //
   //     # immediates TODO: update with slices
   //     if Rtype:
   //         s.uop.imm @= 0
@@ -178,7 +178,7 @@ module SingleInstDecode_noparam
   //     elif Csrtype:
   //         s.uop.imm @= 0
   //         s.uop.lrs2 @= 0
-  
+
   always_comb begin : decode_comb
     __tmpvar__decode_comb_opcode = inst[5'd6:5'd0];
     __tmpvar__decode_comb_Rtype = __tmpvar__decode_comb_opcode == 7'( __const__RTYPE_OPCODE );
@@ -251,7 +251,7 @@ module RegisterRename_noparam
   input  LogicalRegs__lrd_5__lrs1_5__lrs2_5 inst2_lregs ,
   output PhysicalRegs__prd_6__prs1_6__prs2_6__stale_6 inst2_pregs ,
   output PRegBusy__prs1_1__prs2_1 inst2_pregs_busy ,
-  input  logic [0:0] reset 
+  input  logic [0:0] reset
 );
   localparam logic [2:0] __const__PHYS_REG_BITWIDTH  = 3'd6;
   localparam logic [5:0] __const__NUM_ISA_REGS  = 6'd32;
@@ -270,7 +270,7 @@ module RegisterRename_noparam
   //     # Combinatorially getting physical source registers from map table
   //     # and getting physical dest registers from free list
   //     # TODO: add assert statements for when physical registers are full
-  // 
+  //
   //     # *combinatorially* getting dest registers, but not updating tables
   //     # pdst1, pdst2 = cascading_priority_encoder(2, s.free_list_next)
   //     s.pdst1 @= 0
@@ -283,7 +283,7 @@ module RegisterRename_noparam
   //                 s.pdst2 @= i
   //     # making sure that there are free registers
   //     # assert s.pdst1 != 0 or s.pdst2 != 0
-  // 
+  //
   //     if s.inst1_lregs.lrd:
   //         s.inst1_pregs.prd @= s.pdst1
   //         s.inst2_pregs.prd @= s.pdst2 if s.inst2_lregs.lrd else 0
@@ -293,13 +293,13 @@ module RegisterRename_noparam
   //     else:
   //         s.inst1_pregs.prd @= 0
   //         s.inst2_pregs.prd @= 0
-  // 
+  //
   //     s.inst1_pregs.prs1 @= s.map_table[s.inst1_lregs.lrs1]
   //     s.inst1_pregs.prs2 @= s.map_table[s.inst1_lregs.lrs2]
   //     s.inst1_pregs.stale @= s.map_table[s.inst1_lregs.lrd]
   //     s.inst1_pregs_busy.prs1 @= s.busy_table[s.inst1_pregs.prs1]
   //     s.inst1_pregs_busy.prs2 @= s.busy_table[s.inst1_pregs.prs2]
-  // 
+  //
   //     # bypass network.
   //     # forward dependent sources from inst2 to inst1. handle stale
   //     if (s.inst2_lregs.lrd == s.inst1_lregs.lrd) & (s.inst1_lregs.lrd != 0):
@@ -307,7 +307,7 @@ module RegisterRename_noparam
   //         s.inst2_pregs.stale @= s.pdst1
   //     else:
   //         s.inst2_pregs.stale @= s.map_table[s.inst2_lregs.lrd]
-  // 
+  //
   //     if (s.inst2_lregs.lrs1 == s.inst1_lregs.lrd) & (s.inst1_lregs.lrd != 0):
   //         # inst2 dependent on inst1. inst2 prs1 = pdst1 and is busy
   //         s.inst2_pregs.prs1 @= s.pdst1
@@ -315,7 +315,7 @@ module RegisterRename_noparam
   //     else:
   //         s.inst2_pregs.prs1 @= s.map_table[s.inst2_lregs.lrs1]
   //         s.inst2_pregs_busy.prs1 @= s.busy_table[s.inst2_pregs.prs2]
-  // 
+  //
   //     if (s.inst2_lregs.lrs2 == s.inst1_lregs.lrd) & (s.inst1_lregs.lrd != 0):
   //         # inst2 dependent on inst1. inst2 prs2 = pdst1 and is busy
   //         s.inst2_pregs.prs2 @= s.pdst1
@@ -323,7 +323,7 @@ module RegisterRename_noparam
   //     else:
   //         s.inst2_pregs.prs2 @= s.map_table[s.inst2_lregs.lrs2]
   //         s.inst2_pregs_busy.prs2 @= s.busy_table[s.inst2_pregs.prs2]
-  // 
+  //
   //     # nextstate for updating free_list, map_table, busy_table
   //     if s.reset:
   //         s.free_list_next @= s.free_list_reset
@@ -341,7 +341,7 @@ module RegisterRename_noparam
   //                 s.map_table_wr1 @= s.pdst1
   //             elif s.inst2_lregs.lrd:
   //                 s.map_table_wr2 @= s.pdst1
-  // 
+  //
   //         elif (s.inst1_lregs.lrd != 0) & (s.inst2_lregs.lrd != 0):
   //             # ensuring there are registers to allocate
   //             s.free_list_next @= (
@@ -356,7 +356,7 @@ module RegisterRename_noparam
   //             )
   //             s.map_table_wr1 @= s.pdst1
   //             s.map_table_wr2 @= s.pdst2
-  
+
   always_comb begin : rename_comb
     pdst1 = 6'd0;
     pdst2 = 6'd0;
@@ -437,12 +437,12 @@ module RegisterRename_noparam
   //     s.busy_table <<= s.busy_table_next
   //     s.map_table[s.inst1_lregs.lrd] <<= s.map_table_wr1
   //     s.map_table[s.inst2_lregs.lrd] <<= s.map_table_wr2
-  // 
+  //
   //     # # resetting
   //     if s.reset == 1:
   //         for x in range(NUM_ISA_REGS):
   //             s.map_table[x] <<= 0
-  
+
   always_ff @(posedge clk) begin : rename_ff
     free_list <= free_list_next;
     busy_table <= busy_table_next;
@@ -459,7 +459,7 @@ endmodule
 
 // PyMTL Component Decode Definition
 // Full name: Decode_noparam
-// At /Users/curtisbucher/Desktop/ramp-core/src/cl/decoder.py
+// At /Users/curtisbucher/Desktop/ramp-core/src/cl/decode.py
 
 module Decode
 (
@@ -467,7 +467,7 @@ module Decode
   input  logic [0:0] clk ,
   output DualMicroOp__9076e23e91e8c61e dual_uop ,
   input  FetchPacket__inst1_32__inst2_32__pc_8 fetch_packet ,
-  input  logic [0:0] reset 
+  input  logic [0:0] reset
 );
   logic [31:0] inst1;
   logic [31:0] inst2;

@@ -1,5 +1,5 @@
 from pymtl3 import Component, Bits, InPort, OutPort, update, zext, Wire
-from src.cl.decoder import (
+from src.cl.decode import (
     ALU_ADD,
     ALU_SLL,
     ALU_SLT,
@@ -30,7 +30,7 @@ class ALU(Component):
         @update
         def updt():
             # s.b[4:0] (for 32 bit) s.b[7:0] (for 64 bit)
-            s.b_sub @= ( s.b & (Type.nbits - 1) )
+            s.b_sub @= s.b & (Type.nbits - 1)
 
             # ADD
             if s.op == ALU_ADD:
@@ -77,5 +77,6 @@ class ALU(Component):
                 s.out @= s.a << 12
             else:
                 s.out @= 0
+
     def line_trace(s):
         return f"op: {s.op} a: {s.a} b: {s.b} out: {s.out}"

@@ -4,7 +4,7 @@ from hypothesis import given, strategies as st
 
 from src.cl.dispatch import Dispatch
 from src.cl.fetch_stage import FetchPacket
-from src.cl.decoder import (
+from src.cl.decode import (
     DualMicroOp,
     MicroOp,
     Decode,

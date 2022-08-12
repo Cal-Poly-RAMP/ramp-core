@@ -1,7 +1,7 @@
 import unittest
 from pymtl3 import *
 from src.cl.alu import ALU
-from src.cl.decoder import (
+from src.cl.decode import (
     ALU_ADD,
     ALU_SLL,
     ALU_SLT,
@@ -20,7 +20,6 @@ BITWIDTH = 32
 
 # See Verilog debugging for a more inclusive testcase
 class TestALU(unittest.TestCase):
-
     def setUp(s) -> None:
         # runs before every test
         if not hasattr(s, "dut"):
@@ -129,16 +128,17 @@ class TestALU(unittest.TestCase):
         b_sub = Bits(BITWIDTH, b) & (BITWIDTH - 1)
         s.dut.sim_tick()
 
-
         if s.dut.a[BITWIDTH - 1]:
-            s.assertEqual(s.dut.out, (Bits(BITWIDTH, a) >> b_sub) | ~(Bits(BITWIDTH, -1) >> b_sub))
+            s.assertEqual(
+                s.dut.out, (Bits(BITWIDTH, a) >> b_sub) | ~(Bits(BITWIDTH, -1) >> b_sub)
+            )
             # s.out @= (s.a >> s.b) | ~(ONES >> s.b_sub)
         else:
             s.assertEqual(s.dut.out, (Bits(BITWIDTH, a) >> b_sub))
 
     @given(
-        st.integers(min_value=-(2**(BITWIDTH - 1)), max_value=2**(BITWIDTH - 1)),
-        st.integers(min_value=-(2**(BITWIDTH - 1)), max_value=2**(BITWIDTH - 1)),
+        st.integers(min_value=-(2 ** (BITWIDTH - 1)), max_value=2 ** (BITWIDTH - 1)),
+        st.integers(min_value=-(2 ** (BITWIDTH - 1)), max_value=2 ** (BITWIDTH - 1)),
     )
     def test_slt(s, a, b):
         s.dut.a @= a
@@ -168,6 +168,7 @@ class TestALU(unittest.TestCase):
         s.dut.op @= ALU_LUI_COPY
         s.dut.sim_tick()
         s.assertEqual(s.dut.out, trunc(Bits(BITWIDTH + 12, a << 12), BITWIDTH))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -2,7 +2,7 @@ import unittest
 from pymtl3 import *
 
 from src.cl.fetch_stage import FetchPacket
-from src.cl.decoder import (
+from src.cl.decode import (
     MicroOp,
     Decode,
     NO_OP,
@@ -32,7 +32,7 @@ class TestDecode(unittest.TestCase):
         # TODO: function to assemble instructions for working with hypothesis
         inst1 = 0x0BEEF937  # lui x18, 0xBEEF
         inst2 = 0x012909B3  # add x19, x18, x18
-        fp = FetchPacket(inst1, inst2, 0)
+        fp = FetchPacket(inst1=inst1, inst2=inst2, pc=0, valid=1)
         s.dut.fetch_packet @= fp
         s.dut.sim_eval_combinational()
 
@@ -52,8 +52,8 @@ class TestDecode(unittest.TestCase):
             prs2_busy=0,
             imm=0x0BEEF000,
             issue_unit=INT_ISSUE_UNIT,
-            fu_unit=s.dut.dual_uop.uop1.fu_unit.uint(),  # functional unit is not set yet
-            fu_op=s.dut.dual_uop.uop1.fu_op.uint(),  # functional unit operation is not set yet
+            funct_unit=s.dut.dual_uop.uop1.funct_unit.uint(),  # functional unit is not set yet
+            funct_op=s.dut.dual_uop.uop1.funct_op.uint(),  # functional unit operation is not set yet
         )
         exp_uop2 = MicroOp(
             optype=0b0000,  # not set yet
@@ -71,8 +71,8 @@ class TestDecode(unittest.TestCase):
             prs2_busy=1,
             imm=0,
             issue_unit=INT_ISSUE_UNIT,
-            fu_unit=s.dut.dual_uop.uop2.fu_unit.uint(),  # functional unit is not set yet
-            fu_op=s.dut.dual_uop.uop2.fu_op.uint(),  # functional unit operation is not set yet
+            funct_unit=s.dut.dual_uop.uop2.funct_unit.uint(),  # functional unit is not set yet
+            funct_op=s.dut.dual_uop.uop2.funct_op.uint(),  # functional unit operation is not set yet
         )
 
         s.assertEqual(str(s.dut.dual_uop.uop1), str(exp_uop1))
@@ -85,7 +85,7 @@ class TestDecode(unittest.TestCase):
         inst1 = 0x0209A903  # lw x18,   0x20(x19)
         inst2 = 0x054AA023  # sw x20,   0x40(x21)
 
-        fp = FetchPacket(inst1, inst2, 8)
+        fp = FetchPacket(inst1=inst1, inst2=inst2, pc=8, valid=1)
         s.dut.fetch_packet @= fp
         s.dut.sim_eval_combinational()
 
@@ -105,8 +105,8 @@ class TestDecode(unittest.TestCase):
             prs2_busy=0,
             imm=0x020,
             issue_unit=MEM_ISSUE_UNIT,
-            fu_unit=s.dut.dual_uop.uop1.fu_unit.uint(),  # functional unit is not set yet
-            fu_op=s.dut.dual_uop.uop1.fu_op.uint(),  # functional unit operation is not set yet
+            funct_unit=s.dut.dual_uop.uop1.funct_unit.uint(),  # functional unit is not set yet
+            funct_op=s.dut.dual_uop.uop1.funct_op.uint(),  # functional unit operation is not set yet
         )
         exp_uop2 = MicroOp(
             optype=0b0000,  # not set yet
@@ -124,8 +124,8 @@ class TestDecode(unittest.TestCase):
             prs2_busy=0,
             imm=0x040,
             issue_unit=MEM_ISSUE_UNIT,
-            fu_unit=s.dut.dual_uop.uop2.fu_unit.uint(),  # functional unit is not set yet
-            fu_op=s.dut.dual_uop.uop2.fu_op.uint(),  # functional unit operation is not set yet
+            funct_unit=s.dut.dual_uop.uop2.funct_unit.uint(),  # functional unit is not set yet
+            funct_op=s.dut.dual_uop.uop2.funct_op.uint(),  # functional unit operation is not set yet
         )
 
         s.assertEqual(str(s.dut.dual_uop.uop1), str(exp_uop1))
@@ -138,7 +138,7 @@ class TestDecode(unittest.TestCase):
         inst1 = 0x004000EF  # backward: jal	forward
         inst2 = 0xFF390EE3  # forward: beq	x18,	x19,	backward
 
-        fp = FetchPacket(inst1, inst2, 12)
+        fp = FetchPacket(inst1=inst1, inst2=inst2, pc=12, valid=1)
         s.dut.fetch_packet @= fp
         s.dut.sim_eval_combinational()
 
@@ -158,8 +158,8 @@ class TestDecode(unittest.TestCase):
             prs2_busy=0,
             imm=0x00000004,
             issue_unit=INT_ISSUE_UNIT,
-            fu_unit=0b00,  # functional unit is not set yet
-            fu_op=0b00,  # functional unit operation is not set yet
+            funct_unit=0b00,  # functional unit is not set yet
+            funct_op=0b00,  # functional unit operation is not set yet
         )
         exp_uop2 = MicroOp(
             optype=0b0000,  # not set yet
@@ -177,8 +177,8 @@ class TestDecode(unittest.TestCase):
             prs2_busy=0,
             imm=-4,
             issue_unit=INT_ISSUE_UNIT,
-            fu_unit=0b00,  # functional unit is not set yet
-            fu_op=0b00,  # functional unit operation is not set yet
+            funct_unit=0b00,  # functional unit is not set yet
+            funct_op=0b00,  # functional unit operation is not set yet
         )
 
         s.assertEqual(str(s.dut.dual_uop.uop1), str(exp_uop1))
@@ -186,9 +186,15 @@ class TestDecode(unittest.TestCase):
 
     def test_multiple_decode(s):
         # tests multiple decode back-to-back
-        fp1 = FetchPacket(0x0200A103, 0x00211193, 0)  # lw x2,0x20(x1) : slli x3,x2,2
-        fp2 = FetchPacket(0x00111213, 0x00320233, 8)  # slli x4,x2,1 : add x4,x4,x3
-        fp3 = FetchPacket(0x0440A023, 0x0, 16)  # sw x4,0x40(x1) : noop
+        fp1 = FetchPacket(
+            inst1=0x0200A103, inst2=0x00211193, pc=0, valid=1
+        )  # lw x2,0x20(x1) : slli x3,x2,2
+        fp2 = FetchPacket(
+            inst1=0x00111213, inst2=0x00320233, pc=8, valid=1
+        )  # slli x4,x2,1 : add x4,x4,x3
+        fp3 = FetchPacket(
+            inst1=0x0440A023, inst2=0x0, pc=16, valid=1
+        )  # sw x4,0x40(x1) : noop
 
         # fp1
         uop1a = MicroOp(
@@ -207,8 +213,8 @@ class TestDecode(unittest.TestCase):
             prs2_busy=0,
             imm=0x00000020,
             issue_unit=MEM_ISSUE_UNIT,
-            fu_unit=0b00,  # functional unit is not set yet
-            fu_op=0b00,  # functional unit operation is not set yet
+            funct_unit=0b00,  # functional unit is not set yet
+            funct_op=0b00,  # functional unit operation is not set yet
         )
         uop1b = MicroOp(
             optype=0b0000,  # not set yet
@@ -226,8 +232,8 @@ class TestDecode(unittest.TestCase):
             prs2_busy=0,
             imm=0x00000002,
             issue_unit=INT_ISSUE_UNIT,
-            fu_unit=0b00,  # functional unit is not set yet
-            fu_op=0b00,  # functional unit operation is not set yet
+            funct_unit=0b00,  # functional unit is not set yet
+            funct_op=0b00,  # functional unit operation is not set yet
         )
         # fp2
         uop2a = MicroOp(
@@ -246,8 +252,8 @@ class TestDecode(unittest.TestCase):
             prs2_busy=0,
             imm=0x00000001,
             issue_unit=INT_ISSUE_UNIT,
-            fu_unit=0b00,  # functional unit is not set yet
-            fu_op=0b00,  # functional unit operation is not set yet
+            funct_unit=0b00,  # functional unit is not set yet
+            funct_op=0b00,  # functional unit operation is not set yet
         )
         uop2b = MicroOp(
             optype=0b0000,  # not set yet
@@ -265,8 +271,8 @@ class TestDecode(unittest.TestCase):
             prs2_busy=1,
             imm=0x00000000,
             issue_unit=INT_ISSUE_UNIT,
-            fu_unit=0b00,  # functional unit is not set yet
-            fu_op=0b00,  # functional unit operation is not set yet
+            funct_unit=0b00,  # functional unit is not set yet
+            funct_op=0b00,  # functional unit operation is not set yet
         )
         # fp3
         uop3a = MicroOp(
@@ -285,8 +291,8 @@ class TestDecode(unittest.TestCase):
             prs2_busy=1,
             imm=0x00000040,
             issue_unit=MEM_ISSUE_UNIT,
-            fu_unit=0b00,  # functional unit is not set yet
-            fu_op=0b00,  # functional unit operation is not set yet
+            funct_unit=0b00,  # functional unit is not set yet
+            funct_op=0b00,  # functional unit operation is not set yet
         )
         uop3b = MicroOp(
             optype=0b0000,  # not set yet
@@ -304,8 +310,8 @@ class TestDecode(unittest.TestCase):
             prs2_busy=0,
             imm=0x00000000,
             issue_unit=INT_ISSUE_UNIT,
-            fu_unit=0b00,  # functional unit is not set yet
-            fu_op=0b00,  # functional unit operation is not set yet
+            funct_unit=0b00,  # functional unit is not set yet
+            funct_op=0b00,  # functional unit operation is not set yet
         )
 
         s.dut.fetch_packet @= fp1
