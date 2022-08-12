@@ -89,14 +89,14 @@ class ReorderBuffer(Component):
                             valid=s.write_in.uop1.valid,
                             busy=s.write_in.uop1.valid,  # busy if valid
                             optype=s.write_in.uop1.optype,
-                            lrd=s.write_in.uop1.lrd,
+                            prd=s.write_in.uop1.prd,
                             stale=s.write_in.uop1.stale,
                         ),
                         uop2_entry=ROBEntryUop(
                             valid=s.write_in.uop2.valid,
                             busy=s.write_in.uop1.valid,  # busy if valid
                             optype=s.write_in.uop2.optype,
-                            lrd=s.write_in.uop2.lrd,
+                            prd=s.write_in.uop2.prd,
                             stale=s.write_in.uop2.stale,
                         ),
                     )
@@ -194,7 +194,7 @@ class ROBEntryUop:
     valid: mk_bits(1)
     busy: mk_bits(1)
     optype: mk_bits(3)
-    lrd: mk_bits(ISA_REG_BITWIDTH)
+    prd: mk_bits(PHYS_REG_BITWIDTH)
     stale: mk_bits(PHYS_REG_BITWIDTH)
     data: mk_bits(32)
 

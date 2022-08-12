@@ -12,6 +12,7 @@ from src.cl.decode import (
     Wire,
     OutPort,
 )
+from src.cl.commit_unit import CommitUnit
 from src.cl.front_end import FrontEnd
 from src.cl.fetch_stage import INSTR_WIDTH, PC_WIDTH, FetchPacket, FetchStage
 from src.cl.decode import Decode
@@ -69,7 +70,7 @@ class RampCore(Component):
 
         # register file - physical registers
         s.register_file = RegisterFile(
-            mk_bits(32), nregs=NUM_PHYS_REGS, rd_ports=2, wr_ports=1, const_zero=True
+            mk_bits(32), nregs=NUM_PHYS_REGS, rd_ports=2, wr_ports=2, const_zero=True
         )
         s.register_file.raddr[0] //= s.pr3.out.prs1
         s.register_file.raddr[1] //= s.pr3.out.prs2
@@ -85,7 +86,14 @@ class RampCore(Component):
         s.reorder_buffer.op_complete.int_data //= s.alu.out
 
         # commit unit - commit the changes
-        # ...
+        s.commit_unit = CommitUnit()
+        s.commit_unit.in_ //= s.reorder_buffer.commit_out
+        s.commit_unit.reg_wb_addr[0] //= s.register_file.waddr[0]
+        s.commit_unit.reg_wb_data[0] //= s.register_file.wdata[0]
+        s.commit_unit.reg_wb_en[0] //= s.register_file.wen[0]
+        s.commit_unit.reg_wb_addr[1] //= s.register_file.waddr[1]
+        s.commit_unit.reg_wb_data[1] //= s.register_file.wdata[1]
+        s.commit_unit.reg_wb_en[1] //= s.register_file.wen[1]
 
         @update
         def update_cntrl():

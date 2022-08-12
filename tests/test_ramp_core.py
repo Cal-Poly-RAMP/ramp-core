@@ -166,9 +166,8 @@ def test_system(cmdline_opts):
     # Commit
     assert dut.reorder_buffer.commit_out.uop2_entry.data == 420
 
-
     dut.sim_tick()
-
+    dut.sim_tick()
 
     # Cleanup
     assert False
