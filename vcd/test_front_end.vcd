@@ -1,5 +1,5 @@
 $date
-  Fri Aug 12 15:35:55 2022
+  Sun Aug 14 16:25:36 2022
 $end
 $version
   PyMTL 3 (Mamba)
@@ -9,248 +9,58 @@ $timescale
 $end
 
 $scope module top $end
-  $var reg 1 # clk $end
-  $var reg 1 % reset $end
-  $var reg 64 ) busy_table $end
-  $var reg 260 ' dual_uop $end
-  $scope module decode $end
-    $var reg 1 % reset $end
-    $var reg 73 $ fetch_packet $end
-    $var reg 64 ) busy_table $end
-    $var reg 260 ' dual_uop $end
-    $var reg 32 + inst2 $end
-    $var reg 32 * inst1 $end
-    $var reg 1 # clk $end
-    $scope module d1 $end
-      $var reg 1 - valid $end
-      $var reg 1 % reset $end
-      $var reg 24 / pregs $end
-      $var reg 130 . uop $end
-      $var reg 32 * inst $end
-      $var reg 8 , pc $end
-      $var reg 2 & pregs_busy $end
-      $var reg 1 # clk $end
-    $upscope $end
-    $scope module d2 $end
-      $var reg 24 0 pregs $end
-      $var reg 130 " uop $end
-      $var reg 32 + inst $end
-      $var reg 2 ( pregs_busy $end
-      $var reg 8 , pc $end
-      $var reg 1 - valid $end
-      $var reg 1 # clk $end
-      $var reg 1 % reset $end
-    $upscope $end
-    $scope module register_rename $end
-      $var reg 6 1 map_table(30) $end
-      $var reg 64 ) busy_table $end
-      $var reg 6 2 map_table(9) $end
-      $var reg 6 3 map_table_wr2 $end
-      $var reg 6 4 map_table(20) $end
-      $var reg 6 5 map_table(31) $end
-      $var reg 6 6 map_table(10) $end
-      $var reg 64 7 free_list_next $end
-      $var reg 6 8 map_table(21) $end
-      $var reg 6 9 map_table(0) $end
-      $var reg 6 : map_table(11) $end
-      $var reg 6 ; map_table(1) $end
-      $var reg 6 < map_table(22) $end
-      $var reg 64 = busy_table_next $end
-      $var reg 1 # clk $end
-      $var reg 6 > map_table(12) $end
-      $var reg 6 ? map_table_wr1 $end
-      $var reg 6 @ map_table(2) $end
-      $var reg 6 A pdst1 $end
-      $var reg 1 % reset $end
-      $var reg 6 B map_table(23) $end
-      $var reg 6 C map_table(13) $end
-      $var reg 6 D map_table(3) $end
-      $var reg 6 E map_table(24) $end
-      $var reg 15 F inst1_lregs $end
-      $var reg 6 G pdst2 $end
-      $var reg 6 H map_table(14) $end
-      $var reg 24 I inst1_pregs $end
-      $var reg 6 J map_table(4) $end
-      $var reg 6 K map_table(25) $end
-      $var reg 2 & inst1_pregs_busy $end
-      $var reg 6 L map_table(15) $end
-      $var reg 6 M map_table(5) $end
-      $var reg 6 N map_table(26) $end
-      $var reg 15 O inst2_lregs $end
-      $var reg 6 P map_table(16) $end
-      $var reg 6 Q map_table(6) $end
-      $var reg 6 R map_table(27) $end
-      $var reg 24 S inst2_pregs $end
-      $var reg 6 T map_table(17) $end
-      $var reg 6 U map_table(7) $end
-      $var reg 6 V map_table(28) $end
-      $var reg 2 ( inst2_pregs_busy $end
-      $var reg 6 W map_table(18) $end
-      $var reg 6 X map_table(8) $end
-      $var reg 6 Y map_table(29) $end
-      $var reg 64 Z free_list $end
-      $var reg 6 [ map_table(19) $end
-    $upscope $end
-  $upscope $end
-  $scope module pipeline_reg_fetch_decode $end
-    $var reg 1 # clk $end
-    $var reg 73 ! in_ $end
-    $var reg 73 $ out $end
-    $var reg 1 \ en $end
-    $var reg 1 % reset $end
-  $upscope $end
-  $scope module fetch_stage $end
-    $var reg 73 ! fetch_packet $end
-    $var reg 8 ] pc $end
-    $var reg 1 # clk $end
-    $var reg 64 ^ icache_data $end
-    $var reg 1 % reset $end
-    $var reg 8 _ pc_next $end
-    $scope module icache $end
-      $var reg 1 % reset $end
-      $var reg 1 # clk $end
-      $var reg 8 ` addr $end
-      $var reg 64 a data_out $end
-      $scope module memory $end
-        $var reg 1 # clk $end
-        $var reg 1 % reset $end
-      $upscope $end
+  $var reg 64 # icache_data $end
+  $var reg 1 ! clk $end
+  $var reg 1 " reset $end
+  $var reg 8 $ pc_next $end
+  $var reg 73 % fetch_packet $end
+  $var reg 8 & pc $end
+  $scope module icache $end
+    $var reg 8 ' addr $end
+    $var reg 1 ! clk $end
+    $var reg 64 ( data_out $end
+    $var reg 1 " reset $end
+    $scope module memory $end
+      $var reg 1 ! clk $end
+      $var reg 1 " reset $end
     $upscope $end
   $upscope $end
 $upscope $end
 $enddefinitions $end
 
-b0b0000000000000000000000000000000000000000000000000000000000000000000000000 !
-b0b0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 "
-b0b0 #
-b0b0000000000000000000000000000000000000000000000000000000000000000000000000 $
-b0b0 %
-b0b00 &
-b0b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 '
-b0b00 (
-b0b0000000000000000000000000000000000000000000000000000000000000000 )
-b0b00000000000000000000000000000000 *
-b0b00000000000000000000000000000000 +
-b0b00000000 ,
-b0b0 -
-b0b0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 .
-b0b000000000000000000000000 /
-b0b000000000000000000000000 0
-b0b000000 1
-b0b000000 2
-b0b000000 3
-b0b000000 4
-b0b000000 5
-b0b000000 6
-b0b0000000000000000000000000000000000000000000000000000000000000000 7
-b0b000000 8
-b0b000000 9
-b0b000000 :
-b0b000000 ;
-b0b000000 <
-b0b0000000000000000000000000000000000000000000000000000000000000000 =
-b0b000000 >
-b0b000000 ?
-b0b000000 @
-b0b000000 A
-b0b000000 B
-b0b000000 C
-b0b000000 D
-b0b000000 E
-b0b000000000000000 F
-b0b000000 G
-b0b000000 H
-b0b000000000000000000000000 I
-b0b000000 J
-b0b000000 K
-b0b000000 L
-b0b000000 M
-b0b000000 N
-b0b000000000000000 O
-b0b000000 P
-b0b000000 Q
-b0b000000 R
-b0b000000000000000000000000 S
-b0b000000 T
-b0b000000 U
-b0b000000 V
-b0b000000 W
-b0b000000 X
-b0b000000 Y
-b0b0000000000000000000000000000000000000000000000000000000000000000 Z
-b0b000000 [
-b0b0 \
-b0b00000000 ]
-b0b0000000000000000000000000000000000000000000000000000000000000000 ^
-b0b00000000 _
-b0b00000000 `
-b0b0000000000000000000000000000000000000000000000000000000000000000 a
+b0b0 !
+b0b0 "
+b0b0000000000000000000000000000000000000000000000000000000000000000 #
+b0b00000000 $
+b0b0000000000000000000000000000000000000000000000000000000000000000000000000 %
+b0b00000000 &
+b0b00000000 '
+b0b0000000000000000000000000000000000000000000000000000000000000000 (
 
 #0
-b0b1 #
+b0b1 !
 
-b0b0000000000000000000000000000000000000000000000000000000000000000000000001 !
-b0b0000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000101000000000 "
-b0b0000000000000000000000000000000000000000000000000000000000000000000000000 $
-b0b1 %
-b0b00 &
-b0b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001010000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000101000000000 '
-b0b00 (
-b0b0000000000000000000000000000000000000000000000000000000000000000 )
-b0b00000000000000000000000000000000 *
-b0b00000000 ,
-b0b0 -
-b0b0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000101000000000 .
-b0b000000000000000000000000 /
-b0b000000 1
-b0b1111111111111111111111111111111111111111111111111111111111111110 7
-b0b000000 8
-b0b0000000000000000000000000000000000000000000000000000000000000000 =
-b0b000000 >
-b0b000000000000000 F
-b0b000000 G
-b0b000000000000000000000000 I
-b0b000000 J
-b0b000000000000000 O
-b0b000000 P
-b0b000000000000000000000000 S
-b0b000000 T
-b0b0000000000000000000000000000000000000000000000000000000000000000 Z
-b0b000000 [
-b0b0 \
-b0b00000000 ]
-b0b0000000000000000000000000000000000000000000000000000000000000000 ^
-b0b00001000 _
-b0b0000000000000000000000000000000000000000000000000000000000000000 a
+b0b1 "
+b0b0000000000000000000000000000000000000000000000000000000000000000 #
+b0b00001000 $
+b0b0000000000000000000000000000000000000000000000000000000000000000000000001 %
+b0b00000000 &
+b0b0000000000000000000000000000000000000000000000000000000000000000 (
 
 #50
-b0b0 #
+b0b0 !
 #100
-b0b1 #
+b0b1 !
 
-b0b000001 A
-b0b000010 G
-b0b1111111111111111111111111111111111111111111111111111111111111110 Z
 
 #150
-b0b0 #
+b0b0 !
 #200
-b0b1 #
+b0b1 !
 
 
 #250
-b0b0 #
+b0b0 !
 #300
-b0b1 #
-
-b0b0000000000000011101000010000000000000010100100110001000100100001000000001 !
-b0b0 %
-b0b1 \
-b0b0000001110100001000000000000001010010011000100010010000100000000 ^
-b0b0000001110100001000000000000001010010011000100010010000100000000 a
-
-#350
-b0b0 #
-#400
-b0b1 #
+b0b1 !
 

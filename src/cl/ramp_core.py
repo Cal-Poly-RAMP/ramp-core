@@ -6,6 +6,7 @@ from src.cl.decode import (
     INT_ISSUE_UNIT,
     MEM_FUNCT_UNIT,
     NO_OP,
+    R_TYPE,
     DualMicroOp,
     MicroOp,
     NUM_PHYS_REGS,
@@ -79,18 +80,20 @@ class RampCore(Component):
         # ALU
         s.alu = ALU(mk_bits(32))
         s.alu.a //= s.register_file.rdata[0]
-        s.alu.b //= s.register_file.rdata[1]
         s.alu.op //= s.pr3.out.funct_op
 
+        # (6) writeback
         s.reorder_buffer.op_complete.int_rob_idx //= s.pr3.out.rob_idx
         s.reorder_buffer.op_complete.int_data //= s.alu.out
 
-        # commit unit - commit the changes
+        # (6) commit unit - commit the changes
         s.commit_unit = CommitUnit()
         s.commit_unit.in_ //= s.reorder_buffer.commit_out
         s.commit_unit.reg_wb_addr[0] //= s.register_file.waddr[0]
         s.commit_unit.reg_wb_data[0] //= s.register_file.wdata[0]
         s.commit_unit.reg_wb_en[0] //= s.register_file.wen[0]
+        s.commit_unit.stale_out[0] //= s.decode.stale_in
+        s.commit_unit.ready_out[0] //= s.decode.ready_in
         s.commit_unit.reg_wb_addr[1] //= s.register_file.waddr[1]
         s.commit_unit.reg_wb_data[1] //= s.register_file.wdata[1]
         s.commit_unit.reg_wb_en[1] //= s.register_file.wen[1]
@@ -108,6 +111,12 @@ class RampCore(Component):
                 s.pr3.out.funct_unit == MEM_FUNCT_UNIT
             )
 
+            # Immediate logic
+            if (s.pr3.out.optype != R_TYPE):
+                s.alu.b @= s.pr3.out.imm
+            else:
+                s.alu.b @= s.register_file.rdata[1]
+
     def line_trace(s):
         return (
             f"\npr1: {s.pr1.line_trace()}\n\n"
@@ -116,6 +125,7 @@ class RampCore(Component):
             f"register_file: {[r.uint() for r in s.register_file.regs]}\n\n"
             f"busy_table: {[b.uint() for b in s.busy_table]}\n\n"
             f"map_table: {[b.uint() for b in s.decode.register_rename.map_table]}\n\n"
+            f"free_list: {bin(s.decode.register_rename.free_list)}\n\n"
             f"int_issue_queue: {s.int_issue_queue.line_trace()}\n\n"
             f"commit out uop1: 0x{s.reorder_buffer.commit_out.uop1_entry.data}\n\n"
             f"commit out uop2: 0x{s.reorder_buffer.commit_out.uop2_entry.data}\n\n"

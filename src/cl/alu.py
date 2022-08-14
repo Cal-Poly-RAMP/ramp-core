@@ -74,7 +74,7 @@ class ALU(Component):
                 s.out @= 1 if (s.a < s.b) else 0  # TODO: Better way to do this?
             # Load Upper Immediate Copy
             elif s.op == ALU_LUI_COPY:
-                s.out @= s.a << 12
+                s.out @= s.b
             else:
                 s.out @= 0
 

@@ -116,6 +116,28 @@ class IssueQueue(Component):
                     0,
                     0,
                 )
+            else:
+                s.uop_out <<= MicroOp(
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                )
+
 
             # APPENDING new uops to queue, if valid
             if (
@@ -150,7 +172,7 @@ class IssueQueue(Component):
 
     def line_trace(s):
         return (
-            f"Issue Queue: {[i.to_bits().uint() for i in s.queue]}\n"
+            f"\n\tIssue Queue: {[hex(i.inst.uint()) for i in s.queue]}\n"
             f"\tTail: {s.tail}\n"
             f"\tduop In: {s.duop_in.uop1}\n\t\t{s.duop_in.uop2}\n"
             f"\tuop Out: {s.uop_out}\n"

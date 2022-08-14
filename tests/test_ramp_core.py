@@ -34,14 +34,15 @@ from src.cl.decode import (
     ALU_LUI_COPY,
 )
 
-
-def test_system(cmdline_opts):
+def test_system_dual_rtype(cmdline_opts):
     # Configure the model from command line flags
     dut = RampCore()
     dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
-    dut.apply(DefaultPassGroup(linetrace=True, vcdwave="vcd/test_ramp_core"))
+    dut.apply(DefaultPassGroup(linetrace=True, vcdwave="vcd/test_ramp_core1"))
     dut.sim_reset()
-    dut.fetch_stage.icache.load_file("tests/input_files/test_ramp_core1.bin")
+    # add x3, x2, x1
+    # sub x13, x12, x11
+    dut.fetch_stage.icache.load_file("tests/input_files/test_system1.bin")
 
     # 0 Configure starting state
     dut.decode.register_rename.free_list_next @= 0xFFFFFFFFFFFFFFE0
@@ -56,7 +57,6 @@ def test_system(cmdline_opts):
 
     # 1 FETCH
     dut.sim_tick()
-    # inst1: add x3, x2, x1 inst2: sub x13, x12, x11
     fp = FetchPacket(inst1=0x001101B3, inst2=0x40B606B3, pc=0, valid=1)
 
     # Fetch | Decode
@@ -145,6 +145,7 @@ def test_system(cmdline_opts):
     # Dispatch/Issue | Execute
     assert dut.pr3.out == uop1
 
+    # 4 COMMIT
     dut.sim_tick()
     # Fetch | Decode
     assert dut.pr1.out == FetchPacket(inst1=0, inst2=0, pc=40, valid=1)
@@ -155,19 +156,46 @@ def test_system(cmdline_opts):
     # Commit
     assert dut.reorder_buffer.commit_out.uop1_entry.data == 69
 
-    # 4 WRITEBACK
+    # 5 WRITEBACK
     dut.sim_tick()
     # Fetch | Decode
     assert dut.pr1.out == FetchPacket(inst1=0, inst2=0, pc=48, valid=1)
     # Decode | Dispatch/Issue
     assert not dut.pr2.out.uop1.valid and not dut.pr2.out.uop2.valid
     # Dispatch/Issue | Execute
-    assert dut.pr3.out == uop2
+    assert not dut.pr3.out
     # Commit
     assert dut.reorder_buffer.commit_out.uop2_entry.data == 420
+    # Writeback
+    assert dut.register_file.regs[5] == 69
 
     dut.sim_tick()
-    dut.sim_tick()
+    # Fetch | Decode
+    assert dut.pr1.out == FetchPacket(inst1=0, inst2=0, pc=56, valid=1)
+    # Decode | Dispatch/Issue
+    assert not dut.pr2.out.uop1.valid and not dut.pr2.out.uop2.valid
+    # Dispatch/Issue | Execute
+    assert not dut.pr3.out
+    # Commit
+    assert not dut.reorder_buffer.commit_out.uop2_entry.data
+    # Writeback
+    assert dut.register_file.regs[5] == 69
+    assert dut.register_file.regs[6] == 420
 
-    # Cleanup
-    assert False
+def test_system_itype(cmdline_opts):
+    # Configure the model from command line flags
+    dut = RampCore()
+    dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
+    dut.apply(DefaultPassGroup(linetrace=True, vcdwave="vcd/test_ramp_core2"))
+    dut.sim_reset()
+
+    # Load Program
+    # lui x1, 0x000dead0
+    # addi x2, x1, 0x000000af
+    dut.fetch_stage.icache.load_file("tests/input_files/test_system2.bin")
+
+    for _ in range(14):
+        dut.sim_tick()
+
+    prd = dut.decode.register_rename.map_table[2]
+    assert dut.register_file.regs[prd] == 0x0dead0af

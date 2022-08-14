@@ -1,4 +1,3 @@
-from enum import IntEnum
 from pymtl3 import (
     Bits,
     Bits1,
@@ -13,8 +12,8 @@ from pymtl3 import (
     mk_bits,
     sext,
     update,
+    clog2
 )
-from pymtl3.stdlib import stream
 from src.cl.fetch_stage import FetchPacket, PC_WIDTH, INSTR_WIDTH
 from src.cl.register_rename import (
     ISA_REG_BITWIDTH,
@@ -100,6 +99,11 @@ class Decode(Component):
         s.dual_uop = OutPort(DualMicroOp)
         s.busy_table = OutPort(NUM_PHYS_REGS)
 
+        # register to be freed (from commit stage)
+        s.stale_in = InPort(clog2(NUM_PHYS_REGS))
+        # register to be marked as 'not busy' (from commit stage)
+        s.ready_in = InPort(clog2(NUM_PHYS_REGS))
+
         s.d1 = SingleInstDecode()
         # instruction in
         s.d1.inst //= s.inst1
@@ -142,6 +146,10 @@ class Decode(Component):
 
         # busy table
         s.busy_table //= s.register_rename.busy_table
+
+        # from commit stage...
+        s.stale_in //= s.register_rename.stale_in
+        s.ready_in //= s.register_rename.ready_in
 
     def line_trace(s):
         return (
@@ -190,8 +198,7 @@ class SingleInstDecode(Component):
             mem_issue = (opcode == ITYPE_OPCODE2) | (opcode == STYPE_OPCODE)
             int_issue = ~mem_issue  # TODO: fpu issue
 
-            # uop (hardcoded values)
-            # TODO: uopcode
+            # defaults
             s.uop.inst @= s.inst
             s.uop.pc @= (s.pc + 4) if s.idx else (s.pc)
             s.uop.valid @= (s.inst != INSTR_NOP) & ~(s.inst == 0)
@@ -208,19 +215,23 @@ class SingleInstDecode(Component):
             s.uop.prs1_busy @= s.pregs_busy.prs1
             s.uop.prs2_busy @= s.pregs_busy.prs2
 
+            s.uop.imm @= 0
+
             s.uop.issue_unit @= (
                 INT_ISSUE_UNIT if int_issue else MEM_ISSUE_UNIT if mem_issue else 0
             )
-
             s.uop.funct_unit @= (
                 ALU_FUNCT_UNIT if int_issue else MEM_FUNCT_UNIT if mem_issue else 0
             )
+            s.uop.funct_op @= concat(s.inst[30], s.inst[FUNCT3_SLICE])
+
+            s.uop.rob_idx @= 0
 
             if s.uop.optype == R_TYPE:
-                s.uop.imm @= 0
                 s.uop.funct_op @= concat(s.inst[30], s.inst[FUNCT3_SLICE])
             elif s.uop.optype == I_TYPE:
                 s.uop.imm @= sext(s.inst[20:32], 32)
+                # see decoding for funct op
                 s.uop.lrs2 @= 0
             elif s.uop.optype == S_TYPE:
                 s.uop.imm @= sext(concat(s.inst[25:32], s.inst[7:12]), 32)
@@ -293,7 +304,7 @@ class MicroOp:
             f" i_unit: {s.issue_unit} f_unit: {s.funct_unit} f_op: {s.funct_op}"
             f" lr : {s.lrd.uint():02d}:{s.lrs1.uint():02d}:{s.lrs2.uint():02d}"
             f" pr : {s.prd.uint():02d}:{s.prs1.uint():02d}:{s.prs2.uint():02d}"
-            # f" stale: x{s.stale.uint():02d} prs1_busy: {s.prs1_busy} prs2_busy: {s.prs2_busy}"
+            f" stale: x{s.stale.uint():02d} busy:{s.prs1_busy}:{s.prs2_busy}"
             # f" rob_idx: {s.rob_idx}"
         )
 

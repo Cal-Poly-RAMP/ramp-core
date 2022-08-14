@@ -9,6 +9,7 @@ from pymtl3 import (
     update,
     update_ff,
     zext,
+    clog2
 )
 
 NUM_ISA_REGS = 32
@@ -17,7 +18,7 @@ ISA_REG_BITWIDTH = 5
 NUM_PHYS_REGS = 64
 PHYS_REG_BITWIDTH = 6
 
-REG_RENAME_ERR = "Tried to rename a register when no physical registers are free. Halting not implemented yet. 🤬"
+REG_RENAME_ERR = "Tried to rename a register when no physical registers are free. Halting not implemented yet."
 
 
 @bitstruct
@@ -55,6 +56,11 @@ class RegisterRename(Component):
 
         s.free_list = OutPort(NUM_PHYS_REGS)
         s.busy_table = OutPort(NUM_PHYS_REGS)
+
+        # register to be freed (from commit stage)
+        s.stale_in = InPort(clog2(NUM_PHYS_REGS))
+        # register to be marked as 'not busy' (from commit stage)
+        s.ready_in = InPort(clog2(NUM_PHYS_REGS))
 
         # map tables
         s.map_table = [Wire(PHYS_REG_BITWIDTH) for _ in range(NUM_ISA_REGS)]
@@ -165,11 +171,21 @@ class RegisterRename(Component):
                     )
                     s.map_table_wr1 @= s.pdst1
                     s.map_table_wr2 @= s.pdst2
+                else:
+                    s.busy_table_next @= s.busy_table
+                    s.map_table_wr1 @= s.map_table[s.inst1_lregs.lrd]
+                    s.map_table_wr2 @= s.map_table[s.inst2_lregs.lrd]
 
         @update_ff
         def rename_ff():
-            s.free_list <<= s.free_list_next
-            s.busy_table <<= s.busy_table_next
+            if s.stale_in:
+                s.free_list <<= s.free_list_next | (s.ONE << zext(s.stale_in, NUM_PHYS_REGS))
+            else:
+                s.free_list <<= s.free_list_next
+            if s.ready_in:
+                s.busy_table <<= s.busy_table_next & ~(s.ONE << zext(s.ready_in, NUM_PHYS_REGS))
+            else:
+                s.busy_table <<= s.busy_table_next
             s.map_table[s.inst1_lregs.lrd] <<= s.map_table_wr1
             s.map_table[s.inst2_lregs.lrd] <<= s.map_table_wr2
 
