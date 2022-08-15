@@ -68,8 +68,6 @@ class TestFrontEnd(unittest.TestCase):
             prs1=0,
             prs2=0,
             stale=0,
-            prs1_busy=0,
-            prs2_busy=0,
             imm=0x00000020,
             issue_unit=MEM_ISSUE_UNIT,
             funct_unit=MEM_FUNCT_UNIT,
@@ -87,8 +85,6 @@ class TestFrontEnd(unittest.TestCase):
             prs1=1,
             prs2=0,
             stale=0,
-            prs1_busy=1,
-            prs2_busy=0,
             imm=0x00000002,
             issue_unit=INT_ISSUE_UNIT,
             funct_unit=ALU_FUNCT_UNIT,
@@ -107,8 +103,6 @@ class TestFrontEnd(unittest.TestCase):
             prs1=1,
             prs2=0,
             stale=0,
-            prs1_busy=1,
-            prs2_busy=0,
             imm=0x00000001,
             issue_unit=INT_ISSUE_UNIT,
             funct_unit=ALU_FUNCT_UNIT,  # functional unit is not set yet
@@ -126,8 +120,6 @@ class TestFrontEnd(unittest.TestCase):
             prs1=3,
             prs2=2,
             stale=3,
-            prs1_busy=1,
-            prs2_busy=1,
             imm=0x00000000,
             issue_unit=INT_ISSUE_UNIT,
             funct_unit=ALU_FUNCT_UNIT,  # functional unit is not set yet
@@ -146,8 +138,6 @@ class TestFrontEnd(unittest.TestCase):
             prs1=0,
             prs2=4,
             stale=0,
-            prs1_busy=0,
-            prs2_busy=1,
             imm=0x00000040,
             issue_unit=MEM_ISSUE_UNIT,
             funct_unit=MEM_FUNCT_UNIT,  # functional unit is not set yet
@@ -165,8 +155,6 @@ class TestFrontEnd(unittest.TestCase):
             prs1=0,
             prs2=0,
             stale=0,
-            prs1_busy=0,
-            prs2_busy=0,
             imm=0x00000000,
             issue_unit=INT_ISSUE_UNIT,
             funct_unit=ALU_FUNCT_UNIT,  # functional unit is not set yet

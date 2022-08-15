@@ -9,7 +9,7 @@ from pymtl3 import (
     update,
     update_ff,
     zext,
-    clog2
+    clog2,
 )
 
 NUM_ISA_REGS = 32
@@ -178,10 +178,14 @@ class RegisterRename(Component):
 
             # updating free_list, busy_table
             for i in range(2):
-                if(s.stale_in[i]):
-                    s.free_list_next @= s.free_list_next | (s.ONE << zext(s.stale_in[i], NUM_PHYS_REGS))
-                if(s.ready_in[i]):
-                    s.busy_table_next @= s.busy_table_next & ~(s.ONE << zext(s.ready_in[i], NUM_PHYS_REGS))
+                if s.stale_in[i]:
+                    s.free_list_next @= s.free_list_next | (
+                        s.ONE << zext(s.stale_in[i], NUM_PHYS_REGS)
+                    )
+                if s.ready_in[i]:
+                    s.busy_table_next @= s.busy_table_next & ~(
+                        s.ONE << zext(s.ready_in[i], NUM_PHYS_REGS)
+                    )
 
         @update_ff
         def rename_ff():

@@ -167,7 +167,7 @@ class TestALU(unittest.TestCase):
         s.dut.b @= b
         s.dut.op @= ALU_LUI_COPY
         s.dut.sim_tick()
-        s.assertEqual(s.dut.out, trunc(Bits(BITWIDTH + 12, a << 12), BITWIDTH))
+        s.assertEqual(s.dut.out, Bits(BITWIDTH, b))
 
 
 if __name__ == "__main__":

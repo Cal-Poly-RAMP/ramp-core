@@ -11,7 +11,7 @@ from src.cl.decode import (
     NA_ISSUE_UNIT,
     INT_ISSUE_UNIT,
     MEM_ISSUE_UNIT,
-    NA_FUNCTIONAL_UNIT,
+    NA_FUNCT_UNIT,
     ALU_FUNCT_UNIT,
     MEM_FUNCT_UNIT,
     R_TYPE,
@@ -33,6 +33,7 @@ from src.cl.decode import (
     ALU_SLTU,
     ALU_LUI_COPY,
 )
+
 
 def test_system_dual_rtype(cmdline_opts):
     # Configure the model from command line flags
@@ -80,8 +81,6 @@ def test_system_dual_rtype(cmdline_opts):
         prs1=2,
         prs2=1,
         stale=0,
-        prs1_busy=0,
-        prs2_busy=0,
         imm=0,
         issue_unit=INT_ISSUE_UNIT,
         funct_unit=ALU_FUNCT_UNIT,
@@ -100,8 +99,6 @@ def test_system_dual_rtype(cmdline_opts):
         prs1=3,
         prs2=4,
         stale=0,
-        prs1_busy=0,
-        prs2_busy=0,
         imm=0,
         issue_unit=INT_ISSUE_UNIT,
         funct_unit=ALU_FUNCT_UNIT,
@@ -182,6 +179,7 @@ def test_system_dual_rtype(cmdline_opts):
     assert dut.register_file.regs[5] == 69
     assert dut.register_file.regs[6] == 420
 
+
 def test_system_iu_type(cmdline_opts):
     # lui x1, 0x000dead0
     # addi x2, x1, 0x000000af
@@ -197,7 +195,8 @@ def test_system_iu_type(cmdline_opts):
         dut.sim_tick()
 
     prd = dut.decode.register_rename.map_table[2]
-    assert dut.register_file.regs[prd] == 0x0dead0af
+    assert dut.register_file.regs[prd] == 0x0DEAD0AF
+
 
 def test_system_multiple(cmdline_opts):
     # addi	t0,	x0,	6   0x00600293
@@ -218,6 +217,7 @@ def test_system_multiple(cmdline_opts):
 
     prd = dut.decode.register_rename.map_table[5]
     assert dut.register_file.regs[prd] == 60
+
 
 def test_system_multiple2(cmdline_opts):
     # Program to multiply by 50
@@ -249,6 +249,7 @@ def test_system_multiple2(cmdline_opts):
 
     prd = dut.decode.register_rename.map_table[5]
     assert dut.register_file.regs[prd] == 300
+
 
 def test_system5(cmdline_opts):
     # Program to multiply by 314

@@ -96,7 +96,9 @@ class IssueQueue(Component):
                                 collapse = 1
 
                         # u,b,j type: ready to issue
-                        elif (s.queue[i].optype == U_TYPE) | (s.queue[i].optype == J_TYPE):
+                        elif (s.queue[i].optype == U_TYPE) | (
+                            s.queue[i].optype == J_TYPE
+                        ):
                             s.uop_out_next @= s.queue[i]
                             s.tail_next @= s.tail - 1
                             s.queue_full_next @= 0
@@ -105,7 +107,6 @@ class IssueQueue(Component):
                 if collapse:
                     s.queue_empty_next @= (s.tail - 1) == 0
                     s.queue_next[ISSUE_QUEUE_DEPTH - 1] @= MicroOp(0)
-
 
                 # APPENDING new uops to queue, if valid
                 if (
@@ -134,19 +135,18 @@ class IssueQueue(Component):
                     s.queue_next[s.tail_next] @= s.duop_in.uop2
 
                     s.queue_empty_next @= 0
-                    s.tail_next @=s.tail_next + 1
+                    s.tail_next @= s.tail_next + 1
                     if s.tail_next + 1 == 0:
                         s.queue_full_next @= 1
 
         @update_ff
         def ff():
             s.tail <<= s.tail_next
-            s.queue_full <<=s.queue_full_next
+            s.queue_full <<= s.queue_full_next
             s.queue_empty <<= s.queue_empty_next
             s.uop_out <<= s.uop_out_next
             for i in range(ISSUE_QUEUE_DEPTH):
                 s.queue[i] <<= s.queue_next[i]
-
 
     def line_trace(s):
         return (

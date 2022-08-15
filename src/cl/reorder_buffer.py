@@ -125,25 +125,29 @@ class ReorderBuffer(Component):
                 if s.op_complete.int_rob_idx % 2 == 0:
                     # even index, uop1 is completed
                     s.instr_bank_next[internal_rob_addr].uop1_entry.busy @= 0
-                    s.instr_bank_next[internal_rob_addr].uop1_entry.data @= \
-                        s.op_complete.int_data
+                    s.instr_bank_next[
+                        internal_rob_addr
+                    ].uop1_entry.data @= s.op_complete.int_data
                 else:
                     # odd index, uop2 is completed
                     s.instr_bank_next[internal_rob_addr].uop2_entry.busy @= 0
-                    s.instr_bank_next[internal_rob_addr].uop2_entry.data @= \
-                        s.op_complete.int_data
+                    s.instr_bank_next[
+                        internal_rob_addr
+                    ].uop2_entry.data @= s.op_complete.int_data
 
             if s.op_complete.mem_rob_complete:
                 if s.op_complete.mem_rob_idx % 2 == 0:
                     # even index, uop1 is completed
                     s.instr_bank_next[internal_rob_addr].uop1_entry.busy @= 0
-                    s.instr_bank_next[internal_rob_addr].uop1_entry.data @= \
-                        s.op_complete.mem_data
+                    s.instr_bank_next[
+                        internal_rob_addr
+                    ].uop1_entry.data @= s.op_complete.mem_data
                 else:
                     # odd index, uop2 is completed
                     s.instr_bank_next[internal_rob_addr].uop2_entry.busy @= 0
-                    s.instr_bank_next[internal_rob_addr].uop2_entry.data @= \
-                        s.op_complete.mem_data
+                    s.instr_bank_next[
+                        internal_rob_addr
+                    ].uop2_entry.data @= s.op_complete.mem_data
 
             # COMMITTING
             # committed store instructions write to memory
@@ -154,7 +158,9 @@ class ReorderBuffer(Component):
                 s.instr_bank_next[s.internal_rob_head_next].uop1_entry.valid
                 & ~s.instr_bank_next[s.internal_rob_head_next].uop1_entry.busy
             ):
-                s.uop1_entry_next @= s.instr_bank_next[s.internal_rob_head_next].uop1_entry
+                s.uop1_entry_next @= s.instr_bank_next[
+                    s.internal_rob_head_next
+                ].uop1_entry
                 s.instr_bank_next[s.internal_rob_head_next].uop1_entry.valid @= 0
             # otherwise do not commit it
             else:
@@ -164,7 +170,9 @@ class ReorderBuffer(Component):
                 s.instr_bank_next[s.internal_rob_head_next].uop2_entry.valid
                 & ~s.instr_bank_next[s.internal_rob_head_next].uop2_entry.busy
             ):
-                s.uop2_entry_next @= s.instr_bank_next[s.internal_rob_head_next].uop2_entry
+                s.uop2_entry_next @= s.instr_bank_next[
+                    s.internal_rob_head_next
+                ].uop2_entry
                 s.instr_bank_next[s.internal_rob_head_next].uop2_entry.valid @= 0
             # otherwise do not commit it
             else:

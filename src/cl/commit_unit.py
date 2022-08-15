@@ -2,6 +2,7 @@ from pymtl3 import Component, InPort, clog2, update, OutPort
 from src.cl.reorder_buffer import ROBEntry, ROBEntryUop
 from src.cl.decode import S_TYPE, DualMicroOp, NUM_PHYS_REGS
 
+
 class CommitUnit(Component):
     def construct(s, width=2):
         # committed entries from ROB
@@ -23,6 +24,7 @@ class CommitUnit(Component):
             s.commit_units[x].reg_wb_en //= s.reg_wb_en[x]
             s.commit_units[x].stale_out //= s.stale_out[x]
             s.commit_units[x].ready_out //= s.ready_out[x]
+
 
 # For each uop in rob entry
 class SingleCommit(Component):
@@ -66,5 +68,3 @@ class SingleCommit(Component):
                 s.reg_wb_data @= s.in_.data
                 s.stale_out @= s.in_.stale
                 s.ready_out @= s.in_.prd
-
-

@@ -14,8 +14,7 @@ from src.cl.decode import (
     OutPort,
 )
 from src.cl.commit_unit import CommitUnit
-from src.cl.front_end import FrontEnd
-from src.cl.fetch_stage import INSTR_WIDTH, PC_WIDTH, FetchPacket, FetchStage
+from src.cl.fetch_stage import FetchPacket, FetchStage
 from src.cl.decode import Decode
 from src.cl.dispatch import Dispatch
 from src.cl.reorder_buffer import ReorderBuffer, ExecToROB
@@ -110,7 +109,7 @@ class RampCore(Component):
             )
 
             # Immediate logic
-            if (s.pr3.out.optype != R_TYPE):
+            if s.pr3.out.optype != R_TYPE:
                 s.alu.b @= s.pr3.out.imm
             else:
                 s.alu.b @= s.register_file.rdata[1]

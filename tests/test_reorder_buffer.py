@@ -63,12 +63,12 @@ class TestReorderBuffer(unittest.TestCase):
         duop1 = DualMicroOp.from_bits(Bits(DualMicroOp.nbits, 0))
         duop1.uop1.valid @= 1
         duop1.uop1.optype @= 2
-        duop1.uop1.lrd @= 1
+        duop1.uop1.prd @= 1
         duop1.uop1.stale @= 1
 
         duop1.uop2.valid @= 1
         duop1.uop2.optype @= 3
-        duop1.uop2.lrd @= 2
+        duop1.uop2.prd @= 2
         duop1.uop2.stale @= 2
 
         s.dut.write_in @= duop1
@@ -98,12 +98,12 @@ class TestReorderBuffer(unittest.TestCase):
 
         s.assertEqual(s.dut.commit_out.uop1_entry.busy, 0)
         s.assertEqual(s.dut.commit_out.uop1_entry.optype, 2)
-        s.assertEqual(s.dut.commit_out.uop1_entry.lrd, 1)
+        s.assertEqual(s.dut.commit_out.uop1_entry.prd, 1)
         s.assertEqual(s.dut.commit_out.uop1_entry.stale, 1)
         s.assertEqual(s.dut.commit_out.uop1_entry.valid, 1)
         s.assertEqual(s.dut.commit_out.uop2_entry.busy, 0)
         s.assertEqual(s.dut.commit_out.uop2_entry.optype, 0)
-        s.assertEqual(s.dut.commit_out.uop2_entry.lrd, 0)
+        s.assertEqual(s.dut.commit_out.uop2_entry.prd, 0)
         s.assertEqual(s.dut.commit_out.uop2_entry.stale, 0)
         s.assertEqual(s.dut.commit_out.uop2_entry.valid, 0)
 
@@ -119,12 +119,12 @@ class TestReorderBuffer(unittest.TestCase):
 
         s.assertEqual(s.dut.commit_out.uop1_entry.busy, 0)
         s.assertEqual(s.dut.commit_out.uop1_entry.optype, 0)
-        s.assertEqual(s.dut.commit_out.uop1_entry.lrd, 0)
+        s.assertEqual(s.dut.commit_out.uop1_entry.prd, 0)
         s.assertEqual(s.dut.commit_out.uop1_entry.stale, 0)
         s.assertEqual(s.dut.commit_out.uop1_entry.valid, 0)
         s.assertEqual(s.dut.commit_out.uop2_entry.busy, 0)
         s.assertEqual(s.dut.commit_out.uop2_entry.optype, 3)
-        s.assertEqual(s.dut.commit_out.uop2_entry.lrd, 2)
+        s.assertEqual(s.dut.commit_out.uop2_entry.prd, 2)
         s.assertEqual(s.dut.commit_out.uop2_entry.stale, 2)
         s.assertEqual(s.dut.commit_out.uop2_entry.valid, 1)
 
@@ -143,7 +143,7 @@ class TestReorderBuffer(unittest.TestCase):
         s.dut.write_in @= duop1
 
         # filling rob
-        for x in range(ROB_SIZE // 2):
+        for x in range(ROB_SIZE // 2 - 1):
             s.assertEqual(s.dut.rob_tail, 2 * x)
             s.assertEqual(s.dut.internal_rob_head, 0)
             s.assertFalse(s.dut.bank_full)

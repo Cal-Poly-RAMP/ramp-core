@@ -12,7 +12,7 @@ from pymtl3 import (
     mk_bits,
     sext,
     update,
-    clog2
+    clog2,
 )
 from src.cl.fetch_stage import FetchPacket, PC_WIDTH, INSTR_WIDTH
 from src.cl.register_rename import (
@@ -54,7 +54,7 @@ INT_ISSUE_UNIT = 0b01
 MEM_ISSUE_UNIT = 0b10
 
 # functional units
-NA_FUNCTIONAL_UNIT = 0b00
+NA_FUNCT_UNIT = 0b00
 ALU_FUNCT_UNIT = 0b01
 MEM_FUNCT_UNIT = 0b10
 
@@ -197,7 +197,13 @@ class SingleInstDecode(Component):
 
             # For determining issue unit
             mem_issue = (opcode == ITYPE_OPCODE2) | (opcode == STYPE_OPCODE)
-            int_issue = ~mem_issue  # TODO: fpu issue
+            int_issue = (
+                (opcode == RTYPE_OPCODE)
+                | (opcode == ITYPE_OPCODE1)
+                | (opcode == ITYPE_OPCODE3)
+                | (opcode == UTYPE_OPCODE1)
+                | (opcode == UTYPE_OPCODE2)
+            )
 
             # defaults
             s.uop.inst @= s.inst
@@ -213,9 +219,6 @@ class SingleInstDecode(Component):
             s.uop.prs2 @= s.pregs.prs2
             s.uop.stale @= s.pregs.stale
 
-            s.uop.prs1_busy @= s.pregs_busy.prs1
-            s.uop.prs2_busy @= s.pregs_busy.prs2
-
             s.uop.imm @= 0
 
             s.uop.issue_unit @= (
@@ -224,13 +227,14 @@ class SingleInstDecode(Component):
             s.uop.funct_unit @= (
                 ALU_FUNCT_UNIT if int_issue else MEM_FUNCT_UNIT if mem_issue else 0
             )
-            s.uop.funct_op @= concat(s.inst[30], s.inst[FUNCT3_SLICE])
+            s.uop.funct_op @= 0
 
             s.uop.rob_idx @= 0
 
             if s.uop.optype == R_TYPE:
                 s.uop.funct_op @= concat(s.inst[30], s.inst[FUNCT3_SLICE])
             elif s.uop.optype == I_TYPE:
+                s.uop.funct_op @= concat(s.inst[30], s.inst[FUNCT3_SLICE])
                 s.uop.imm @= sext(s.inst[20:32], 32)
                 # see decoding for funct op
                 s.uop.lrs2 @= 0
@@ -285,12 +289,8 @@ class MicroOp:
     prs2: mk_bits(PHYS_REG_BITWIDTH)  # physical source register 2
     stale: mk_bits(PHYS_REG_BITWIDTH)  # stale physical register
 
-    prs1_busy: mk_bits(1)  # physical source register 1 busy
-    prs2_busy: mk_bits(1)  # physical source register 2 busy
-
     # immediate TODO: encode to be smaller, and use sign extension TODO: 64 bit?
-    imm: mk_bits(32
-)
+    imm: mk_bits(32)
 
     issue_unit: mk_bits(2)  # issue unit
     funct_unit: mk_bits(2)  # functional unit
@@ -305,7 +305,7 @@ class MicroOp:
             f" i_unit: {s.issue_unit} f_unit: {s.funct_unit} f_op: {s.funct_op}"
             f" lr : {s.lrd.uint():02d}:{s.lrs1.uint():02d}:{s.lrs2.uint():02d}"
             f" pr : {s.prd.uint():02d}:{s.prs1.uint():02d}:{s.prs2.uint():02d}"
-            f" stale: x{s.stale.uint():02d} busy:{s.prs1_busy}:{s.prs2_busy}"
+            f" stale: x{s.stale.uint():02d}"
             # f" rob_idx: {s.rob_idx}"
         )
 
