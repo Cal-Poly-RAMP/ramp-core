@@ -1,5 +1,5 @@
 $date
-  Sun Aug 14 16:25:36 2022
+  Mon Aug 15 12:12:29 2022
 $end
 $version
   PyMTL 3 (Mamba)
@@ -9,30 +9,30 @@ $timescale
 $end
 
 $scope module top $end
-  $var reg 260 ) in_ $end
+  $var reg 260 ) to_mem_issue $end
   $var reg 1 ( reset $end
-  $var reg 5 * rob_idx $end
-  $var reg 260 + to_int_issue $end
-  $var reg 260 , to_mem_issue $end
   $var reg 1 & clk $end
+  $var reg 5 * rob_idx $end
+  $var reg 260 + in_ $end
+  $var reg 260 , to_int_issue $end
   $var reg 260 - to_rob $end
   $scope module uop1_dispatch $end
-    $var reg 5 . rob_idx $end
-    $var reg 130 " to_int_issue $end
-    $var reg 130 ' in_ $end
-    $var reg 130 ' to_rob $end
-    $var reg 130 $ to_mem_issue $end
     $var reg 1 ( reset $end
+    $var reg 130 " in_ $end
+    $var reg 130 # to_int_issue $end
+    $var reg 5 . rob_idx $end
+    $var reg 130 " to_rob $end
     $var reg 1 & clk $end
+    $var reg 130 ' to_mem_issue $end
   $upscope $end
   $scope module uop2_dispatch $end
-    $var reg 130 # in_ $end
-    $var reg 130 # to_rob $end
-    $var reg 1 & clk $end
-    $var reg 130 ! to_mem_issue $end
-    $var reg 1 ( reset $end
-    $var reg 130 % to_int_issue $end
+    $var reg 130 ! to_int_issue $end
+    $var reg 130 % in_ $end
+    $var reg 130 $ to_mem_issue $end
     $var reg 5 / rob_idx $end
+    $var reg 1 & clk $end
+    $var reg 130 % to_rob $end
+    $var reg 1 ( reset $end
   $upscope $end
 $upscope $end
 $enddefinitions $end

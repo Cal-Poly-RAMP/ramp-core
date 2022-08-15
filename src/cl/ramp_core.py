@@ -89,14 +89,12 @@ class RampCore(Component):
         # (6) commit unit - commit the changes
         s.commit_unit = CommitUnit()
         s.commit_unit.in_ //= s.reorder_buffer.commit_out
-        s.commit_unit.reg_wb_addr[0] //= s.register_file.waddr[0]
-        s.commit_unit.reg_wb_data[0] //= s.register_file.wdata[0]
-        s.commit_unit.reg_wb_en[0] //= s.register_file.wen[0]
-        s.commit_unit.stale_out[0] //= s.decode.stale_in
-        s.commit_unit.ready_out[0] //= s.decode.ready_in
-        s.commit_unit.reg_wb_addr[1] //= s.register_file.waddr[1]
-        s.commit_unit.reg_wb_data[1] //= s.register_file.wdata[1]
-        s.commit_unit.reg_wb_en[1] //= s.register_file.wen[1]
+        for i in range(2):
+            s.commit_unit.reg_wb_addr[i] //= s.register_file.waddr[i]
+            s.commit_unit.reg_wb_data[i] //= s.register_file.wdata[i]
+            s.commit_unit.reg_wb_en[i] //= s.register_file.wen[i]
+            s.commit_unit.stale_out[i] //= s.decode.stale_in[i]
+            s.commit_unit.ready_out[i] //= s.decode.ready_in[i]
 
         @update
         def update_cntrl():
@@ -122,11 +120,12 @@ class RampCore(Component):
             f"\npr1: {s.pr1.line_trace()}\n\n"
             f"pr2: {s.pr2.line_trace()}\n\n"
             f"pr3: {s.pr3.line_trace()}\n\n"
-            f"register_file: {[r.uint() for r in s.register_file.regs]}\n\n"
-            f"busy_table: {[b.uint() for b in s.busy_table]}\n\n"
+            f"register_file:\t{[r.uint() for r in s.register_file.regs]}\n\n"
+            f"busy_table:\t{[b.uint() for b in s.busy_table]}\n\n"
             f"map_table: {[b.uint() for b in s.decode.register_rename.map_table]}\n\n"
             f"free_list: {bin(s.decode.register_rename.free_list)}\n\n"
             f"int_issue_queue: {s.int_issue_queue.line_trace()}\n\n"
             f"commit out uop1: 0x{s.reorder_buffer.commit_out.uop1_entry.data}\n\n"
             f"commit out uop2: 0x{s.reorder_buffer.commit_out.uop2_entry.data}\n\n"
+            f"reorder buffer: {s.reorder_buffer.line_trace()}\n\n"
         )

@@ -100,9 +100,9 @@ class Decode(Component):
         s.busy_table = OutPort(NUM_PHYS_REGS)
 
         # register to be freed (from commit stage)
-        s.stale_in = InPort(clog2(NUM_PHYS_REGS))
+        s.stale_in = [InPort(clog2(NUM_PHYS_REGS)) for _ in range(2)]
         # register to be marked as 'not busy' (from commit stage)
-        s.ready_in = InPort(clog2(NUM_PHYS_REGS))
+        s.ready_in = [InPort(clog2(NUM_PHYS_REGS)) for _ in range(2)]
 
         s.d1 = SingleInstDecode()
         # instruction in
@@ -148,8 +148,9 @@ class Decode(Component):
         s.busy_table //= s.register_rename.busy_table
 
         # from commit stage...
-        s.stale_in //= s.register_rename.stale_in
-        s.ready_in //= s.register_rename.ready_in
+        for x in range(2):
+            s.stale_in[x] //= s.register_rename.stale_in[x]
+            s.ready_in[x] //= s.register_rename.ready_in[x]
 
     def line_trace(s):
         return (
@@ -287,9 +288,9 @@ class MicroOp:
     prs1_busy: mk_bits(1)  # physical source register 1 busy
     prs2_busy: mk_bits(1)  # physical source register 2 busy
 
-    imm: mk_bits(
-        32
-    )  # immediate TODO: encode to be smaller, and use sign extension TODO: 64 bit?
+    # immediate TODO: encode to be smaller, and use sign extension TODO: 64 bit?
+    imm: mk_bits(32
+)
 
     issue_unit: mk_bits(2)  # issue unit
     funct_unit: mk_bits(2)  # functional unit

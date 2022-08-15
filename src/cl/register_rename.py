@@ -58,9 +58,9 @@ class RegisterRename(Component):
         s.busy_table = OutPort(NUM_PHYS_REGS)
 
         # register to be freed (from commit stage)
-        s.stale_in = InPort(clog2(NUM_PHYS_REGS))
+        s.stale_in = [InPort(clog2(NUM_PHYS_REGS)) for _ in range(2)]
         # register to be marked as 'not busy' (from commit stage)
-        s.ready_in = InPort(clog2(NUM_PHYS_REGS))
+        s.ready_in = [InPort(clog2(NUM_PHYS_REGS)) for _ in range(2)]
 
         # map tables
         s.map_table = [Wire(PHYS_REG_BITWIDTH) for _ in range(NUM_ISA_REGS)]
@@ -176,16 +176,17 @@ class RegisterRename(Component):
                     s.map_table_wr1 @= s.map_table[s.inst1_lregs.lrd]
                     s.map_table_wr2 @= s.map_table[s.inst2_lregs.lrd]
 
+            # updating free_list, busy_table
+            for i in range(2):
+                if(s.stale_in[i]):
+                    s.free_list_next @= s.free_list_next | (s.ONE << zext(s.stale_in[i], NUM_PHYS_REGS))
+                if(s.ready_in[i]):
+                    s.busy_table_next @= s.busy_table_next & ~(s.ONE << zext(s.ready_in[i], NUM_PHYS_REGS))
+
         @update_ff
         def rename_ff():
-            if s.stale_in:
-                s.free_list <<= s.free_list_next | (s.ONE << zext(s.stale_in, NUM_PHYS_REGS))
-            else:
-                s.free_list <<= s.free_list_next
-            if s.ready_in:
-                s.busy_table <<= s.busy_table_next & ~(s.ONE << zext(s.ready_in, NUM_PHYS_REGS))
-            else:
-                s.busy_table <<= s.busy_table_next
+            s.free_list <<= s.free_list_next
+            s.busy_table <<= s.busy_table_next
             s.map_table[s.inst1_lregs.lrd] <<= s.map_table_wr1
             s.map_table[s.inst2_lregs.lrd] <<= s.map_table_wr2
 

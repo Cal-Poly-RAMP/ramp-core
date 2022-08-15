@@ -182,20 +182,87 @@ def test_system_dual_rtype(cmdline_opts):
     assert dut.register_file.regs[5] == 69
     assert dut.register_file.regs[6] == 420
 
-def test_system_itype(cmdline_opts):
-    # Configure the model from command line flags
+def test_system_iu_type(cmdline_opts):
+    # lui x1, 0x000dead0
+    # addi x2, x1, 0x000000af
     dut = RampCore()
     dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
     dut.apply(DefaultPassGroup(linetrace=True, vcdwave="vcd/test_ramp_core2"))
     dut.sim_reset()
 
     # Load Program
-    # lui x1, 0x000dead0
-    # addi x2, x1, 0x000000af
     dut.fetch_stage.icache.load_file("tests/input_files/test_system2.bin")
 
-    for _ in range(14):
+    for _ in range(11):
         dut.sim_tick()
 
     prd = dut.decode.register_rename.map_table[2]
     assert dut.register_file.regs[prd] == 0x0dead0af
+
+def test_system_multiple(cmdline_opts):
+    # addi	t0,	x0,	6   0x00600293
+    # slli	t1,	t0,	3   0x00329313
+    # slli	t2,	t0,	1   0x00129393
+    # add	t0,	t1,	t2  0x007302b3
+
+    dut = RampCore()
+    dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
+    dut.apply(DefaultPassGroup(linetrace=True, vcdwave="vcd/test_ramp_core3"))
+    dut.sim_reset()
+
+    # Load Program
+    dut.fetch_stage.icache.load_file("tests/input_files/test_system3.bin")
+
+    for _ in range(16):
+        dut.sim_tick()
+
+    prd = dut.decode.register_rename.map_table[5]
+    assert dut.register_file.regs[prd] == 60
+
+def test_system_multiple2(cmdline_opts):
+    # Program to multiply by 50
+    # 6 << 7 + c << 5 + 6 << 2) >> 1
+    # ori	t0,	x0,	6
+    # andi	t1,	t0,	2
+    # addi	t2,	x0,	5
+    # addi	t3,	x0,	7
+
+    # sll	t1,	t0,	t1
+    # sll	t2,	t0, 	t2
+    # sll	t3,	t0,	t3
+
+    # sub	t0,	t3,	t2
+    # add	t0,	t1,	t0
+
+    # srai	t0,	t0,	1
+
+    dut = RampCore()
+    dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
+    dut.apply(DefaultPassGroup(linetrace=True, vcdwave="vcd/test_ramp_core4"))
+    dut.sim_reset()
+
+    # Load Program
+    dut.fetch_stage.icache.load_file("tests/input_files/test_system4.bin")
+
+    for _ in range(29):
+        dut.sim_tick()
+
+    prd = dut.decode.register_rename.map_table[5]
+    assert dut.register_file.regs[prd] == 300
+
+def test_system5(cmdline_opts):
+    # Program to multiply by 314
+
+    dut = RampCore()
+    dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
+    dut.apply(DefaultPassGroup(linetrace=True, vcdwave="vcd/test_ramp_core5"))
+    dut.sim_reset()
+
+    # Load Program
+    dut.fetch_stage.icache.load_file("tests/input_files/test_system5.bin")
+
+    for _ in range(29):
+        dut.sim_tick()
+
+    prd = dut.decode.register_rename.map_table[5]
+    assert dut.register_file.regs[prd] == 1884

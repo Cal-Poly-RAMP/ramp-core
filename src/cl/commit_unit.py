@@ -44,15 +44,23 @@ class SingleCommit(Component):
 
         @update
         def comb_():
+            s.mem_wb_en @= 0
+            s.mem_wb_addr @= 0
+            s.mem_wb_data @= 0
+            s.reg_wb_en @= 0
+            s.reg_wb_addr @= 0
+            s.reg_wb_data @= 0
+            s.stale_out @= 0
+            s.ready_out @= 0
             # writeback stores to memory
-            if s.in_.optype == S_TYPE:
+            if (s.in_.optype == S_TYPE) & s.in_.valid:
                 s.mem_wb_en @= 0
                 s.mem_wb_addr @= 0
                 s.mem_wb_data @= 0
                 s.stale_out @= 0
                 s.ready_out @= 0
             # writeback loads / arithmetic to registers
-            else:
+            elif s.in_.valid:
                 s.reg_wb_en @= 1
                 s.reg_wb_addr @= s.in_.prd
                 s.reg_wb_data @= s.in_.data
