@@ -5,6 +5,10 @@ from src.cl.fetch_stage import FetchPacket
 from src.cl.decode import (
     ALU_LUI_COPY,
     ALU_SLL,
+    BRANCH_FUNCT_UNIT,
+    BRANCH_ISSUE_UNIT,
+    MEM_LOAD,
+    MEM_STORE,
     NA_FUNCT_UNIT,
     NA_ISSUE_UNIT,
     MicroOp,
@@ -165,8 +169,8 @@ class TestDecode(unittest.TestCase):
             prs2=0,
             stale=0,
             imm=0x00000004,
-            issue_unit=NA_ISSUE_UNIT,
-            funct_unit=NA_FUNCT_UNIT,
+            issue_unit=BRANCH_ISSUE_UNIT,
+            funct_unit=BRANCH_FUNCT_UNIT,
             funct_op=0b00,  # functional unit operation is not set yet
         )
         exp_uop2 = MicroOp(
@@ -182,8 +186,8 @@ class TestDecode(unittest.TestCase):
             prs2=0,
             stale=0,
             imm=-4,
-            issue_unit=NA_ISSUE_UNIT,
-            funct_unit=NA_FUNCT_UNIT,
+            issue_unit=BRANCH_ISSUE_UNIT,
+            funct_unit=BRANCH_FUNCT_UNIT,
             funct_op=0b00,  # functional unit operation is not set yet
         )
 
@@ -215,7 +219,7 @@ class TestDecode(unittest.TestCase):
             imm=0x00000020,
             issue_unit=MEM_ISSUE_UNIT,
             funct_unit=MEM_FUNCT_UNIT,
-            funct_op=0b10,
+            funct_op=MEM_LOAD,
         )
         uop1b = MicroOp(
             optype=I_TYPE,
@@ -285,7 +289,7 @@ class TestDecode(unittest.TestCase):
             imm=0x00000040,
             issue_unit=MEM_ISSUE_UNIT,
             funct_unit=MEM_FUNCT_UNIT,
-            funct_op=0b00,  # functional unit operation is not set yet
+            funct_op=MEM_STORE,
         )
         uop3b = MicroOp(
             optype=NA_TYPE,

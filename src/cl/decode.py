@@ -1,3 +1,4 @@
+from sre_constants import BRANCH
 from pymtl3 import (
     Bits,
     Bits1,
@@ -11,6 +12,7 @@ from pymtl3 import (
     concat,
     mk_bits,
     sext,
+    zext,
     update,
     clog2,
 )
@@ -52,11 +54,13 @@ CSRTYPE_OPCODE = 0b1110011
 NA_ISSUE_UNIT = 0b00
 INT_ISSUE_UNIT = 0b01
 MEM_ISSUE_UNIT = 0b10
+BRANCH_ISSUE_UNIT = 0b11
 
 # functional units
 NA_FUNCT_UNIT = 0b00
 ALU_FUNCT_UNIT = 0b01
 MEM_FUNCT_UNIT = 0b10
+BRANCH_FUNCT_UNIT = 0b11
 
 # instruction types
 NA_TYPE = 0b00
@@ -80,6 +84,10 @@ ALU_SRA = Bits(4, 0b1101)
 ALU_SLT = Bits(4, 0b0010)
 ALU_SLTU = Bits(4, 0b0011)
 ALU_LUI_COPY = Bits(4, 0b1001)
+
+# memory functions funct7[5]
+MEM_LOAD = Bits(4, 0b0000)
+MEM_STORE = Bits(4, 0b0001)
 
 # TODO: move to a file that makes sense, (circular import)
 ROB_ADDR_WIDTH = 5
@@ -172,39 +180,6 @@ class SingleInstDecode(Component):
 
         @update
         def decode_comb():
-            # For determining type
-            opcode = s.inst[0:7]
-            if opcode == RTYPE_OPCODE:
-                s.uop.optype @= R_TYPE
-            elif (
-                (opcode == ITYPE_OPCODE1)
-                | (opcode == ITYPE_OPCODE2)
-                | (opcode == ITYPE_OPCODE3)
-            ):
-                s.uop.optype @= I_TYPE
-            elif opcode == STYPE_OPCODE:
-                s.uop.optype @= S_TYPE
-            elif opcode == BTYPE_OPCODE:
-                s.uop.optype @= B_TYPE
-            elif (opcode == UTYPE_OPCODE1) | (opcode == UTYPE_OPCODE2):
-                s.uop.optype @= U_TYPE
-            elif opcode == JTYPE_OPCODE:
-                s.uop.optype @= J_TYPE
-            elif opcode == CSRTYPE_OPCODE:
-                s.uop.optype @= CSR_TYPE
-            else:
-                s.uop.optype @= 0
-
-            # For determining issue unit
-            mem_issue = (opcode == ITYPE_OPCODE2) | (opcode == STYPE_OPCODE)
-            int_issue = (
-                (opcode == RTYPE_OPCODE)
-                | (opcode == ITYPE_OPCODE1)
-                | (opcode == ITYPE_OPCODE3)
-                | (opcode == UTYPE_OPCODE1)
-                | (opcode == UTYPE_OPCODE2)
-            )
-
             # defaults
             s.uop.inst @= s.inst
             s.uop.pc @= (s.pc + 4) if s.idx else (s.pc)
@@ -221,40 +196,82 @@ class SingleInstDecode(Component):
 
             s.uop.imm @= 0
 
-            s.uop.issue_unit @= (
-                INT_ISSUE_UNIT if int_issue else MEM_ISSUE_UNIT if mem_issue else 0
-            )
-            s.uop.funct_unit @= (
-                ALU_FUNCT_UNIT if int_issue else MEM_FUNCT_UNIT if mem_issue else 0
-            )
             s.uop.funct_op @= 0
 
             s.uop.rob_idx @= 0
 
-            if s.uop.optype == R_TYPE:
+            # For determining type
+            opcode = s.inst[0:7]
+            # arithmetic and logical instructions
+            if opcode == RTYPE_OPCODE:
+                s.uop.optype @= R_TYPE
+                s.uop.issue_unit @= INT_ISSUE_UNIT
+                s.uop.funct_unit @= ALU_FUNCT_UNIT
                 s.uop.funct_op @= concat(s.inst[30], s.inst[FUNCT3_SLICE])
-            elif s.uop.optype == I_TYPE:
-                s.uop.funct_op @= concat(s.inst[30], s.inst[FUNCT3_SLICE])
+
+            # immediate arithmetic and logical
+            elif opcode == ITYPE_OPCODE1:
+                s.uop.optype @= I_TYPE
+                s.uop.issue_unit @= INT_ISSUE_UNIT
+                s.uop.funct_unit @= ALU_FUNCT_UNIT
+                s.uop.funct_op @= zext(s.inst[FUNCT3_SLICE], 4)
+                # srli, srai
+                if s.inst[FUNCT3_SLICE] == 0b101:
+                    s.uop.funct_op @= concat(s.inst[30], s.inst[FUNCT3_SLICE])
                 s.uop.imm @= sext(s.inst[20:32], 32)
-                # see decoding for funct op
+
                 s.uop.lrs2 @= 0
-            elif s.uop.optype == S_TYPE:
+            # loads
+            elif opcode == ITYPE_OPCODE2:
+                s.uop.optype @= I_TYPE
+                s.uop.issue_unit @= MEM_ISSUE_UNIT
+                s.uop.funct_unit @= MEM_FUNCT_UNIT
+                s.uop.funct_op @= MEM_LOAD
+                s.uop.imm @= sext(s.inst[20:32], 32)
+
+                s.uop.lrs2 @= 0
+            # jalr
+            elif opcode == ITYPE_OPCODE3:
+                s.uop.optype @= I_TYPE
+                s.uop.issue_unit @= BRANCH_ISSUE_UNIT
+                s.uop.funct_unit @= BRANCH_FUNCT_UNIT
+                s.uop.funct_op @= 0
+                s.uop.imm @= sext(s.inst[20:32], 32)
+
+                s.uop.lrs2 @= 0
+            # stores
+            elif opcode == STYPE_OPCODE:
+                s.uop.optype @= S_TYPE
+                s.uop.issue_unit @= MEM_ISSUE_UNIT
+                s.uop.funct_unit @= MEM_FUNCT_UNIT
+                s.uop.funct_op @= MEM_STORE
                 s.uop.imm @= sext(concat(s.inst[25:32], s.inst[7:12]), 32)
+
                 s.uop.lrd @= 0
-            elif s.uop.optype == B_TYPE:
-                s.uop.imm @= sext(
-                    concat(
-                        s.inst[31], s.inst[7], s.inst[25:31], s.inst[8:12], Bits1(0)
-                    ),
-                    32,
-                )
+            # branches
+            elif opcode == BTYPE_OPCODE:
+                s.uop.optype @= B_TYPE
+                s.uop.issue_unit @= BRANCH_ISSUE_UNIT
+                s.uop.funct_unit @= BRANCH_FUNCT_UNIT
+                s.uop.funct_op @= 0
+                s.uop.imm @= sext(concat(s.inst[31], s.inst[7], s.inst[25:31], s.inst[8:12], Bits1(0)),32,)
+
                 s.uop.lrd @= 0
-            elif s.uop.optype == U_TYPE:
+            # lui (1), auipc (2)
+            elif (opcode == UTYPE_OPCODE1) | (opcode == UTYPE_OPCODE2):
+                s.uop.optype @= U_TYPE
+                s.uop.issue_unit @= INT_ISSUE_UNIT
+                s.uop.funct_unit @= ALU_FUNCT_UNIT
+                s.uop.funct_op @= Bits4(0b1001)  # alu lui-copy TODO: auipc
                 s.uop.imm @= concat(s.inst[12:32], Bits12(0))
+
                 s.uop.lrs1 @= 0
                 s.uop.lrs2 @= 0
-                s.uop.funct_op @= Bits4(0b1001)  # alu lui-copy TODO: auipc
-            elif s.uop.optype == J_TYPE:
+            # jal
+            elif opcode == JTYPE_OPCODE:
+                s.uop.optype @= J_TYPE
+                s.uop.issue_unit @= BRANCH_ISSUE_UNIT
+                s.uop.funct_unit @= BRANCH_FUNCT_UNIT
                 s.uop.imm @= sext(
                     concat(
                         s.inst[31],
@@ -266,12 +283,29 @@ class SingleInstDecode(Component):
                     ),
                     32,
                 )
+
                 s.uop.lrs1 @= 0
                 s.uop.lrs2 @= 0
-            elif s.uop.optype == CSR_TYPE:
+            # system instructions
+            elif opcode == CSRTYPE_OPCODE:
+                s.uop.optype @= CSR_TYPE
+                s.uop.issue_unit @= NA_ISSUE_UNIT
+                s.uop.funct_unit @= NA_FUNCT_UNIT
+                s.uop.funct_op @= 0
+                s.uop.imm @= 0
+
+                s.uop.lrs2 @= 0
+            # otherwise noop
+            else:
+                s.uop.optype @= NA_TYPE
+                s.uop.issue_unit @= NA_ISSUE_UNIT
+                s.uop.funct_unit @= NA_FUNCT_UNIT
+                s.uop.funct_op @= 0
                 s.uop.imm @= 0
                 s.uop.lrs2 @= 0
-
+                s.uop.lrs1 @= 0
+                s.uop.lrd @= 0
+                s.uop.stale @= 0
 
 @bitstruct
 class MicroOp:
