@@ -254,7 +254,12 @@ class SingleInstDecode(Component):
                 s.uop.issue_unit @= BRANCH_ISSUE_UNIT
                 s.uop.funct_unit @= BRANCH_FUNCT_UNIT
                 s.uop.funct_op @= 0
-                s.uop.imm @= sext(concat(s.inst[31], s.inst[7], s.inst[25:31], s.inst[8:12], Bits1(0)),32,)
+                s.uop.imm @= sext(
+                    concat(
+                        s.inst[31], s.inst[7], s.inst[25:31], s.inst[8:12], Bits1(0)
+                    ),
+                    32,
+                )
 
                 s.uop.lrd @= 0
             # lui (1), auipc (2)
@@ -306,6 +311,7 @@ class SingleInstDecode(Component):
                 s.uop.lrs1 @= 0
                 s.uop.lrd @= 0
                 s.uop.stale @= 0
+
 
 @bitstruct
 class MicroOp:

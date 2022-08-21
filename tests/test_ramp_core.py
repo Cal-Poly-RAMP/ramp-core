@@ -65,7 +65,8 @@ def test_system_dual_rtype(cmdline_opts):
     # Decode | Dispatch/Issue
     assert not dut.pr2.out
     # Dispatch/Issue | Execute
-    assert not dut.pr3.out
+    # assert not dut.pr3.out
+    assert not dut.int_issue_queue.uop_out
 
     # 2 DECODE
     dut.sim_tick()
@@ -109,12 +110,11 @@ def test_system_dual_rtype(cmdline_opts):
     # Fetch | Decode
     assert dut.pr1.out == FetchPacket(inst1=0, inst2=0, pc=8, valid=1)
     # Decode | Dispatch/Issue
-    assert str(dut.pr2.out.uop1) == str(uop1)
     assert dut.pr2.out.uop1 == uop1
-    assert str(dut.pr2.out.uop2) == str(uop2)
     assert dut.pr2.out.uop2 == uop2
     # Dispatch/Issue | Execute
-    assert not dut.pr3.out
+    # assert not dut.pr3.out
+    assert not dut.int_issue_queue.uop_out
 
     # 3 EXECUTE
     dut.sim_tick()
@@ -124,43 +124,39 @@ def test_system_dual_rtype(cmdline_opts):
     # Decode | Dispatch/Issue
     assert not dut.pr2.out.uop1.valid and not dut.pr2.out.uop2.valid
     # Dispatch/Issue | Execute
-    assert not dut.pr3.out
+    # assert not dut.pr3.out
+    assert dut.int_issue_queue.uop_out == uop1
 
+    # dut.sim_tick()
+    # # Fetch | Decode
+    # assert dut.pr1.out == FetchPacket(inst1=0, inst2=0, pc=24, valid=1)
+    # # Decode | Dispatch/Issue
+    # assert not dut.pr2.out.uop1.valid and not dut.pr2.out.uop2.valid
+    # # Dispatch/Issue | Execute
+    # # assert dut.pr3.out == uop1
+    # assert dut.int_issue_queue.uop_out == uop1
+
+    # 4 COMMIT
     dut.sim_tick()
     # Fetch | Decode
     assert dut.pr1.out == FetchPacket(inst1=0, inst2=0, pc=24, valid=1)
     # Decode | Dispatch/Issue
     assert not dut.pr2.out.uop1.valid and not dut.pr2.out.uop2.valid
     # Dispatch/Issue | Execute
-    assert not dut.pr3.out
-
-    dut.sim_tick()
-    # Fetch | Decode
-    assert dut.pr1.out == FetchPacket(inst1=0, inst2=0, pc=32, valid=1)
-    # Decode | Dispatch/Issue
-    assert not dut.pr2.out.uop1.valid and not dut.pr2.out.uop2.valid
-    # Dispatch/Issue | Execute
-    assert dut.pr3.out == uop1
-
-    # 4 COMMIT
-    dut.sim_tick()
-    # Fetch | Decode
-    assert dut.pr1.out == FetchPacket(inst1=0, inst2=0, pc=40, valid=1)
-    # Decode | Dispatch/Issue
-    assert not dut.pr2.out.uop1.valid and not dut.pr2.out.uop2.valid
-    # Dispatch/Issue | Execute
-    assert dut.pr3.out == uop2
+    # assert dut.pr3.out == uop2
+    assert dut.int_issue_queue.uop_out == uop2
     # Commit
     assert dut.reorder_buffer.commit_out.uop1_entry.data == 69
 
     # 5 WRITEBACK
     dut.sim_tick()
     # Fetch | Decode
-    assert dut.pr1.out == FetchPacket(inst1=0, inst2=0, pc=48, valid=1)
+    assert dut.pr1.out == FetchPacket(inst1=0, inst2=0, pc=32, valid=1)
     # Decode | Dispatch/Issue
     assert not dut.pr2.out.uop1.valid and not dut.pr2.out.uop2.valid
     # Dispatch/Issue | Execute
-    assert not dut.pr3.out
+    # assert not dut.pr3.out
+    assert not dut.int_issue_queue.uop_out
     # Commit
     assert dut.reorder_buffer.commit_out.uop2_entry.data == 420
     # Writeback
@@ -168,16 +164,19 @@ def test_system_dual_rtype(cmdline_opts):
 
     dut.sim_tick()
     # Fetch | Decode
-    assert dut.pr1.out == FetchPacket(inst1=0, inst2=0, pc=56, valid=1)
+    assert dut.pr1.out == FetchPacket(inst1=0, inst2=0, pc=40, valid=1)
     # Decode | Dispatch/Issue
     assert not dut.pr2.out.uop1.valid and not dut.pr2.out.uop2.valid
     # Dispatch/Issue | Execute
-    assert not dut.pr3.out
+    # assert not dut.pr3.out
+    assert not dut.int_issue_queue.uop_out
     # Commit
     assert not dut.reorder_buffer.commit_out.uop2_entry.data
     # Writeback
     assert dut.register_file.regs[5] == 69
     assert dut.register_file.regs[6] == 420
+
+    # 7 cycles (reset makes 9)
 
 
 def test_system_iu_type(cmdline_opts):
@@ -191,10 +190,9 @@ def test_system_iu_type(cmdline_opts):
     # Load Program
     dut.fetch_stage.icache.load_file("tests/input_files/test_system2.bin")
 
-    for _ in range(11):
-        dut.sim_tick()
-
     prd = dut.decode.register_rename.map_table[2]
+    for _ in range(8):
+        dut.sim_tick()
     assert dut.register_file.regs[prd] == 0x0DEAD0AF
 
 
@@ -212,10 +210,10 @@ def test_system_multiple(cmdline_opts):
     # Load Program
     dut.fetch_stage.icache.load_file("tests/input_files/test_system3.bin")
 
-    for _ in range(16):
+    prd = dut.decode.register_rename.map_table[5]
+    for _ in range(12):
         dut.sim_tick()
 
-    prd = dut.decode.register_rename.map_table[5]
     assert dut.register_file.regs[prd] == 60
 
 
@@ -244,10 +242,9 @@ def test_system_multiple2(cmdline_opts):
     # Load Program
     dut.fetch_stage.icache.load_file("tests/input_files/test_system4.bin")
 
-    for _ in range(29):
-        dut.sim_tick()
-
     prd = dut.decode.register_rename.map_table[5]
+    for _ in range(22):
+        dut.sim_tick()
     assert dut.register_file.regs[prd] == 300
 
 
@@ -262,8 +259,7 @@ def test_system5(cmdline_opts):
     # Load Program
     dut.fetch_stage.icache.load_file("tests/input_files/test_system5.bin")
 
-    for _ in range(29):
-        dut.sim_tick()
-
     prd = dut.decode.register_rename.map_table[5]
+    for _ in range(17):
+        dut.sim_tick()
     assert dut.register_file.regs[prd] == 1884

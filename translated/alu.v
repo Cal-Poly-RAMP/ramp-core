@@ -79,7 +79,7 @@ module ALU
   //         s.out @= 1 if (s.a < s.b) else 0  # TODO: Better way to do this?
   //     # Load Upper Immediate Copy
   //     elif s.op == ALU_LUI_COPY:
-  //         s.out @= s.a << 12
+  //         s.out @= s.b
   //     else:
   //         s.out @= 0
   
@@ -127,7 +127,7 @@ module ALU
       out = ( a < b ) ? 32'd1 : 32'd0;
     end
     else if ( op == 4'( __const__ALU_LUI_COPY ) ) begin
-      out = a << 4'd12;
+      out = b;
     end
     else
       out = 32'd0;

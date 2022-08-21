@@ -39,9 +39,11 @@ module RegisterRename
   input  LogicalRegs__lrd_5__lrs1_5__lrs2_5 inst2_lregs ,
   output PhysicalRegs__prd_6__prs1_6__prs2_6__stale_6 inst2_pregs ,
   output PRegBusy__prs1_1__prs2_1 inst2_pregs_busy ,
-  input  logic [0:0] reset 
+  input  logic [5:0] ready_in [0:1],
+  input  logic [0:0] reset ,
+  input  logic [5:0] stale_in [0:1]
 );
-  localparam logic [2:0] __const__PHYS_REG_BITWIDTH  = 3'd6;
+  localparam logic [6:0] __const__NUM_PHYS_REGS  = 7'd64;
   localparam logic [5:0] __const__NUM_ISA_REGS  = 6'd32;
   logic [63:0] busy_table_next;
   logic [63:0] free_list_next;
@@ -52,7 +54,7 @@ module RegisterRename
   logic [5:0] pdst2;
 
   // PyMTL Update Block Source
-  // At /Users/curtisbucher/Desktop/ramp-core/src/cl/register_rename.py:77
+  // At /Users/curtisbucher/Desktop/ramp-core/src/cl/register_rename.py:83
   // @update
   // def rename_comb():
   //     # Combinatorially getting physical source registers from map table
@@ -63,7 +65,7 @@ module RegisterRename
   //     # pdst1, pdst2 = cascading_priority_encoder(2, s.free_list_next)
   //     s.pdst1 @= 0
   //     s.pdst2 @= 0
-  //     for i in range(PHYS_REG_BITWIDTH):
+  //     for i in range(NUM_PHYS_REGS):
   //         if s.free_list[i]:
   //             if s.pdst1 == 0:
   //                 s.pdst1 @= i
@@ -144,11 +146,26 @@ module RegisterRename
   //             )
   //             s.map_table_wr1 @= s.pdst1
   //             s.map_table_wr2 @= s.pdst2
+  //         else:
+  //             s.busy_table_next @= s.busy_table
+  //             s.map_table_wr1 @= s.map_table[s.inst1_lregs.lrd]
+  //             s.map_table_wr2 @= s.map_table[s.inst2_lregs.lrd]
+  // 
+  //     # updating free_list, busy_table
+  //     for i in range(2):
+  //         if s.stale_in[i]:
+  //             s.free_list_next @= s.free_list_next | (
+  //                 s.ONE << zext(s.stale_in[i], NUM_PHYS_REGS)
+  //             )
+  //         if s.ready_in[i]:
+  //             s.busy_table_next @= s.busy_table_next & ~(
+  //                 s.ONE << zext(s.ready_in[i], NUM_PHYS_REGS)
+  //             )
   
   always_comb begin : rename_comb
     pdst1 = 6'd0;
     pdst2 = 6'd0;
-    for ( int unsigned i = 1'd0; i < 3'( __const__PHYS_REG_BITWIDTH ); i += 1'd1 )
+    for ( int unsigned i = 1'd0; i < 7'( __const__NUM_PHYS_REGS ); i += 1'd1 )
       if ( free_list[6'(i)] ) begin
         if ( pdst1 == 6'd0 ) begin
           pdst1 = 6'(i);
@@ -215,10 +232,23 @@ module RegisterRename
       map_table_wr1 = pdst1;
       map_table_wr2 = pdst2;
     end
+    else begin
+      busy_table_next = busy_table;
+      map_table_wr1 = map_table[inst1_lregs.lrd];
+      map_table_wr2 = map_table[inst2_lregs.lrd];
+    end
+    for ( int unsigned i = 1'd0; i < 2'd2; i += 1'd1 ) begin
+      if ( stale_in[1'(i)] ) begin
+        free_list_next = free_list_next | ( 64'd1 << { { 58 { 1'b0 } }, stale_in[1'(i)] } );
+      end
+      if ( ready_in[1'(i)] ) begin
+        busy_table_next = busy_table_next & ( ~( 64'd1 << { { 58 { 1'b0 } }, ready_in[1'(i)] } ) );
+      end
+    end
   end
 
   // PyMTL Update Block Source
-  // At /Users/curtisbucher/Desktop/ramp-core/src/cl/register_rename.py:169
+  // At /Users/curtisbucher/Desktop/ramp-core/src/cl/register_rename.py:190
   // @update_ff
   // def rename_ff():
   //     s.free_list <<= s.free_list_next

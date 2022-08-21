@@ -50,7 +50,7 @@ class RampCore(Component):
         s.pr2.in_ //= s.decode.dual_uop
 
         # BACK END - executes the micro ops
-        # (3) dispatch - sends microops to ROB, and correct execution path
+        # (3) dispatch stage - sends microops to ROB, and correct execution path
         s.dispatch = Dispatch()
         s.dispatch.in_ //= s.pr2.out
 
@@ -59,30 +59,28 @@ class RampCore(Component):
         s.reorder_buffer.write_in //= s.dispatch.to_rob
         s.reorder_buffer.rob_tail //= s.dispatch.rob_idx
 
-        # (4) issue queues - store microops until they are ready to be issued
+        # (4) issue stage - store microops until they are ready to be issued
         s.int_issue_queue = IssueQueue()
         s.int_issue_queue.duop_in //= s.dispatch.to_int_issue
         s.int_issue_queue.busy_table //= s.decode.busy_table
-
-        # pipeline regiater - between issue queues and register files
-        s.pr3 = RegEnRst(MicroOp, reset_value=NO_OP)
-        s.pr3.in_ //= s.int_issue_queue.uop_out
 
         # register file - physical registers
         s.register_file = RegisterFile(
             mk_bits(32), nregs=NUM_PHYS_REGS, rd_ports=2, wr_ports=2, const_zero=True
         )
-        s.register_file.raddr[0] //= s.pr3.out.prs1
-        s.register_file.raddr[1] //= s.pr3.out.prs2
+        s.register_file.raddr[0] //= s.int_issue_queue.uop_out.prs1
+        s.register_file.raddr[1] //= s.int_issue_queue.uop_out.prs2
 
-        # (5) execution units - execute the microops TODO:handle immediates
+        # (5) execution stage - execute the microops
         # ALU
         s.alu = ALU(mk_bits(32))
         s.alu.a //= s.register_file.rdata[0]
-        s.alu.op //= s.pr3.out.funct_op
+        s.alu.op //= s.int_issue_queue.uop_out.funct_op
+
+        # Memory
 
         # (6) writeback
-        s.reorder_buffer.op_complete.int_rob_idx //= s.pr3.out.rob_idx
+        s.reorder_buffer.op_complete.int_rob_idx //= s.int_issue_queue.uop_out.rob_idx
         s.reorder_buffer.op_complete.int_data //= s.alu.out
 
         # (6) commit unit - commit the changes
@@ -99,18 +97,17 @@ class RampCore(Component):
         def update_cntrl():
             s.pr1.en @= ~s.reset
             s.pr2.en @= ~s.reset
-            s.pr3.en @= ~s.reset
 
             s.reorder_buffer.op_complete.int_rob_complete @= (
-                s.pr3.out.funct_unit == ALU_FUNCT_UNIT
+                s.int_issue_queue.uop_out.funct_unit == ALU_FUNCT_UNIT
             )
             s.reorder_buffer.op_complete.mem_rob_complete @= (
-                s.pr3.out.funct_unit == MEM_FUNCT_UNIT
+                s.int_issue_queue.uop_out.funct_unit == MEM_FUNCT_UNIT
             )
 
             # Immediate logic
-            if s.pr3.out.optype != R_TYPE:
-                s.alu.b @= s.pr3.out.imm
+            if s.int_issue_queue.uop_out.optype != R_TYPE:
+                s.alu.b @= s.int_issue_queue.uop_out.imm
             else:
                 s.alu.b @= s.register_file.rdata[1]
 
@@ -118,7 +115,7 @@ class RampCore(Component):
         return (
             f"\npr1: {s.pr1.line_trace()}\n\n"
             f"pr2: {s.pr2.line_trace()}\n\n"
-            f"pr3: {s.pr3.line_trace()}\n\n"
+            # f"pr3: {s.pr3.line_trace()}\n\n"
             f"register_file:\t{[r.uint() for r in s.register_file.regs]}\n\n"
             f"busy_table:\t{[b.uint() for b in s.busy_table]}\n\n"
             f"map_table: {[b.uint() for b in s.decode.register_rename.map_table]}\n\n"
