@@ -16,7 +16,8 @@ class DRAM(Component):
     def construct(
         s, Type, num_entries=32, rd_ports=1, wr_ports=1, reset_value=0, data=None
     ):
-        assert not data | len(data) == num_entries
+        if data:
+            assert len(data) == num_entries
         assert num_entries > 0
 
         addr_type = mk_bits(max(1, clog2(num_entries)))
@@ -38,7 +39,7 @@ class DRAM(Component):
         @update
         def up_rf_read():
             for i in range(rd_ports):
-                s.rdata[i] @= s.regs[s.raddr[i]]
+                s.rdata[i] @= s.mem[s.raddr[i]]
 
         @update_ff
         def up_rf_write():
@@ -49,3 +50,6 @@ class DRAM(Component):
                 for i in range(wr_ports):
                     if s.wen[i]:
                         s.mem[s.waddr[i]] <<= s.wdata[i]
+
+    def line_trace(s):
+        return f"\nDRAM: {[e.uint() for e in s.mem]}"

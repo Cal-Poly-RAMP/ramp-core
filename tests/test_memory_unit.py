@@ -1,14 +1,10 @@
 import unittest
 from pymtl3 import *
 
-from src.cl.memory_unit import (
-    MemoryUnit,
-    MultiInputRdyCircularBuffer,
-)
-from src.cl.decode import MicroOp, Decode
+from src.cl.memory_unit import MemoryUnit
+from src.cl.dram import DRAM
 
-
-class TestDecode(unittest.TestCase):
+class TestMemoryUnit(unittest.TestCase):
     def setUp(s) -> None:
         # runs before every test
         s.dut = MemoryUnit(queue_size=16, memory_size=16)
@@ -25,5 +21,5 @@ class TestDecode(unittest.TestCase):
             print("final:", s.dut.line_trace())
             s.dut.print_textwave()
 
-    def test_(s):
-        pass
+    def test_stuff(s):
+        assert False

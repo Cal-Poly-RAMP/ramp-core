@@ -48,7 +48,6 @@ class ReorderBuffer(Component):
         # a circular buffer of entries
         s.instr_bank = [Wire(ROBEntry) for _ in range(ROB_SIZE // 2)]
         s.instr_bank_next = [Wire(ROBEntry) for _ in range(ROB_SIZE // 2)]
-        # s.instr_ba
         s.bank_full = OutPort(1)
         s.bank_empty = OutPort(1)
 

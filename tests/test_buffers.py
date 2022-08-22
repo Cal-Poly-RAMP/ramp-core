@@ -13,7 +13,9 @@ class TestMultiInputRdyCircularBuffer(unittest.TestCase):
         # runs before every test
         s.size = 8
         s.num_inports = 2
-        s.dut = MultiInputRdyCircularBuffer(mk_bits(32), size=s.size, num_inports=s.num_inports)
+        s.dut = MultiInputRdyCircularBuffer(
+            mk_bits(32), size=s.size, num_inports=s.num_inports
+        )
         s.dut.apply(
             DefaultPassGroup(
                 textwave=True, linetrace=True, vcdwave="vcd/test_memory_unit"
@@ -28,21 +30,28 @@ class TestMultiInputRdyCircularBuffer(unittest.TestCase):
             s.dut.print_textwave()
 
     def test_multi_input_rdy_circular_buffer(s):
-        # 0
+        # 0 - defaults
+        def default():
+            s.dut.allocate_in.en @= 0
+            s.dut.allocate_in.msg @= 0
+            s.dut.out.rdy @= 1
+            for i in range(s.num_inports):
+                s.dut.update_in[i].en @= 0
+                s.dut.update_in[i].msg @= 0
+                s.dut.update_idx_in[i].en @= 0
+                s.dut.update_idx_in[i].msg @= 0
+
+        default()
         assert s.dut.tail == 0
         assert s.dut.head == 0
         assert s.dut.full == 0
         assert s.dut.empty == 1
         assert s.dut.out.en == 0
+        assert s.dut.n_elements == 0
 
-        # 1 pushing to empty buffer
-        s.dut.push_in[0].msg @= 10
-        s.dut.push_in[0].en @= 1
-        s.dut.push_in[1].msg @= 15
-        s.dut.push_in[1].en @= 1
-        s.dut.rdy_in[0].en @= 0
-        s.dut.rdy_in[1].en @= 0
-        s.dut.out.rdy @= 0
+        # 1 - allocating two items to empty buffer
+        s.dut.allocate_in.en @= 1
+        s.dut.allocate_in.msg @= 2
         s.dut.sim_tick()
 
         assert s.dut.tail == 2
@@ -50,13 +59,14 @@ class TestMultiInputRdyCircularBuffer(unittest.TestCase):
         assert s.dut.full == 0
         assert s.dut.empty == 0
         assert s.dut.out.en == 0
+        assert s.dut.n_elements == 2
 
-        # 2 checking that nothing will be popped if not ready
-        s.dut.push_in[0].en @= 0
-        s.dut.push_in[1].en @= 0
-        s.dut.rdy_in[0].en @= 0
-        s.dut.rdy_in[1].en @= 0
-        s.dut.out.rdy @= 1
+        # 2 - updating second item, nothing should be popped
+        default()
+        s.dut.update_idx_in[0].en @= 1
+        s.dut.update_idx_in[0].msg @= 1
+        s.dut.update_in[0].en @= 1
+        s.dut.update_in[0].msg @= 0xDEADBEEF
         s.dut.sim_tick()
 
         assert s.dut.tail == 2
@@ -64,90 +74,72 @@ class TestMultiInputRdyCircularBuffer(unittest.TestCase):
         assert s.dut.full == 0
         assert s.dut.empty == 0
         assert s.dut.out.en == 0
+        assert s.dut.n_elements == 2
 
-        # 2 checking pop if ready
-        s.dut.push_in[0].en @= 0
-        s.dut.push_in[1].en @= 0
-        s.dut.rdy_in[0].msg @= 0
-        s.dut.rdy_in[0].en @= 1
-        s.dut.rdy_in[1].msg @= 1
-        s.dut.rdy_in[1].en @= 1
-        s.dut.rdy_in[2].msg @= 2
-        s.dut.rdy_in[2].en @= 1
-        s.dut.out.rdy @= 1
+        # 3 - updating first item, first item should be popped (simultaneous)
+        default()
+        s.dut.update_idx_in[0].en @= 1
+        s.dut.update_idx_in[0].msg @= 0
+        s.dut.update_in[0].en @= 1
+        s.dut.update_in[0].msg @= 0xABCDEF01
         s.dut.sim_tick()
 
         assert s.dut.tail == 2
         assert s.dut.head == 1
         assert s.dut.full == 0
         assert s.dut.empty == 0
-        assert s.dut.out.msg == 10
         assert s.dut.out.en == 1
+        assert s.dut.out.msg == 0xABCDEF01
+        assert s.dut.n_elements == 1
 
-        # 3 checking pop and append simultaneously
-        s.dut.push_in[0].en @= 0
-        s.dut.push_in[1].msg @= 25
-        s.dut.push_in[1].en @= 1
-        s.dut.out.rdy @= 1
-        s.dut.rdy_in[0].en @= 0
-        s.dut.rdy_in[1].en @= 0
-        s.dut.rdy_in[2].en @= 0
+        # 4 - output disabled, nothing should be popped
+        default()
+        s.dut.out.rdy @= 0
         s.dut.sim_tick()
 
-        assert s.dut.tail == 3
-        assert s.dut.head == 2
+        assert s.dut.tail == 2
+        assert s.dut.head == 1
         assert s.dut.full == 0
         assert s.dut.empty == 0
-        assert s.dut.out.msg == 15
+        assert s.dut.out.en == 0
+        assert s.dut.n_elements == 1
+
+        # 5 - output enabled, second item should be popped
+        default()
+        s.dut.out.rdy @= 1
+        s.dut.sim_tick()
+
+        assert s.dut.tail == 2
+        assert s.dut.head == 2
+        assert s.dut.full == 0
+        assert s.dut.empty == 1
         assert s.dut.out.en == 1
+        assert s.dut.out.msg == 0xDEADBEEF
+        assert s.dut.n_elements == 0
 
     def test_fill_empty_buffer(s):
         # Loading load store buffer
+        s.dut.allocate_in.en @= 1
+        s.dut.allocate_in.msg @= s.size
+        s.dut.sim_tick()
 
-        for _ in range(10):
-            # Filling up buffer
-            for i in range(s.num_inports):
-                s.dut.push_in[i].en @= 1
-                s.dut.rdy_in[0].en @= 0
-            s.dut.out.rdy @= 0
+        assert s.dut.tail == 0
+        assert s.dut.head == 0
+        assert s.dut.full == 1
+        assert s.dut.empty == 0
+        assert s.dut.n_elements == s.size
 
-            for i in range(0, s.size + s.num_inports, s.num_inports):
-                for x in range(s.num_inports):
-                    s.dut.push_in[x].msg @= i + x
-                s.dut.sim_tick()
-
-            # Checking buffer is full
-            assert s.dut.tail == s.dut.head
-            assert s.dut.full == 1
-            assert s.dut.empty == 0
-            tmp = [x.uint() for x in s.dut.buffer]
-
-            # Trying to add more
-            for x in range(s.num_inports):
-                s.dut.push_in[x].msg @= 10 * x
+        # systemically emptying buffer
+        s.dut.out.rdy @= 1
+        for i in range(s.size):
+            s.dut.update_idx_in[0].en @= 1
+            s.dut.update_idx_in[0].msg @= i
+            s.dut.update_in[0].en @= 1
+            s.dut.update_in[0].msg @= i
             s.dut.sim_tick()
 
-            # Checking buffer has not been modified
-            assert s.dut.buffer == tmp
-
-            # Emptying buffer
-            s.dut.out.rdy @= 1
-            for x in range(s.num_inports):
-                s.dut.push_in[x].en @= 0
-            for i in range(0, s.size):
-                s.dut.rdy_in[0].en @= 1
-                s.dut.rdy_in[0].msg @= i
-
-                s.dut.sim_tick()
-                assert s.dut.out.en == 1
-                assert s.dut.out.msg == i
-
-            for i in range(s.num_inports):
-                s.dut.push_in[i].en @= 0
-                s.dut.rdy_in[0].en @= 0
-            s.dut.out.rdy @= 0
-            s.dut.sim_tick()
-            assert s.dut.tail == s.dut.head
-            assert s.dut.full == 0
-            assert s.dut.empty == 1
-            assert s.dut.out.en == 0
+        assert s.dut.tail == 0
+        assert s.dut.head == 0
+        assert s.dut.full == 0
+        assert s.dut.empty == 1
+        assert s.dut.n_elements == 0
