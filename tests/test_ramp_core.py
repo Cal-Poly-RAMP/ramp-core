@@ -87,6 +87,7 @@ def test_system_dual_rtype(cmdline_opts):
         funct_unit=ALU_FUNCT_UNIT,
         funct_op=ALU_ADD,
         rob_idx=0,
+        mem_q_idx=0,
     )
     uop2 = MicroOp(
         optype=R_TYPE,
@@ -105,6 +106,7 @@ def test_system_dual_rtype(cmdline_opts):
         funct_unit=ALU_FUNCT_UNIT,
         funct_op=ALU_SUB,
         rob_idx=0,
+        mem_q_idx=0,
     )
 
     # Fetch | Decode

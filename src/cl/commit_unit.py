@@ -1,6 +1,8 @@
 from pymtl3 import Component, InPort, clog2, update, OutPort
 from src.cl.reorder_buffer import ROBEntry, ROBEntryUop
-from src.cl.decode import S_TYPE, DualMicroOp, NUM_PHYS_REGS
+from src.cl.decode import MEM_STORE, MEM_SW, S_TYPE, DualMicroOp, NUM_PHYS_REGS
+from src.cl.memory_unit import LoadStoreEntry
+from pymtl3.stdlib.ifcs import RecvIfcRTL, SendIfcRTL
 
 
 class CommitUnit(Component):
@@ -10,6 +12,8 @@ class CommitUnit(Component):
         s.reg_wb_addr = [OutPort(clog2(NUM_PHYS_REGS)) for _ in range(width)]
         s.reg_wb_data = [OutPort(32) for _ in range(width)]
         s.reg_wb_en = [OutPort(1) for _ in range(width)]
+
+        s.store_out = [SendIfcRTL(LoadStoreEntry) for _ in range(width)]
         # for updating freelist
         s.stale_out = [OutPort(clog2(NUM_PHYS_REGS)) for _ in range(width)]
         # for updating busy table
@@ -22,6 +26,9 @@ class CommitUnit(Component):
             s.commit_units[x].reg_wb_addr //= s.reg_wb_addr[x]
             s.commit_units[x].reg_wb_data //= s.reg_wb_data[x]
             s.commit_units[x].reg_wb_en //= s.reg_wb_en[x]
+
+            s.commit_units[x].store_out //= s.store_out[x]
+
             s.commit_units[x].stale_out //= s.stale_out[x]
             s.commit_units[x].ready_out //= s.ready_out[x]
 
@@ -35,9 +42,7 @@ class SingleCommit(Component):
         s.reg_wb_data = OutPort(32)
         s.reg_wb_en = OutPort(1)
         # writeback to memory
-        s.mem_wb_addr = OutPort(32)
-        s.mem_wb_data = OutPort(32)
-        s.mem_wb_en = OutPort(1)
+        s.store_out = SendIfcRTL(LoadStoreEntry)
 
         # for updating freelist
         s.stale_out = OutPort(clog2(NUM_PHYS_REGS))
@@ -46,25 +51,29 @@ class SingleCommit(Component):
 
         @update
         def comb_():
-            s.mem_wb_en @= 0
-            s.mem_wb_addr @= 0
-            s.mem_wb_data @= 0
             s.reg_wb_en @= 0
             s.reg_wb_addr @= 0
             s.reg_wb_data @= 0
             s.stale_out @= 0
             s.ready_out @= 0
-            # writeback stores to memory
-            if (s.in_.optype == S_TYPE) & s.in_.valid:
-                s.mem_wb_en @= 0
-                s.mem_wb_addr @= 0
-                s.mem_wb_data @= 0
-                s.stale_out @= 0
-                s.ready_out @= 0
+
+            s.store_out.en @= 0
+            s.store_out.msg.addr @= 0
+            s.store_out.msg.data @= 0
+            s.store_out.msg.op @= MEM_STORE
+
             # writeback loads / arithmetic to registers
-            elif s.in_.valid:
+            if ~(s.in_.optype == S_TYPE) & s.in_.valid:
                 s.reg_wb_en @= 1
                 s.reg_wb_addr @= s.in_.prd
                 s.reg_wb_data @= s.in_.data
                 s.stale_out @= s.in_.stale
                 s.ready_out @= s.in_.prd
+
+            # writeback stores to memory
+            elif s.in_.valid:
+                s.store_out.en @= 1
+                s.store_out.msg.addr @= s.in_.store_addr
+                s.store_out.msg.data @= s.in_.data
+                s.stale_out @= 0
+                s.ready_out @= 0

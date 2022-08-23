@@ -8,7 +8,9 @@ from src.cl.decode import (
     BRANCH_FUNCT_UNIT,
     BRANCH_ISSUE_UNIT,
     MEM_LOAD,
+    MEM_LW,
     MEM_STORE,
+    MEM_SW,
     NA_FUNCT_UNIT,
     NA_ISSUE_UNIT,
     MicroOp,
@@ -95,6 +97,7 @@ class TestDecode(unittest.TestCase):
 
         s.assertEqual(str(s.dut.dual_uop.uop1), str(exp_uop1))
         s.assertEqual(str(s.dut.dual_uop.uop2), str(exp_uop2))
+        s.assertEqual(s.dut.mem_q_allocate, 0)
 
     def test_decode_i_s_regs_imm(s):
         # tests itype, btype
@@ -144,6 +147,7 @@ class TestDecode(unittest.TestCase):
 
         s.assertEqual(str(s.dut.dual_uop.uop1), str(exp_uop1))
         s.assertEqual(str(s.dut.dual_uop.uop2), str(exp_uop2))
+        s.assertEqual(s.dut.mem_q_allocate, 2)
 
     def test_decode_j_b_regs_imm(s):
         # tests jtype, btype
@@ -193,6 +197,7 @@ class TestDecode(unittest.TestCase):
 
         s.assertEqual(str(s.dut.dual_uop.uop1), str(exp_uop1))
         s.assertEqual(str(s.dut.dual_uop.uop2), str(exp_uop2))
+        s.assertEqual(s.dut.mem_q_allocate, 0)
 
     def test_multiple_decode(s):
         # tests multiple decode back-to-back
@@ -219,7 +224,7 @@ class TestDecode(unittest.TestCase):
             imm=0x00000020,
             issue_unit=MEM_ISSUE_UNIT,
             funct_unit=MEM_FUNCT_UNIT,
-            funct_op=MEM_LOAD,
+            funct_op=MEM_LW,
         )
         uop1b = MicroOp(
             optype=I_TYPE,
@@ -289,7 +294,7 @@ class TestDecode(unittest.TestCase):
             imm=0x00000040,
             issue_unit=MEM_ISSUE_UNIT,
             funct_unit=MEM_FUNCT_UNIT,
-            funct_op=MEM_STORE,
+            funct_op=MEM_SW,
         )
         uop3b = MicroOp(
             optype=NA_TYPE,
@@ -313,18 +318,21 @@ class TestDecode(unittest.TestCase):
         s.dut.sim_eval_combinational()
         s.assertEqual(str(s.dut.dual_uop.uop1), str(uop1a))
         s.assertEqual(str(s.dut.dual_uop.uop2), str(uop1b))
+        s.assertEqual(s.dut.mem_q_allocate, 1)
 
         s.dut.sim_tick()
         s.dut.fetch_packet @= fp2
         s.dut.sim_eval_combinational()
         s.assertEqual(str(s.dut.dual_uop.uop1), str(uop2a))
         s.assertEqual(str(s.dut.dual_uop.uop2), str(uop2b))
+        s.assertEqual(s.dut.mem_q_allocate, 0)
 
         s.dut.sim_tick()
         s.dut.fetch_packet @= fp3
         s.dut.sim_eval_combinational()
         s.assertEqual(str(s.dut.dual_uop.uop1), str(uop3a))
         s.assertEqual(str(s.dut.dual_uop.uop2), str(uop3b))
+        s.assertEqual(s.dut.mem_q_allocate, 1)
 
     def test_multiple_decode_reset(s):
         # tests multiple decode back-to-back
@@ -376,3 +384,4 @@ class TestDecode(unittest.TestCase):
         s.dut.sim_eval_combinational()
         s.assertEqual(str(s.dut.dual_uop.uop1), str(uop1))
         s.assertEqual(str(s.dut.dual_uop.uop2), str(uop2))
+        s.assertEqual(s.dut.mem_q_allocate, 0)

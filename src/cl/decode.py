@@ -85,13 +85,26 @@ ALU_SLT = Bits(4, 0b0010)
 ALU_SLTU = Bits(4, 0b0011)
 ALU_LUI_COPY = Bits(4, 0b1001)
 
-# memory functions funct7[5]
+# memory functions [opcode[5], funct3]
+MEM_LB = Bits(4, 0b0000)
+MEM_LH = Bits(4, 0b0001)
+MEM_LW = Bits(4, 0b0010)
+MEM_LBU = Bits(4, 0b0100)
+MEM_LHU = Bits(4, 0b0101)
 MEM_LOAD = Bits(4, 0b0000)
-MEM_STORE = Bits(4, 0b0001)
+MEM_SB = Bits(4, 0b1000)
+MEM_SH = Bits(4, 0b1001)
+MEM_SW = Bits(4, 0b1010)
+MEM_STORE = Bits(4, 0b1000)
+MEM_FLAG = Bits(4, 0b1000)  # flag for determining load or store
 
 # TODO: move to a file that makes sense, (circular import)
 ROB_ADDR_WIDTH = 5
 ROB_SIZE = 2**ROB_ADDR_WIDTH
+
+MEM_Q_SIZE = 16
+MEM_SIZE = 256
+WINDOW_SIZE = 2
 
 
 class Decode(Component):
@@ -106,6 +119,8 @@ class Decode(Component):
 
         s.dual_uop = OutPort(DualMicroOp)
         s.busy_table = OutPort(NUM_PHYS_REGS)
+        # for allocating space in load/store queue
+        s.mem_q_allocate = OutPort(WINDOW_SIZE)
 
         # register to be freed (from commit stage)
         s.stale_in = [InPort(clog2(NUM_PHYS_REGS)) for _ in range(2)]
@@ -120,6 +135,7 @@ class Decode(Component):
         # uop out...
         s.d1.uop //= s.dual_uop.uop1
         s.d1.valid //= s.fetch_packet.valid
+
 
         s.d2 = SingleInstDecode()
         # instruction in
@@ -160,6 +176,12 @@ class Decode(Component):
             s.stale_in[x] //= s.register_rename.stale_in[x]
             s.ready_in[x] //= s.register_rename.ready_in[x]
 
+        @update
+        def allocate_():
+            s.mem_q_allocate @= zext(
+                s.d1.uop.issue_unit == MEM_ISSUE_UNIT, WINDOW_SIZE
+            ) + zext(s.d2.uop.issue_unit == MEM_ISSUE_UNIT, WINDOW_SIZE)
+
     def line_trace(s):
         return (
             f"\tfetch packet:\t{s.fetch_packet}"
@@ -173,6 +195,7 @@ class SingleInstDecode(Component):
         s.inst = InPort(INSTR_WIDTH)  # instruction from fetch packet
         s.pc = InPort(PC_WIDTH)  # pc from fetch packet
         s.idx = InPort()  # index of instruction in fetch packet (0, 1)
+        s.mem_q_idx = InPort(clog2(MEM_Q_SIZE))  # tail of load/store queue
         s.pregs = InPort(PhysicalRegs)  # physical registers from register rename
         s.pregs_busy = InPort(PRegBusy)  # busy table from register rename
         s.valid = InPort()  # valid bit from fetch packet
@@ -195,13 +218,12 @@ class SingleInstDecode(Component):
             s.uop.stale @= s.pregs.stale
 
             s.uop.imm @= 0
-
             s.uop.funct_op @= 0
-
             s.uop.rob_idx @= 0
+            s.uop.mem_q_idx @= 0
 
             # For determining type
-            opcode = s.inst[0:7]
+            opcode = s.inst[OPCODE_SLICE]
             # arithmetic and logical instructions
             if opcode == RTYPE_OPCODE:
                 s.uop.optype @= R_TYPE
@@ -226,7 +248,7 @@ class SingleInstDecode(Component):
                 s.uop.optype @= I_TYPE
                 s.uop.issue_unit @= MEM_ISSUE_UNIT
                 s.uop.funct_unit @= MEM_FUNCT_UNIT
-                s.uop.funct_op @= MEM_LOAD
+                s.uop.funct_op @= concat(opcode[5], s.inst[FUNCT3_SLICE])
                 s.uop.imm @= sext(s.inst[20:32], 32)
 
                 s.uop.lrs2 @= 0
@@ -244,7 +266,7 @@ class SingleInstDecode(Component):
                 s.uop.optype @= S_TYPE
                 s.uop.issue_unit @= MEM_ISSUE_UNIT
                 s.uop.funct_unit @= MEM_FUNCT_UNIT
-                s.uop.funct_op @= MEM_STORE
+                s.uop.funct_op @= concat(opcode[5], s.inst[FUNCT3_SLICE])
                 s.uop.imm @= sext(concat(s.inst[25:32], s.inst[7:12]), 32)
 
                 s.uop.lrd @= 0
@@ -337,6 +359,7 @@ class MicroOp:
     funct_op: mk_bits(4)  # functional unit operation
 
     rob_idx: mk_bits(ROB_ADDR_WIDTH)  # index of instruction in ROB
+    mem_q_idx: mk_bits(clog2(MEM_Q_SIZE))  # index of instruction in memory queue
 
     def __str__(s):
         return (

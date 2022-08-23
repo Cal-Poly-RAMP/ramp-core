@@ -27,9 +27,7 @@ class MultiInputRdyCircularBuffer(Component):
         s.allocate_in = RecvIfcRTL(clog2(size) + 1)
         # inputs for updating elements in the buffer, data and index
         s.update_in = [RecvIfcRTL(Type) for _ in range(num_inports)]
-        s.update_idx_in = [
-            RecvIfcRTL(clog2(size)) for _ in range(num_inports)
-        ]
+        s.update_idx_in = [RecvIfcRTL(clog2(size)) for _ in range(num_inports)]
         for i in range(num_inports):
             s.update_in[i].rdy //= Bits(1, 1)
             s.update_idx_in[i].rdy //= Bits(1, 1)
@@ -114,7 +112,8 @@ class MultiInputRdyCircularBuffer(Component):
             # updating data, and setting ready bit
             for i in range(num_inports):
                 # ensuring that update data has a corresponding index
-                assert ~(s.update_idx_in[i].en ^ s.update_in[i].en)
+                assert ~(s.update_idx_in[i].en ^ s.update_in[i].en), \
+                    f"update idx[{i}] en: {s.update_idx_in[i].en}, update[{i}] en: {s.update_in[i].en}"
                 if s.update_idx_in[i].en:
                     s.buffer[s.update_idx_in[i].msg] <<= s.update_in[i].msg
                     s.buffer_rdy[s.update_idx_in[i].msg] <<= 1

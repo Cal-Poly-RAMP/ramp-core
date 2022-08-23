@@ -47,6 +47,7 @@ class TestDispatch(unittest.TestCase):
         duop = DualMicroOp(uop1, uop2)
         self.dut.in_ @= duop
         self.dut.rob_idx @= 0
+        self.dut.mem_q_tail @= 0
         self.dut.sim_eval_combinational()
 
         self.assertEqual(self.dut.to_int_issue, duop)
@@ -56,12 +57,14 @@ class TestDispatch(unittest.TestCase):
         uop1, uop2 = MicroOp(), MicroOp()
         uop1.issue_unit @= MEM_ISSUE_UNIT
         uop1.rob_idx @= 8
+        uop1.mem_q_idx @= 1
         uop2.issue_unit @= MEM_ISSUE_UNIT
-        uop2.rob_idx @= 9
+        uop2.rob_idx @= 2
 
         duop = DualMicroOp(uop1, uop2)
         self.dut.in_ @= duop
         self.dut.rob_idx @= 8
+        self.dut.mem_q_tail @= 3
         self.dut.sim_eval_combinational()
 
         self.assertEqual(self.dut.to_mem_issue, duop)
@@ -71,12 +74,15 @@ class TestDispatch(unittest.TestCase):
         uop1, uop2 = MicroOp(), MicroOp()
         uop1.issue_unit @= INT_ISSUE_UNIT
         uop1.rob_idx @= 3
+        uop1.mem_q_idx @= 0
         uop2.issue_unit @= MEM_ISSUE_UNIT
         uop2.rob_idx @= 4
+        uop2.mem_q_idx @= 7
 
         duop = DualMicroOp(uop1, uop2)
         self.dut.in_ @= duop
         self.dut.rob_idx @= 3
+        self.dut.mem_q_tail @= 8
         self.dut.sim_eval_combinational()
 
         self.assertEqual(self.dut.to_int_issue, DualMicroOp(uop1, NO_OP))
