@@ -159,5 +159,4 @@ class IssueQueue(Component):
             f"\tuop Out: {s.uop_out}\n"
             f"\tQueue Full: {s.queue_full}\n"
             f"\tQueue Empty: {s.queue_empty}\n"
-            f"\tBusy Table: {s.busy_table}"
         )

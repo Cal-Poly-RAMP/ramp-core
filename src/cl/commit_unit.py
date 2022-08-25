@@ -60,6 +60,8 @@ class SingleCommit(Component):
             s.store_out.en @= 0
             s.store_out.msg.addr @= 0
             s.store_out.msg.data @= 0
+            s.store_out.msg.rob_idx @= 0
+            s.store_out.msg.mem_q_idx @= 0
             s.store_out.msg.op @= MEM_STORE
 
             # writeback loads / arithmetic to registers
@@ -75,5 +77,6 @@ class SingleCommit(Component):
                 s.store_out.en @= 1
                 s.store_out.msg.addr @= s.in_.store_addr
                 s.store_out.msg.data @= s.in_.data
+                s.store_out.msg.mem_q_idx @= s.in_.mem_q_idx
                 s.stale_out @= 0
                 s.ready_out @= 0

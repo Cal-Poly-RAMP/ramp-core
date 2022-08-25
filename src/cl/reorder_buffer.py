@@ -3,8 +3,6 @@
 # We are going to store full microops in the ROB, but for synthesis, only certain
 # fields are needed.
 from pymtl3 import (
-    Bits,
-    Bits1,
     Component,
     InPort,
     OutPort,
@@ -14,8 +12,9 @@ from pymtl3 import (
     sext,
     update,
     update_ff,
+    clog2,
 )
-from src.cl.decode import ROB_ADDR_WIDTH, ROB_SIZE, DualMicroOp
+from src.cl.decode import MEM_Q_SIZE, ROB_ADDR_WIDTH, ROB_SIZE, DualMicroOp
 from src.cl.fetch_stage import PC_WIDTH
 from src.cl.register_rename import ISA_REG_BITWIDTH, PHYS_REG_BITWIDTH
 
@@ -120,55 +119,63 @@ class ReorderBuffer(Component):
             # even though actual instruction bank is 2 wide,
             # uop1 and uop2 are indexed seperately (even and odd respectively)
             # rob indices must be calculated from these indices in the uop
-            i_rob_addr = s.op_complete.int_rob_idx >> 1
+            internal_int_rob_addr = s.op_complete.int_rob_idx >> 1
+            internal_load_rob_addr = s.op_complete.load_rob_idx >> 1
+            internal_store_rob_addr = s.op_complete.store_rob_idx >> 1
             # INTEGER UPDATES
             if s.op_complete.int_rob_complete:
                 if s.op_complete.int_rob_idx % 2 == 0:
                     # even index, uop1 is completed
-                    s.instr_bank_next[i_rob_addr].uop1_entry.busy @= 0
+                    s.instr_bank_next[internal_int_rob_addr].uop1_entry.busy @= 0
                     s.instr_bank_next[
-                        i_rob_addr
+                        internal_int_rob_addr
                     ].uop1_entry.data @= s.op_complete.int_data
                 else:
                     # odd index, uop2 is completed
-                    s.instr_bank_next[i_rob_addr].uop2_entry.busy @= 0
+                    s.instr_bank_next[internal_int_rob_addr].uop2_entry.busy @= 0
                     s.instr_bank_next[
-                        i_rob_addr
+                        internal_int_rob_addr
                     ].uop2_entry.data @= s.op_complete.int_data
             # LOAD UPDATES
             if s.op_complete.load_rob_complete:
                 if s.op_complete.load_rob_idx % 2 == 0:
                     # even index, uop1 is completed
-                    s.instr_bank_next[i_rob_addr].uop1_entry.busy @= 0
+                    s.instr_bank_next[internal_load_rob_addr].uop1_entry.busy @= 0
                     s.instr_bank_next[
-                        i_rob_addr
+                        internal_load_rob_addr
                     ].uop1_entry.data @= s.op_complete.load_data
                 else:
                     # odd index, uop2 is completed
-                    s.instr_bank_next[i_rob_addr].uop2_entry.busy @= 0
+                    s.instr_bank_next[internal_load_rob_addr].uop2_entry.busy @= 0
                     s.instr_bank_next[
-                        i_rob_addr
+                        internal_load_rob_addr
                     ].uop2_entry.data @= s.op_complete.load_data
             # STORE UPDATES
             if s.op_complete.store_rob_complete:
                 if s.op_complete.store_rob_idx % 2 == 0:
                     # even index, uop1 is completed
-                    s.instr_bank_next[i_rob_addr].uop1_entry.busy @= 0
+                    s.instr_bank_next[internal_store_rob_addr].uop1_entry.busy @= 0
                     s.instr_bank_next[
-                        i_rob_addr
+                        internal_store_rob_addr
                     ].uop1_entry.data @= s.op_complete.store_data
                     s.instr_bank_next[
-                        i_rob_addr
+                        internal_store_rob_addr
                     ].uop1_entry.store_addr @= s.op_complete.store_addr
+                    s.instr_bank_next[
+                        internal_store_rob_addr
+                    ].uop1_entry.mem_q_idx @= s.op_complete.store_mem_q_idx
                 else:
                     # odd index, uop2 is completed
-                    s.instr_bank_next[i_rob_addr].uop2_entry.busy @= 0
+                    s.instr_bank_next[internal_store_rob_addr].uop2_entry.busy @= 0
                     s.instr_bank_next[
-                        i_rob_addr
+                        internal_store_rob_addr
                     ].uop2_entry.data @= s.op_complete.store_data
                     s.instr_bank_next[
-                        i_rob_addr
-                    ].uop1_entry.store_addr @= s.op_complete.store_addr
+                        internal_store_rob_addr
+                    ].uop2_entry.store_addr @= s.op_complete.store_addr
+                    s.instr_bank_next[
+                        internal_store_rob_addr
+                    ].uop2_entry.mem_q_idx @= s.op_complete.store_mem_q_idx
 
             # COMMITTING
             # committed store instructions write to memory
@@ -224,7 +231,7 @@ class ReorderBuffer(Component):
             f"\n\tWrite In: {s.write_in.uop1}\n\t\t{s.write_in.uop2} \n\tOp Complete In: {s.op_complete} \n\tCommit Out: {s.commit_out}"
             f"\n\tExternal ROB head: {s.internal_rob_head * 2} External ROB tail: {s.internal_rob_tail * 2}"
             f"\n\tBank Full: {s.bank_full} Bank Empty: {s.bank_empty}"
-            f"\n\tInstr Bank : {[str(x) if x.to_bits() else 0 for x in s.instr_bank]}\n"
+            f"\n\tInstr Bank : {[str(x) if (x.uop1_entry.valid | x.uop2_entry.valid) else '-' for x in s.instr_bank]}\n"
         )
 
 
@@ -237,6 +244,7 @@ class ROBEntryUop:
     stale: mk_bits(PHYS_REG_BITWIDTH)
     data: mk_bits(32)
     # for store instructions
+    mem_q_idx: mk_bits(clog2(MEM_Q_SIZE))
     store_addr: mk_bits(32)
 
 
@@ -260,6 +268,7 @@ class ExecToROB:
     load_data: mk_bits(32)
     # index of the store operation just completed by mem unit, and whether it is valid
     store_rob_idx: mk_bits(ROB_ADDR_WIDTH)
+    store_mem_q_idx: mk_bits(clog2(MEM_Q_SIZE))
     store_rob_complete: mk_bits(1)
     store_addr: mk_bits(32)
     store_data: mk_bits(32)

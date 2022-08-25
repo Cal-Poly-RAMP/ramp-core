@@ -42,16 +42,17 @@ class Dispatch(Component):
             s.uop1_dispatch.mem_q_idx @= 0
             s.uop2_dispatch.mem_q_idx @= 0
             # uop1 and uop2 in buffer
-            if (s.in_.uop1.issue_unit == MEM_ISSUE_UNIT) & (s.in_.uop2.issue_unit == MEM_ISSUE_UNIT):
+            if (s.in_.uop1.issue_unit == MEM_ISSUE_UNIT) & (
+                s.in_.uop2.issue_unit == MEM_ISSUE_UNIT
+            ):
                 s.uop1_dispatch.mem_q_idx @= s.mem_q_tail - 2
                 s.uop2_dispatch.mem_q_idx @= s.mem_q_tail - 1
             # uop1 is in ls buffer
-            elif (s.in_.uop1.issue_unit == MEM_ISSUE_UNIT):
+            elif s.in_.uop1.issue_unit == MEM_ISSUE_UNIT:
                 s.uop1_dispatch.mem_q_idx @= s.mem_q_tail - 1
             # uop2 is in ls buffer
-            elif (s.in_.uop2.issue_unit == MEM_ISSUE_UNIT):
+            elif s.in_.uop2.issue_unit == MEM_ISSUE_UNIT:
                 s.uop2_dispatch.mem_q_idx @= s.mem_q_tail - 1
-
 
     def line_trace(s):
         return (

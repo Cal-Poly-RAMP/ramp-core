@@ -4,34 +4,12 @@ from src.cl.ramp_core import RampCore
 from src.cl.fetch_stage import FetchPacket
 from pymtl3.stdlib.test_utils import config_model_with_cmdline_opts
 from src.cl.decode import (
-    INSTR_NOP,
-    NO_OP,
-    DualMicroOp,
     MicroOp,
-    NA_ISSUE_UNIT,
     INT_ISSUE_UNIT,
-    MEM_ISSUE_UNIT,
-    NA_FUNCT_UNIT,
     ALU_FUNCT_UNIT,
-    MEM_FUNCT_UNIT,
     R_TYPE,
-    I_TYPE,
-    S_TYPE,
-    B_TYPE,
-    U_TYPE,
-    J_TYPE,
-    CSR_TYPE,
     ALU_ADD,
     ALU_SUB,
-    ALU_OR,
-    ALU_AND,
-    ALU_XOR,
-    ALU_SRL,
-    ALU_SLL,
-    ALU_SRA,
-    ALU_SLT,
-    ALU_SLTU,
-    ALU_LUI_COPY,
 )
 
 
@@ -192,9 +170,9 @@ def test_system_iu_type(cmdline_opts):
     # Load Program
     dut.fetch_stage.icache.load_file("tests/input_files/test_system2.bin")
 
-    prd = dut.decode.register_rename.map_table[2]
     for _ in range(8):
         dut.sim_tick()
+    prd = dut.decode.register_rename.map_table[2]
     assert dut.register_file.regs[prd] == 0x0DEAD0AF
 
 
@@ -212,10 +190,10 @@ def test_system_multiple(cmdline_opts):
     # Load Program
     dut.fetch_stage.icache.load_file("tests/input_files/test_system3.bin")
 
-    prd = dut.decode.register_rename.map_table[5]
     for _ in range(12):
         dut.sim_tick()
 
+    prd = dut.decode.register_rename.map_table[5]
     assert dut.register_file.regs[prd] == 60
 
 
@@ -244,9 +222,9 @@ def test_system_multiple2(cmdline_opts):
     # Load Program
     dut.fetch_stage.icache.load_file("tests/input_files/test_system4.bin")
 
-    prd = dut.decode.register_rename.map_table[5]
     for _ in range(22):
         dut.sim_tick()
+    prd = dut.decode.register_rename.map_table[5]
     assert dut.register_file.regs[prd] == 300
 
 
@@ -261,7 +239,69 @@ def test_system5(cmdline_opts):
     # Load Program
     dut.fetch_stage.icache.load_file("tests/input_files/test_system5.bin")
 
-    prd = dut.decode.register_rename.map_table[5]
     for _ in range(17):
         dut.sim_tick()
+    prd = dut.decode.register_rename.map_table[5]
     assert dut.register_file.regs[prd] == 1884
+
+
+def test_store(cmdline_opts):
+    # Stores the number 42 to memory
+    dut = RampCore()
+    dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
+    dut.apply(DefaultPassGroup(linetrace=True, vcdwave="vcd/test_ramp_core_store"))
+    dut.sim_reset()
+
+    # Load Program
+    dut.fetch_stage.icache.load_file("tests/input_files/test_store.bin")
+
+    for _ in range(10):
+        dut.sim_tick()
+    prd = dut.decode.register_rename.map_table[1]
+    assert dut.register_file.regs[prd] == 42
+    assert dut.memory_unit.dram.mem[0] == 42
+
+
+def test_load(cmdline_opts):
+    # reads 0xdeadbeef from memory
+    dut = RampCore()
+    dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
+    dut.apply(DefaultPassGroup(linetrace=True, vcdwave="vcd/test_ramp_core_load"))
+    dut.sim_reset()
+
+    # load program
+    dut.fetch_stage.icache.load_file("tests/input_files/test_load.bin")
+    dut.memory_unit.dram.mem[8] <<= 0xDEADBEEF
+
+    for _ in range(10):
+        dut.sim_tick()
+    pr1 = dut.decode.register_rename.map_table[1]
+    pr2 = dut.decode.register_rename.map_table[2]
+    assert dut.register_file.regs[pr1] == 4
+    assert dut.register_file.regs[pr2] == 0xDEADBEEF
+
+
+def test_load_store(cmdline_opts):
+    # Stores the number 42 to memory, then loads it back into registers and adds
+    dut = RampCore()
+    dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
+    dut.apply(DefaultPassGroup(linetrace=True, vcdwave="vcd/test_ramp_core_load_store"))
+    dut.sim_reset()
+
+    # Load Program
+    dut.fetch_stage.icache.load_file("tests/input_files/test_load_store.bin")
+
+    for _ in range(16):
+        dut.sim_tick()
+
+    pr1 = dut.decode.register_rename.map_table[1]
+    pr2 = dut.decode.register_rename.map_table[2]
+    pr3 = dut.decode.register_rename.map_table[3]
+    pr4 = dut.decode.register_rename.map_table[4]
+    assert dut.register_file.regs[pr1] == 7
+    assert dut.register_file.regs[pr2] == 42
+    assert dut.register_file.regs[pr3] == 42
+    assert dut.register_file.regs[pr4] == 84
+    assert dut.memory_unit.dram.mem[2] == 42
+
+    assert False

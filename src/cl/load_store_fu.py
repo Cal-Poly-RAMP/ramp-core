@@ -1,4 +1,4 @@
-from pymtl3 import Component, InPort, OutPort, update, sext
+from pymtl3 import Component, InPort, OutPort, update, sext, clog2
 from pymtl3.stdlib.ifcs import RecvIfcRTL, SendIfcRTL
 
 from src.cl.decode import (
@@ -6,15 +6,11 @@ from src.cl.decode import (
     PHYS_REG_BITWIDTH,
     MEM_LOAD,
     MEM_STORE,
-    MEM_LB,
-    MEM_LH,
-    MEM_LW,
-    MEM_LBU,
-    MEM_LHU,
     MEM_SB,
     MEM_SH,
     MEM_SW,
     ROB_ADDR_WIDTH,
+    MEM_Q_SIZE,
 )
 from src.cl.memory_unit import LoadStoreEntry
 
@@ -27,6 +23,8 @@ class LoadStoreFU(Component):
         s.prd_addr_in = InPort(PHYS_REG_BITWIDTH)
         s.imm_in = InPort(32)
         s.rob_idx_in = InPort(ROB_ADDR_WIDTH)
+        s.mem_q_idx_in = InPort(clog2(MEM_Q_SIZE))
+        s.enable = InPort()
 
         # load 0, store 1
         s.funct = InPort(4)
@@ -37,16 +35,18 @@ class LoadStoreFU(Component):
 
         @update
         def updt():
-            s.load_out.en @= (s.funct & MEM_FLAG) == MEM_LOAD
+            s.load_out.en @= s.enable & ((s.funct & MEM_FLAG) == MEM_LOAD)
             s.load_out.msg.op @= s.funct
             s.load_out.msg.addr @= sext(s.imm_in, 32) + s.rs1_din
             s.load_out.msg.data @= 0
             s.load_out.msg.rob_idx @= s.rob_idx_in
+            s.load_out.msg.mem_q_idx @= s.mem_q_idx_in
 
-            s.store_out.en @= (s.funct & MEM_FLAG) == MEM_STORE
+            s.store_out.en @= s.enable & ((s.funct & MEM_FLAG) == MEM_STORE)
             s.store_out.msg.op @= s.funct
             s.store_out.msg.addr @= sext(s.imm_in, 32) + s.rs1_din
             s.store_out.msg.rob_idx @= s.rob_idx_in
+            s.store_out.msg.mem_q_idx @= s.mem_q_idx_in
 
             # Getting data for store
             # Store Byte
@@ -59,4 +59,10 @@ class LoadStoreFU(Component):
             elif s.funct == MEM_SW:
                 s.store_out.msg.data @= s.rs2_din[0:32]
             else:
-                assert s.load_out.en, "Invalid funct"
+                assert ~s.enable | s.load_out.en, "Invalid funct"
+
+    def line_trace(s):
+        return (
+            f"load out: {s.load_out.msg if s.load_out.en else '-'} "
+            f"store out: {s.store_out.msg if s.store_out.en else '-'}"
+        )

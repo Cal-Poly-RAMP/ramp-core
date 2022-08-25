@@ -112,8 +112,9 @@ class MultiInputRdyCircularBuffer(Component):
             # updating data, and setting ready bit
             for i in range(num_inports):
                 # ensuring that update data has a corresponding index
-                assert ~(s.update_idx_in[i].en ^ s.update_in[i].en), \
-                    f"update idx[{i}] en: {s.update_idx_in[i].en}, update[{i}] en: {s.update_in[i].en}"
+                assert ~(
+                    s.update_idx_in[i].en ^ s.update_in[i].en
+                ), f"update idx[{i}] en: {s.update_idx_in[i].en}, update[{i}] en: {s.update_in[i].en}"
                 if s.update_idx_in[i].en:
                     s.buffer[s.update_idx_in[i].msg] <<= s.update_in[i].msg
                     s.buffer_rdy[s.update_idx_in[i].msg] <<= 1
@@ -127,13 +128,13 @@ class MultiInputRdyCircularBuffer(Component):
 
     def line_trace(s):
         return (
-            f"buffer: {[str(e) for e in s.buffer]}\n"
-            f"buffer_rdy: {[str(e) for e in s.buffer_rdy]}\n"
-            f"head: {s.head} tail: {s.tail}\n"
-            f"allocate in: {s.allocate_in.msg if s.allocate_in.en else '-'}\n"
-            f"update in: {[str(e.msg) for e in s.update_in]}\n"
-            f"update idx in: {[str(e.msg) for e in s.update_idx_in]}\n"
-            f"out: {s.out.msg.uint() if s.out.en else '-'}\n"
-            f"full: {s.full} empty: {s.empty}\n"
-            f"n_elements: {s.n_elements.uint()}\n"
+            f"\tbuffer: {[str(e) for e in s.buffer]}\n"
+            f"\tbuffer_rdy: {[str(e) for e in s.buffer_rdy]}\n"
+            f"\thead: {s.head} tail: {s.tail}\n"
+            f"\tallocate in: {s.allocate_in.msg if s.allocate_in.en else '-'}\n"
+            f"\tupdate in: {[e.msg if e.en else '-' for e in s.update_in]} "
+            f"update idx in: {[e.msg if e.en else '-' for e in s.update_idx_in]}\n"
+            f"\tout: {s.out.msg if s.out.en else '-'}\n"
+            f"\tfull: {s.full} empty: {s.empty}\n"
+            f"\tn_elements: {s.n_elements.uint()}\n"
         )

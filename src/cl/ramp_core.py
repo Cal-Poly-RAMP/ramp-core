@@ -2,6 +2,7 @@ from pymtl3 import Component, update, mk_bits
 
 from src.cl.decode import (
     ALU_FUNCT_UNIT,
+    MEM_FUNCT_UNIT,
     WINDOW_SIZE,
     MEM_Q_SIZE,
     MEM_SIZE,
@@ -28,7 +29,7 @@ from pymtl3.stdlib.basic_rtl.register_files import RegisterFile
 
 
 class RampCore(Component):
-    def construct(s):
+    def construct(s, memory_size=MEM_SIZE, data=None):
         # FRONT END
         # (1) Fetch stage
         s.fetch_stage = FetchStage()
@@ -92,6 +93,7 @@ class RampCore(Component):
         s.load_store_unit.prd_addr_in //= s.mem_issue_queue.uop_out.prd
         s.load_store_unit.imm_in //= s.mem_issue_queue.uop_out.imm
         s.load_store_unit.rob_idx_in //= s.mem_issue_queue.uop_out.rob_idx
+        s.load_store_unit.mem_q_idx_in //= s.mem_issue_queue.uop_out.mem_q_idx
         s.load_store_unit.funct //= s.mem_issue_queue.uop_out.funct_op
 
         # (6) commit unit - commit the changes
@@ -106,7 +108,7 @@ class RampCore(Component):
 
         # Memory
         s.memory_unit = MemoryUnit(
-            queue_size=MEM_Q_SIZE, memory_size=MEM_SIZE, window_size=3
+            queue_size=MEM_Q_SIZE, memory_size=memory_size, window_size=3, data=data
         )
         # allocate space in memory queue in decode unit
         s.memory_unit.allocate_in.msg //= s.decode.mem_q_allocate
@@ -132,6 +134,7 @@ class RampCore(Component):
         s.reorder_buffer.op_complete.store_rob_complete //= (
             s.load_store_unit.store_out.en
         )
+        s.reorder_buffer.op_complete.store_mem_q_idx //= s.load_store_unit.store_out.msg.mem_q_idx
         # LOAD writeback
         s.reorder_buffer.op_complete.load_rob_idx //= s.memory_unit.load_out.msg.rob_idx
         s.reorder_buffer.op_complete.load_data //= s.memory_unit.load_out.msg.data
@@ -145,7 +148,9 @@ class RampCore(Component):
             s.reorder_buffer.op_complete.int_rob_complete @= (
                 s.int_issue_queue.uop_out.funct_unit == ALU_FUNCT_UNIT
             )
-
+            s.load_store_unit.enable @= (
+                s.mem_issue_queue.uop_out.funct_unit == MEM_FUNCT_UNIT
+            )
             # Immediate logic
             if s.int_issue_queue.uop_out.optype != R_TYPE:
                 s.alu.b @= s.int_issue_queue.uop_out.imm
@@ -161,8 +166,12 @@ class RampCore(Component):
             f"busy_table:\t{[b.uint() for b in s.busy_table]}\n\n"
             f"map_table: {[b.uint() for b in s.decode.register_rename.map_table]}\n\n"
             f"free_list: {bin(s.decode.register_rename.free_list)}\n\n"
-            f"int_issue_queue: {s.int_issue_queue.line_trace()}\n\n"
+            f"int_issue_queue: {s.int_issue_queue.line_trace()}\n"
+            f"alu: {s.alu.line_trace()}\n\n"
+            f"mem_issue_queue: {s.mem_issue_queue.line_trace()}\n"
+            f"load_store_fu: {s.load_store_unit.line_trace()}\n\n"
             f"commit out uop1: 0x{s.reorder_buffer.commit_out.uop1_entry.data}\n\n"
             f"commit out uop2: 0x{s.reorder_buffer.commit_out.uop2_entry.data}\n\n"
+            f"memory unit: \n{s.memory_unit.line_trace()}\n\n"
             f"reorder buffer: {s.reorder_buffer.line_trace()}\n\n"
         )

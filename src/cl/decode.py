@@ -136,7 +136,6 @@ class Decode(Component):
         s.d1.uop //= s.dual_uop.uop1
         s.d1.valid //= s.fetch_packet.valid
 
-
         s.d2 = SingleInstDecode()
         # instruction in
         s.d2.inst //= s.inst2
@@ -369,7 +368,7 @@ class MicroOp:
             f" lr : {s.lrd.uint():02d}:{s.lrs1.uint():02d}:{s.lrs2.uint():02d}"
             f" pr : {s.prd.uint():02d}:{s.prs1.uint():02d}:{s.prs2.uint():02d}"
             f" stale: x{s.stale.uint():02d}"
-            # f" rob_idx: {s.rob_idx}"
+            f" rob_idx: {s.rob_idx}"
         )
 
     def __bool__(self):

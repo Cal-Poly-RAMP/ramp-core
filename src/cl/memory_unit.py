@@ -14,7 +14,14 @@ from pymtl3 import (
 )
 
 from src.cl.dram import DRAM
-from src.cl.decode import MEM_LOAD, MEM_Q_SIZE, MEM_STORE, ROB_ADDR_WIDTH, MEM_FLAG, WINDOW_SIZE
+from src.cl.decode import (
+    MEM_LOAD,
+    MEM_Q_SIZE,
+    MEM_STORE,
+    ROB_ADDR_WIDTH,
+    MEM_FLAG,
+    WINDOW_SIZE,
+)
 from src.cl.buffers import MultiInputRdyCircularBuffer
 from pymtl3.stdlib.ifcs import RecvIfcRTL, SendIfcRTL
 
@@ -66,17 +73,19 @@ class MemoryUnit(Component):
             s.dram.raddr[0] @= trunc(s.ls_queue.out.msg.addr, clog2(memory_size))
             s.dram.waddr[0] @= trunc(s.ls_queue.out.msg.addr, clog2(memory_size))
             s.dram.wdata[0] @= s.ls_queue.out.msg.data
-            s.dram.wen[0] @= \
-                s.ls_queue.out.en & ((s.ls_queue.out.msg.op & MEM_FLAG) == MEM_STORE)
+            s.dram.wen[0] @= s.ls_queue.out.en & (
+                (s.ls_queue.out.msg.op & MEM_FLAG) == MEM_STORE
+            )
 
             # connecting memory to load output
             s.load_out.msg.data @= s.dram.rdata[0]
             s.load_out.msg.rob_idx @= s.ls_queue.out.msg.rob_idx
-            s.load_out.en @= \
-                s.ls_queue.out.en & ((s.ls_queue.out.msg.op & MEM_FLAG) == MEM_LOAD)
+            s.load_out.en @= s.ls_queue.out.en & (
+                (s.ls_queue.out.msg.op & MEM_FLAG) == MEM_LOAD
+            )
 
     def line_trace(s):
-        return s.dram.line_trace() + "\n\n" + s.ls_queue.line_trace()
+        return s.dram.line_trace() + "\nLoad/Store Buffer\n" + s.ls_queue.line_trace()
 
 
 # to ROB
@@ -93,3 +102,8 @@ class LoadStoreEntry:
     data: mk_bits(32)
     rob_idx: mk_bits(ROB_ADDR_WIDTH)
     mem_q_idx: mk_bits(clog2(MEM_Q_SIZE))
+
+    # def __str__(s):
+    #     return "op: {} addr: {} data: {} rob_idx: {} mem_q_idx: {}".format(
+    #         s.op, s.addr, s.data, s.rob_idx, s.mem_q_idx
+    #     )

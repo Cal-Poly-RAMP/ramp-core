@@ -52,4 +52,6 @@ class DRAM(Component):
                         s.mem[s.waddr[i]] <<= s.wdata[i]
 
     def line_trace(s):
-        return f"\nDRAM: {[e.uint() for e in s.mem]}"
+        nshown = min(32, len(s.mem))
+        more = len(s.mem) - nshown
+        return f"DRAM: {[e.uint() for e in s.mem[0:nshown]]}(+{more} more)"
