@@ -207,6 +207,9 @@ class SingleInstDecode(Component):
             s.uop.pc @= (s.pc + 4) if s.idx else (s.pc)
             s.uop.valid @= (s.inst != INSTR_NOP) & ~(s.inst == 0)
 
+            # TODO: Currently, register renaming is dependent on not-used
+            # logical registers being zeroed out. If we want to get rid of the
+            # zeroing out logic, register renaming must be changed.
             s.uop.lrd @= s.inst[RD_SLICE]
             s.uop.lrs1 @= s.inst[RS1_SLICE]
             s.uop.lrs2 @= s.inst[RS2_SLICE]

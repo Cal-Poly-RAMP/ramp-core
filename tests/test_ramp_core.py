@@ -303,5 +303,3 @@ def test_load_store(cmdline_opts):
     assert dut.register_file.regs[pr3] == 42
     assert dut.register_file.regs[pr4] == 84
     assert dut.memory_unit.dram.mem[2] == 42
-
-    assert False

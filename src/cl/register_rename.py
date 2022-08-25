@@ -50,6 +50,7 @@ class RegisterRename(Component):
         s.inst1_lregs = InPort(LogicalRegs)
         s.inst1_pregs = OutPort(PhysicalRegs)
         s.inst1_pregs_busy = OutPort(PRegBusy)
+
         s.inst2_lregs = InPort(LogicalRegs)
         s.inst2_pregs = OutPort(PhysicalRegs)
         s.inst2_pregs_busy = OutPort(PRegBusy)
@@ -154,7 +155,9 @@ class RegisterRename(Component):
                     )
                     if s.inst1_lregs.lrd:
                         s.map_table_wr1 @= s.pdst1
+                        s.map_table_wr2 @= 0
                     elif s.inst2_lregs.lrd:
+                        s.map_table_wr1 @= 0
                         s.map_table_wr2 @= s.pdst1
 
                 elif (s.inst1_lregs.lrd != 0) & (s.inst2_lregs.lrd != 0):
@@ -193,11 +196,17 @@ class RegisterRename(Component):
             s.busy_table <<= s.busy_table_next
             s.map_table[s.inst1_lregs.lrd] <<= s.map_table_wr1
             s.map_table[s.inst2_lregs.lrd] <<= s.map_table_wr2
+            assert s.map_table[0] == 0
+            assert ~((s.inst1_lregs.lrd == 0) ^ (s.map_table_wr1 == 0))
+            assert ~((s.inst2_lregs.lrd == 0) ^ (s.map_table_wr2 == 0))
 
             # # resetting
             if s.reset == 1:
                 for x in range(NUM_ISA_REGS):
                     s.map_table[x] <<= 0
+
+            # checking zero always points to zero
+
 
     def line_trace(s):
         return (
