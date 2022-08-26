@@ -207,7 +207,6 @@ class RegisterRename(Component):
 
             # checking zero always points to zero
 
-
     def line_trace(s):
         return (
             "inst1_lregs: {} inst2_lregs: {} ".format(s.inst1_lregs, s.inst2_lregs)

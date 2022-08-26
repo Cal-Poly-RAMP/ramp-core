@@ -23,6 +23,7 @@ from src.cl.issue_queue import IssueQueue
 from src.cl.alu import ALU
 from src.cl.memory_unit import MemoryUnit
 from src.cl.load_store_fu import LoadStoreFU
+from src.cl.branch_fu import BranchFU
 
 from pymtl3.stdlib.basic_rtl.registers import RegEnRst
 from pymtl3.stdlib.basic_rtl.register_files import RegisterFile
@@ -81,12 +82,12 @@ class RampCore(Component):
         s.register_file.raddr[3] //= s.mem_issue_queue.uop_out.prs2
 
         # (5) execution stage - execute the microops
-        # ALU
+        # ALU functional unit
         s.alu = ALU(mk_bits(32))
         s.alu.a //= s.register_file.rdata[0]
         s.alu.op //= s.int_issue_queue.uop_out.funct_op
 
-        # load/store execution unit
+        # load/store functional unit
         s.load_store_unit = LoadStoreFU()
         s.load_store_unit.rs1_din //= s.register_file.rdata[2]
         s.load_store_unit.rs2_din //= s.register_file.rdata[3]
@@ -95,6 +96,14 @@ class RampCore(Component):
         s.load_store_unit.rob_idx_in //= s.mem_issue_queue.uop_out.rob_idx
         s.load_store_unit.mem_q_idx_in //= s.mem_issue_queue.uop_out.mem_q_idx
         s.load_store_unit.funct //= s.mem_issue_queue.uop_out.funct_op
+
+        # branch functional unit
+        s.branch_unit = BranchFU()
+        s.branch_unit.rs1_din //= s.register_file.rdata[0]
+        s.branch_unit.rs2_din //= s.register_file.rdata[1]
+        s.branch_unit.uop //= s.int_issue_queue.uop_out
+        # mispredict signal output
+        # s.
 
         # (6) commit unit - commit the changes
         s.commit_unit = CommitUnit()
@@ -134,7 +143,9 @@ class RampCore(Component):
         s.reorder_buffer.op_complete.store_rob_complete //= (
             s.load_store_unit.store_out.en
         )
-        s.reorder_buffer.op_complete.store_mem_q_idx //= s.load_store_unit.store_out.msg.mem_q_idx
+        s.reorder_buffer.op_complete.store_mem_q_idx //= (
+            s.load_store_unit.store_out.msg.mem_q_idx
+        )
         # LOAD writeback
         s.reorder_buffer.op_complete.load_rob_idx //= s.memory_unit.load_out.msg.rob_idx
         s.reorder_buffer.op_complete.load_data //= s.memory_unit.load_out.msg.data

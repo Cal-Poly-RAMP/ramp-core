@@ -88,17 +88,17 @@ class TestReorderBuffer(unittest.TestCase):
 
         # uop1 execution complete
         s.dut.op_complete @= ExecToROB(
-            int_rob_idx = 0,
-            int_rob_complete = 1,
-            int_data = 0,
-            load_rob_idx = 0,
-            load_rob_complete = 0,
-            load_data = 0,
-            store_rob_idx = 0,
-            store_mem_q_idx = 0,
-            store_rob_complete = 0,
-            store_addr = 0,
-            store_data = 0,
+            int_rob_idx=0,
+            int_rob_complete=1,
+            int_data=0,
+            load_rob_idx=0,
+            load_rob_complete=0,
+            load_data=0,
+            store_rob_idx=0,
+            store_mem_q_idx=0,
+            store_rob_complete=0,
+            store_addr=0,
+            store_data=0,
         )
         s.dut.sim_tick()
 
@@ -119,17 +119,17 @@ class TestReorderBuffer(unittest.TestCase):
 
         # uop2 execution complete
         s.dut.op_complete @= ExecToROB(
-            int_rob_idx = 0,
-            int_rob_complete = 0,
-            int_data = 0,
-            load_rob_idx = 0,
-            load_rob_complete = 0,
-            load_data = 0,
-            store_rob_idx = 1,
-            store_mem_q_idx = 0,
-            store_rob_complete = 1,
-            store_addr = 0,
-            store_data = 0,
+            int_rob_idx=0,
+            int_rob_complete=0,
+            int_data=0,
+            load_rob_idx=0,
+            load_rob_complete=0,
+            load_data=0,
+            store_rob_idx=1,
+            store_mem_q_idx=0,
+            store_rob_complete=1,
+            store_addr=0,
+            store_data=0,
         )
         s.dut.sim_tick()
 
@@ -181,17 +181,17 @@ class TestReorderBuffer(unittest.TestCase):
         for x in range(ROB_SIZE):
             s.assertFalse(s.dut.bank_empty)
             s.dut.op_complete @= ExecToROB(
-                int_rob_idx = x,
-                int_rob_complete = 1,
-                int_data = 0,
-                load_rob_idx = 0,
-                load_rob_complete = 0,
-                load_data = 0,
-                store_rob_idx = 0,
-                store_mem_q_idx = 0,
-                store_rob_complete = 0,
-                store_addr = 0,
-                store_data = 0,
+                int_rob_idx=x,
+                int_rob_complete=1,
+                int_data=0,
+                load_rob_idx=0,
+                load_rob_complete=0,
+                load_data=0,
+                store_rob_idx=0,
+                store_mem_q_idx=0,
+                store_rob_complete=0,
+                store_addr=0,
+                store_data=0,
             )
             s.dut.sim_tick()
 

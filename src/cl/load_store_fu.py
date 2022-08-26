@@ -61,7 +61,7 @@ class LoadStoreFU(Component):
             else:
                 s.store_out.msg.data @= s.rs2_din
 
-            assert ~s.enable | s.load_out.en | s.store_out.en , "Invalid funct"
+            assert ~s.enable | s.load_out.en | s.store_out.en, "Invalid funct"
 
     def line_trace(s):
         return (

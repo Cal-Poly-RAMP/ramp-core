@@ -15,7 +15,6 @@ from pymtl3 import (
     clog2,
 )
 from src.cl.decode import MEM_Q_SIZE, ROB_ADDR_WIDTH, ROB_SIZE, DualMicroOp
-from src.cl.fetch_stage import PC_WIDTH
 from src.cl.register_rename import ISA_REG_BITWIDTH, PHYS_REG_BITWIDTH
 
 
@@ -250,7 +249,7 @@ class ROBEntryUop:
 
 @bitstruct
 class ROBEntry:
-    pc: mk_bits(PC_WIDTH)
+    pc: mk_bits(32)
     uop1_entry: ROBEntryUop
     uop2_entry: ROBEntryUop
 

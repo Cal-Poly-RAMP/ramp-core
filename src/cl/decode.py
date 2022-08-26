@@ -16,7 +16,7 @@ from pymtl3 import (
     update,
     clog2,
 )
-from src.cl.fetch_stage import FetchPacket, PC_WIDTH, INSTR_WIDTH
+from src.cl.fetch_stage import FetchPacket, INSTR_WIDTH
 from src.cl.register_rename import (
     ISA_REG_BITWIDTH,
     NUM_ISA_REGS,
@@ -98,6 +98,14 @@ MEM_SW = Bits(4, 0b1010)
 MEM_STORE = Bits(4, 0b1000)
 MEM_FLAG = Bits(4, 0b1000)  # flag for determining load or store
 
+# branch functions [0, funct3]
+BFU_BEQ = Bits(4, 0b0000)
+BFU_BNE = Bits(4, 0b0001)
+BFU_BLT = Bits(4, 0b0100)
+BFU_BGE = Bits(4, 0b0101)
+BFU_BLTU = Bits(4, 0b0110)
+BFU_BGEU = Bits(4, 0b0111)
+
 # TODO: move to a file that makes sense, (circular import)
 ROB_ADDR_WIDTH = 5
 ROB_SIZE = 2**ROB_ADDR_WIDTH
@@ -131,6 +139,7 @@ class Decode(Component):
         # instruction in
         s.d1.inst //= s.inst1
         s.d1.pc //= s.fetch_packet.pc
+        s.d1.branch_taken //= s.fetch_packet.branch_taken
         s.d1.idx = 0
         # uop out...
         s.d1.uop //= s.dual_uop.uop1
@@ -140,6 +149,7 @@ class Decode(Component):
         # instruction in
         s.d2.inst //= s.inst2
         s.d2.pc //= s.fetch_packet.pc
+        s.d2.branch_taken //= s.fetch_packet.branch_taken
         s.d2.idx = 1
         # uop out...
         s.d2.uop //= s.dual_uop.uop2
@@ -192,7 +202,8 @@ class SingleInstDecode(Component):
     # For decoding a single instruction into one micro-op, with info from register renaming
     def construct(s):
         s.inst = InPort(INSTR_WIDTH)  # instruction from fetch packet
-        s.pc = InPort(PC_WIDTH)  # pc from fetch packet
+        s.pc = InPort(32)  # pc from fetch packet
+        s.branch_taken = InPort(1)  # branch taken from fetch packet
         s.idx = InPort()  # index of instruction in fetch packet (0, 1)
         s.mem_q_idx = InPort(clog2(MEM_Q_SIZE))  # tail of load/store queue
         s.pregs = InPort(PhysicalRegs)  # physical registers from register rename
@@ -205,6 +216,7 @@ class SingleInstDecode(Component):
             # defaults
             s.uop.inst @= s.inst
             s.uop.pc @= (s.pc + 4) if s.idx else (s.pc)
+            s.uop.branch_taken @= s.branch_taken
             s.uop.valid @= (s.inst != INSTR_NOP) & ~(s.inst == 0)
 
             # TODO: Currently, register renaming is dependent on not-used
@@ -277,7 +289,7 @@ class SingleInstDecode(Component):
                 s.uop.optype @= B_TYPE
                 s.uop.issue_unit @= BRANCH_ISSUE_UNIT
                 s.uop.funct_unit @= BRANCH_FUNCT_UNIT
-                s.uop.funct_op @= 0
+                s.uop.funct_op @= zext(s.inst[FUNCT3_SLICE], 4)
                 s.uop.imm @= sext(
                     concat(
                         s.inst[31], s.inst[7], s.inst[25:31], s.inst[8:12], Bits1(0)
@@ -341,7 +353,7 @@ class SingleInstDecode(Component):
 class MicroOp:
     optype: mk_bits(3)  # micro-op type
     inst: mk_bits(INSTR_WIDTH)  # instruction
-    pc: mk_bits(PC_WIDTH)  # program counter TODO: just forward to ROB?
+    pc: mk_bits(32)  # program counter TODO: just forward to ROB?
     valid: mk_bits(1)  # whether this is a valid uop (not noop)
 
     lrd: mk_bits(ISA_REG_BITWIDTH)  # logical destination register
@@ -359,6 +371,8 @@ class MicroOp:
     issue_unit: mk_bits(2)  # issue unit
     funct_unit: mk_bits(2)  # functional unit
     funct_op: mk_bits(4)  # functional unit operation
+
+    branch_taken: mk_bits(1)  # whether branch was taken
 
     rob_idx: mk_bits(ROB_ADDR_WIDTH)  # index of instruction in ROB
     mem_q_idx: mk_bits(clog2(MEM_Q_SIZE))  # index of instruction in memory queue

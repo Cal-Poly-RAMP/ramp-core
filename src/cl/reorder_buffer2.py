@@ -19,7 +19,6 @@ from pymtl3 import (
 )
 
 from src.cl.decode import ROB_ADDR_WIDTH, ROB_SIZE, DualMicroOp
-from src.cl.fetch_stage import PC_WIDTH
 from src.cl.register_rename import ISA_REG_BITWIDTH, PHYS_REG_BITWIDTH
 
 from src.cl.dram import DRAM
