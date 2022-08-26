@@ -11,6 +11,7 @@ from pymtl3 import (
     bitstruct,
     trunc,
     zext,
+    sext,
 )
 
 from src.cl.dram import DRAM
@@ -21,6 +22,14 @@ from src.cl.decode import (
     ROB_ADDR_WIDTH,
     MEM_FLAG,
     WINDOW_SIZE,
+    MEM_SW,
+    MEM_SH,
+    MEM_SB,
+    MEM_LW,
+    MEM_LH,
+    MEM_LB,
+    MEM_LBU,
+    MEM_LHU,
 )
 from src.cl.buffers import MultiInputRdyCircularBuffer
 from pymtl3.stdlib.ifcs import RecvIfcRTL, SendIfcRTL
@@ -72,13 +81,27 @@ class MemoryUnit(Component):
             # connecting memory to queue
             s.dram.raddr[0] @= trunc(s.ls_queue.out.msg.addr, clog2(memory_size))
             s.dram.waddr[0] @= trunc(s.ls_queue.out.msg.addr, clog2(memory_size))
+            # slicing and signing happens in execution
             s.dram.wdata[0] @= s.ls_queue.out.msg.data
+
             s.dram.wen[0] @= s.ls_queue.out.en & (
                 (s.ls_queue.out.msg.op & MEM_FLAG) == MEM_STORE
             )
 
             # connecting memory to load output
-            s.load_out.msg.data @= s.dram.rdata[0]
+            if s.ls_queue.out.msg.op == MEM_LW:
+                s.load_out.msg.data @= s.dram.rdata[0]
+            elif s.ls_queue.out.msg.op == MEM_LH:
+                s.load_out.msg.data @= sext(s.dram.rdata[0][0:16], 32)
+            elif s.ls_queue.out.msg.op == MEM_LHU:
+                s.load_out.msg.data @= zext(s.dram.rdata[0][0:16], 32)
+            elif s.ls_queue.out.msg.op == MEM_LB:
+                s.load_out.msg.data @= sext(s.dram.rdata[0][0:8], 32)
+            elif s.ls_queue.out.msg.op == MEM_LBU:
+                s.load_out.msg.data @= zext(s.dram.rdata[0][0:8], 32)
+            else:
+                s.load_out.msg.data @= s.dram.rdata[0]
+
             s.load_out.msg.rob_idx @= s.ls_queue.out.msg.rob_idx
             s.load_out.en @= s.ls_queue.out.en & (
                 (s.ls_queue.out.msg.op & MEM_FLAG) == MEM_LOAD

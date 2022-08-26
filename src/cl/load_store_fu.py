@@ -1,4 +1,4 @@
-from pymtl3 import Component, InPort, OutPort, update, sext, clog2
+from pymtl3 import Component, InPort, OutPort, update, sext, clog2, Bits, zext
 from pymtl3.stdlib.ifcs import RecvIfcRTL, SendIfcRTL
 
 from src.cl.decode import (
@@ -49,17 +49,19 @@ class LoadStoreFU(Component):
             s.store_out.msg.mem_q_idx @= s.mem_q_idx_in
 
             # Getting data for store
-            # Store Byte
+            # TODO: update for 64 bit
+            # calculating slice for subword
+            subword = Bits(4, 8) << zext(s.funct[0:2], 4)
             if s.funct == MEM_SB:
-                s.store_out.msg.data @= s.rs2_din[0:8]
-            # Store Halfword
+                s.store_out.msg.data @= zext(s.rs2_din[0:8], 32)
             elif s.funct == MEM_SH:
-                s.store_out.msg.data @= s.rs2_din[0:16]
-            # Store Word
+                s.store_out.msg.data @= zext(s.rs2_din[0:16], 32)
             elif s.funct == MEM_SW:
-                s.store_out.msg.data @= s.rs2_din[0:32]
+                s.store_out.msg.data @= s.rs2_din
             else:
-                assert ~s.enable | s.load_out.en, "Invalid funct"
+                s.store_out.msg.data @= s.rs2_din
+
+            assert ~s.enable | s.load_out.en | s.store_out.en , "Invalid funct"
 
     def line_trace(s):
         return (

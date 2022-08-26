@@ -162,7 +162,7 @@ class RampCore(Component):
             f"\npr1: {s.pr1.line_trace()}\n\n"
             f"pr2: {s.pr2.line_trace()}\n\n"
             # f"pr3: {s.pr3.line_trace()}\n\n"
-            f"register_file:\t{[r.uint() for r in s.register_file.regs]}\n\n"
+            f"register_file:\t{[hex(r.uint()) for r in s.register_file.regs]}\n\n"
             f"busy_table:\t{[b.uint() for b in s.busy_table]}\n\n"
             f"map_table: {[b.uint() for b in s.decode.register_rename.map_table]}\n\n"
             f"free_list: {bin(s.decode.register_rename.free_list)}\n\n"

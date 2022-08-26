@@ -3,7 +3,7 @@ from src.cl.memory import Memory
 
 # Generic interface for an instruction cache. Variable address, data, word widths
 class ICache(Component):
-    def construct(s, addr_width=8, word_width=64, data_width=8):
+    def construct(s, addr_width=16, word_width=64, data_width=8):
         # defining interface
         s.addr_width = addr_width
         s.word_width = word_width

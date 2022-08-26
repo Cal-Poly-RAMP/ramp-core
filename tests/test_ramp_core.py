@@ -303,3 +303,36 @@ def test_load_store(cmdline_opts):
     assert dut.register_file.regs[pr3] == 42
     assert dut.register_file.regs[pr4] == 84
     assert dut.memory_unit.dram.mem[2] == 42
+
+def test_ls_subwords(cmdline_opts):
+    # tests lb, lh, lbu, lhu, sb, sh
+    dut = RampCore()
+    dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
+    dut.apply(DefaultPassGroup(linetrace=True, vcdwave="vcd/test_ramp_core_ls_subwords"))
+    dut.sim_reset()
+
+    # Load Program
+    dut.fetch_stage.icache.load_file("tests/input_files/test_ls_subwords.bin")
+
+    for i in range(50):
+        dut.sim_tick()
+        if i > 7 and dut.memory_unit.ls_queue.empty:
+            dut.sim_tick()
+            dut.sim_tick()
+            dut.sim_tick()
+            dut.sim_tick()
+            dut.sim_tick()
+            break
+
+    lr_to_pr = [dut.decode.register_rename.map_table[i] for i in range(0, 9)]
+    assert dut.register_file.regs[lr_to_pr[0]] == 0x00000000
+    assert dut.register_file.regs[lr_to_pr[1]] == 0xdeadbeef
+    assert dut.register_file.regs[lr_to_pr[3]] == 0xffffffef
+    assert dut.register_file.regs[lr_to_pr[4]] == 0xffffbeef
+    assert dut.register_file.regs[lr_to_pr[5]] == 0xdeadbeef
+    assert dut.register_file.regs[lr_to_pr[6]] == 0x000000ef
+    assert dut.register_file.regs[lr_to_pr[7]] == 0x0000beef
+
+    assert dut.memory_unit.dram.mem[0] == 0x000000ef
+    assert dut.memory_unit.dram.mem[4] == 0x0000beef
+    assert dut.memory_unit.dram.mem[8] == 0xdeadbeef

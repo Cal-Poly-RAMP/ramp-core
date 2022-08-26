@@ -54,4 +54,4 @@ class DRAM(Component):
     def line_trace(s):
         nshown = min(32, len(s.mem))
         more = len(s.mem) - nshown
-        return f"DRAM: {[e.uint() for e in s.mem[0:nshown]]}(+{more} more)"
+        return f"DRAM: {[hex(e.uint()) for e in s.mem[0:nshown]]}(+{more} more)"
