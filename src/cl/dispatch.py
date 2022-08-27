@@ -1,7 +1,8 @@
 from pymtl3 import Component, InPort, OutPort, update, mk_bits, zext, clog2
 from src.cl.decode import (
+    B_TYPE,
+    BRANCH_FUNCT_UNIT,
     MEM_Q_SIZE,
-    WINDOW_SIZE,
     DualMicroOp,
     MicroOp,
     NO_OP,
@@ -69,10 +70,13 @@ class SingleDispatch(Component):
         s.rob_idx = InPort(ROB_ADDR_WIDTH)  # for updating uops with ROB index
         s.mem_q_idx = InPort(clog2(MEM_Q_SIZE))
         s.to_rob = OutPort(MicroOp)  # for adding microops to ROB
-        s.to_rob //= s.in_
 
         s.to_int_issue = OutPort(MicroOp)  # for adding microops to int issue queue
         s.to_mem_issue = OutPort(MicroOp)  # for adding microops to mem issue queue
+
+        @update
+        def conditional_dispatch():
+            s.to_rob @= s.in_ if (s.in_.funct_unit != BRANCH_FUNCT_UNIT) else MicroOp(0)
 
         @update
         def issue():

@@ -114,6 +114,8 @@ MEM_Q_SIZE = 16
 MEM_SIZE = 256
 WINDOW_SIZE = 2
 
+NUM_BRANCHES = 8 # maximum depth of nested branches
+
 
 class Decode(Component):
     # For decoding fetch packet into two micro-ops
@@ -373,6 +375,7 @@ class MicroOp:
     funct_op: mk_bits(4)  # functional unit operation
 
     branch_taken: mk_bits(1)  # whether branch was taken
+    br_mask: mk_bits(NUM_BRANCHES)
 
     rob_idx: mk_bits(ROB_ADDR_WIDTH)  # index of instruction in ROB
     mem_q_idx: mk_bits(clog2(MEM_Q_SIZE))  # index of instruction in memory queue

@@ -5,6 +5,8 @@ from hypothesis import given, strategies as st
 from src.cl.dispatch import Dispatch
 from src.cl.fetch_stage import FetchPacket
 from src.cl.decode import (
+    B_TYPE,
+    BRANCH_FUNCT_UNIT,
     DualMicroOp,
     MicroOp,
     Decode,
@@ -36,7 +38,15 @@ class TestDispatch(unittest.TestCase):
         self.dut.in_ @= duop
         self.dut.sim_eval_combinational()
 
-        self.assertEqual(self.dut.to_rob, duop)
+        if duop.uop1.funct_unit != BRANCH_FUNCT_UNIT:
+            self.assertEqual(self.dut.to_rob.uop1, duop.uop1)
+        else:
+            self.assertEqual(self.dut.to_rob.uop1, MicroOp(0))
+
+        if duop.uop2.funct_unit != BRANCH_FUNCT_UNIT:
+            self.assertEqual(self.dut.to_rob.uop2, duop.uop2)
+        else:
+            self.assertEqual(self.dut.to_rob.uop2, MicroOp(0))
 
     def test_both_to_int(self):
         uop1, uop2 = MicroOp(), MicroOp()
