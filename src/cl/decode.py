@@ -27,6 +27,7 @@ from src.cl.register_rename import (
     PRegBusy,
     RegisterRename,
 )
+from src.cl.branch_allocate import BranchAllocate
 
 # Decoding consts
 OPCODE_SLICE = slice(0, 7)
@@ -375,7 +376,8 @@ class MicroOp:
     funct_op: mk_bits(4)  # functional unit operation
 
     branch_taken: mk_bits(1)  # whether branch was taken
-    br_mask: mk_bits(NUM_BRANCHES)
+    br_mask: mk_bits(NUM_BRANCHES) # bitmask corresponding to pred branches
+    br_tag: mk_bits(clog2(NUM_BRANCHES)) # branch tag (for branch instructions)
 
     rob_idx: mk_bits(ROB_ADDR_WIDTH)  # index of instruction in ROB
     mem_q_idx: mk_bits(clog2(MEM_Q_SIZE))  # index of instruction in memory queue
