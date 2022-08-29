@@ -158,6 +158,9 @@ class Decode(Component):
         s.d2.uop //= s.dual_uop.uop2
         s.d2.valid //= s.fetch_packet.valid
 
+        # for allocating physical registers and assigning them logical registers
+        # TODO: there will be problems if only one instruction in the window is
+        # properly allocated registers, and the other is not (full)
         s.register_rename = RegisterRename()
         # logical registers in...
         s.register_rename.inst1_lregs.lrd //= s.d1.uop.lrd
@@ -183,6 +186,16 @@ class Decode(Component):
         # busy table
         s.busy_table //= s.register_rename.busy_table
 
+        # for allocating branch tags and assigning branch masks
+        # TODO: there will be problems if only one instruction in the window is
+        # properly allocated a branch tag, and the other is not (full)
+        s.branch_allocate = BranchAllocate(ntags=8, window_size=2)
+        # branch tags out...
+        s.d1.br_mask //= s.branch_allocate.br_mask[0]
+        s.d1.br_tag //= s.branch_allocate.br_tag[0].msg
+        s.d2.br_mask //= s.branch_allocate.br_mask[1]
+        s.d2.br_tag //= s.branch_allocate.br_tag[1].msg
+
         # from commit stage...
         for x in range(2):
             s.stale_in[x] //= s.register_rename.stale_in[x]
@@ -190,9 +203,19 @@ class Decode(Component):
 
         @update
         def allocate_():
+            # allocate memory queue space
             s.mem_q_allocate @= zext(
                 s.d1.uop.issue_unit == MEM_ISSUE_UNIT, WINDOW_SIZE
             ) + zext(s.d2.uop.issue_unit == MEM_ISSUE_UNIT, WINDOW_SIZE)
+
+            # allocate branch tags
+            s.branch_allocate.br_tag[0].rdy @= (s.d1.uop.optype == B_TYPE)
+            s.branch_allocate.br_tag[1].rdy @= (s.d2.uop.optype == B_TYPE)
+
+            for i in range(2):
+                if (s.branch_allocate.br_tag[i].rdy ^
+                    s.branch_allocate.br_tag[i].en):
+                    assert "could not allocate branch tags"
 
     def line_trace(s):
         return (
@@ -207,6 +230,8 @@ class SingleInstDecode(Component):
         s.inst = InPort(INSTR_WIDTH)  # instruction from fetch packet
         s.pc = InPort(32)  # pc from fetch packet
         s.branch_taken = InPort(1)  # branch taken from fetch packet
+        s.br_tag = InPort(clog2(NUM_BRANCHES))  # branch tag from branch allocate
+        s.br_mask = InPort(NUM_BRANCHES)  # branch mask from branch allocate
         s.idx = InPort()  # index of instruction in fetch packet (0, 1)
         s.mem_q_idx = InPort(clog2(MEM_Q_SIZE))  # tail of load/store queue
         s.pregs = InPort(PhysicalRegs)  # physical registers from register rename
@@ -220,6 +245,8 @@ class SingleInstDecode(Component):
             s.uop.inst @= s.inst
             s.uop.pc @= (s.pc + 4) if s.idx else (s.pc)
             s.uop.branch_taken @= s.branch_taken
+            s.uop.br_tag @= s.br_tag
+            s.uop.br_mask @= s.br_mask
             s.uop.valid @= (s.inst != INSTR_NOP) & ~(s.inst == 0)
 
             # TODO: Currently, register renaming is dependent on not-used
@@ -387,6 +414,7 @@ class MicroOp:
             f"optype: {s.optype} inst: {s.inst} pc: {s.pc}"
             f" valid: {s.valid} imm: {s.imm}"
             f" i_unit: {s.issue_unit} f_unit: {s.funct_unit} f_op: {s.funct_op}"
+            f" br_taken: {s.branch_taken} br_mask: {s.br_mask} br_tag: {s.br_tag}"
             f" lr : {s.lrd.uint():02d}:{s.lrs1.uint():02d}:{s.lrs2.uint():02d}"
             f" pr : {s.prd.uint():02d}:{s.prs1.uint():02d}:{s.prs2.uint():02d}"
             f" stale: x{s.stale.uint():02d}"

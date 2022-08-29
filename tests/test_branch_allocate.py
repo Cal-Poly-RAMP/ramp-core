@@ -38,6 +38,8 @@ class TestBranchAllocate(unittest.TestCase):
         assert s.dut.br_mask[0] == next_freelist
         assert s.dut.br_mask[1] == next_freelist
 
+        assert s.dut.full == (next_freelist == Bits(NTAGS, -1))
+
         s.dut.sim_tick()
         assert s.dut.br_freelist == next_freelist
 
@@ -61,6 +63,8 @@ class TestBranchAllocate(unittest.TestCase):
             assert s.dut.br_tag[1].en == 0
             assert s.dut.br_mask[0] == next_freelist
             assert s.dut.br_mask[1] == next_freelist
+
+            assert s.dut.full
             return
 
         assert s.dut.br_tag[0].en == 1
@@ -99,6 +103,8 @@ class TestBranchAllocate(unittest.TestCase):
             assert s.dut.br_tag[1].en == 0
             assert s.dut.br_mask[0] == next_freelist
             assert s.dut.br_mask[1] == next_freelist
+
+            assert s.dut.full
             return
 
         assert s.dut.br_tag[0].en == 0
@@ -131,11 +137,14 @@ class TestBranchAllocate(unittest.TestCase):
         next_freelist @= freelist & ~(1 << dealloc_msg) if dealloc_en else freelist
 
         s.dut.sim_eval_combinational()
-        if next_freelist == 2**NTAGS-1:
-            assert s.dut.br_tag[0].en == 0
-            assert s.dut.br_tag[1].en == 0
+        if "{:08b}".format(next_freelist.uint()).count('0') < 2:
+            # assert s.dut.br_tag[0].en == 0
+            # assert s.dut.br_tag[1].en == 0
             assert s.dut.br_mask[0] == next_freelist
+            next_freelist @= next_freelist | (1 << s.dut.br_tag[0].msg.uint())
             assert s.dut.br_mask[1] == next_freelist
+
+            assert s.dut.full
             return
 
         assert s.dut.br_tag[0].en == 1
@@ -155,3 +164,5 @@ class TestBranchAllocate(unittest.TestCase):
 
         s.dut.sim_tick()
         assert s.dut.br_freelist == next_freelist
+
+    # TODO: test parameterization
