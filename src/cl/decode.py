@@ -1,4 +1,3 @@
-from sre_constants import BRANCH
 from pymtl3 import (
     Bits,
     Bits1,
@@ -16,17 +15,19 @@ from pymtl3 import (
     update,
     clog2,
 )
-from src.cl.fetch_stage import FetchPacket, INSTR_WIDTH
+from pymtl3.stdlib.ifcs import RecvIfcRTL, SendIfcRTL
+
+from src.cl.fetch_stage import FetchPacket
 from src.cl.register_rename import RegisterRename
 from src.cl.branch_allocate import BranchAllocate
 
 from src.common.interfaces import (
+    BranchUpdate,
     MicroOp,
     DualMicroOp,
     LogicalRegs,
     PhysicalRegs,
     PRegBusy,
-
 )
 from src.common.consts import (
     # fetch
@@ -71,13 +72,13 @@ from src.common.consts import (
     # TODO: move to a file that makes sense, (circular import)
     MEM_Q_SIZE,
     WINDOW_SIZE,
-    NUM_BRANCHES, # maximum depth of nested branches
+    NUM_BRANCHES,  # maximum depth of nested branches
     NUM_ISA_REGS,
     NUM_PHYS_REGS,
-
     NUM_ISA_REGS,
     NUM_PHYS_REGS,
 )
+
 
 class Decode(Component):
     # For decoding fetch packet into two micro-ops
@@ -98,6 +99,9 @@ class Decode(Component):
         s.stale_in = [InPort(clog2(NUM_PHYS_REGS)) for _ in range(2)]
         # register to be marked as 'not busy' (from commit stage)
         s.ready_in = [InPort(clog2(NUM_PHYS_REGS)) for _ in range(2)]
+
+        # for deallocating branch tags
+        s.br_update = RecvIfcRTL(BranchUpdate)
 
         s.d1 = SingleInstDecode()
         # instruction in
@@ -147,6 +151,10 @@ class Decode(Component):
         # busy table
         s.busy_table //= s.register_rename.busy_table
 
+        # for deallocating branch tags
+        s.register_rename.br_update.msg //= s.br_update.msg
+        s.register_rename.br_update.en //= s.br_update.en
+
         # for allocating branch tags and assigning branch masks
         # TODO: there will be problems if only one instruction in the window is
         # properly allocated a branch tag, and the other is not (full)
@@ -156,6 +164,10 @@ class Decode(Component):
         s.d1.br_tag //= s.branch_allocate.br_tag[0].msg
         s.d2.br_mask //= s.branch_allocate.br_mask[1]
         s.d2.br_tag //= s.branch_allocate.br_tag[1].msg
+
+        # for deallocating branch tags
+        s.branch_allocate.br_update.msg //= s.br_update.msg
+        s.branch_allocate.br_update.en //= s.br_update.en
 
         # from commit stage...
         for x in range(2):
@@ -170,12 +182,14 @@ class Decode(Component):
             ) + zext(s.d2.uop.issue_unit == MEM_ISSUE_UNIT, WINDOW_SIZE)
 
             # allocate branch tags
-            s.branch_allocate.br_tag[0].rdy @= (s.d1.uop.optype == B_TYPE)
-            s.branch_allocate.br_tag[1].rdy @= (s.d2.uop.optype == B_TYPE)
+            s.branch_allocate.br_tag[0].rdy @= s.d1.uop.optype == B_TYPE
+            s.branch_allocate.br_tag[1].rdy @= s.d2.uop.optype == B_TYPE
+
+            # connecting branch update signals
+            s.br_update.rdy @= s.branch_allocate.br_update.rdy & s.register_rename.br_update.rdy
 
             for i in range(2):
-                if (s.branch_allocate.br_tag[i].rdy ^
-                    s.branch_allocate.br_tag[i].en):
+                if s.branch_allocate.br_tag[i].rdy ^ s.branch_allocate.br_tag[i].en:
                     assert "could not allocate branch tags"
 
     def line_trace(s):
@@ -338,6 +352,7 @@ class SingleInstDecode(Component):
                 s.uop.lrs1 @= 0
                 s.uop.lrd @= 0
                 s.uop.stale @= 0
+
 
 # Used for deriving data from instructions
 @bitstruct

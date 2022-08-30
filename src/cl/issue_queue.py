@@ -22,6 +22,7 @@ from src.common.consts import (
 )
 from src.common.interfaces import DualMicroOp, MicroOp, NO_OP
 
+
 class IssueQueue(Component):
     def construct(s):
         # uop to be added to queue from dispatch
@@ -74,7 +75,7 @@ class IssueQueue(Component):
                     #  if overflow, no wrap around
                     s.queue_empty_next @= 0
                     s.tail_next @= s.tail_next + 2
-                    if s.tail_next + 2 == 0:
+                    if s.tail_next == 0:
                         s.queue_full_next @= 1
 
                 elif s.duop_in.uop1.valid & ~s.queue_full:
@@ -82,7 +83,7 @@ class IssueQueue(Component):
 
                     s.queue_empty_next @= 0
                     s.tail_next @= s.tail_next + 1
-                    if s.tail_next + 1 == 0:
+                    if s.tail_next == 0:
                         s.queue_full_next @= 1
 
                 elif s.duop_in.uop2.valid & ~s.queue_full:
@@ -90,7 +91,7 @@ class IssueQueue(Component):
 
                     s.queue_empty_next @= 0
                     s.tail_next @= s.tail_next + 1
-                    if s.tail_next + 1 == 0:
+                    if s.tail_next == 0:
                         s.queue_full_next @= 1
 
                 # ISSUING uops from queue, if ready

@@ -7,6 +7,7 @@ from src.cl.fetch_stage import FetchStage
 from src.common.consts import NUM_PHYS_REGS
 from src.common.interfaces import FetchPacket, DualMicroOp
 
+
 class FrontEnd(Component):
     def construct(s):
         # (1) Fetch stage

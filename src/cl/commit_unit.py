@@ -7,6 +7,7 @@ from src.cl.memory_unit import LoadStoreEntry
 from src.common.consts import MEM_STORE, MEM_SW, S_TYPE, NUM_PHYS_REGS
 from src.common.interfaces import DualMicroOp
 
+
 class CommitUnit(Component):
     def construct(s, width=2):
         # committed entries from ROB

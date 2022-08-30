@@ -1,5 +1,5 @@
 # Responsible for allocating tags to branches, and branch masks for non-branches
-from pymtl3 import Component, OutPort, clog2, update, update_ff, Wire, Bits
+from pymtl3 import Component, OutPort, clog2, update, update_ff, Wire, Bits, connect
 from pymtl3.stdlib.ifcs import RecvIfcRTL, SendIfcRTL
 from src.common.interfaces import BranchUpdate
 
@@ -41,7 +41,7 @@ class BranchAllocate(Component):
                 s.br_tag[i].msg @= 0
                 s.br_mask[i] @= s.br_freelist_next
                 for b in range(ntags):
-                    s.full @= (s.br_freelist_next == Bits(ntags, -1))
+                    s.full @= s.br_freelist_next == Bits(ntags, -1)
                     if (s.br_freelist_next[b] == 0) & s.br_tag[i].rdy:
                         s.br_tag[i].en @= 1
                         s.br_tag[i].msg @= b
@@ -49,10 +49,12 @@ class BranchAllocate(Component):
                         break
 
     def line_trace(s):
-        return (f"BranchAllocate:\n"
-                f"br_freelist: {s.br_freelist}\n"
-                f"br_freelist_next: {s.br_freelist_next}\n"
-                f"br_mask: {[e for e in s.br_mask]}\n"
-                f"br_tag_rdy: {[e.rdy for e in s.br_tag]}\n"
-                f"br_tag: {[e.msg if e.en else '-' for e in s.br_tag]}\n"
-                f"deallocate_tag: {s.br_update.msg.tag if s.br_update.en else '-'}\n")
+        return (
+            f"BranchAllocate:\n"
+            f"br_freelist: {s.br_freelist}\n"
+            f"br_freelist_next: {s.br_freelist_next}\n"
+            f"br_mask: {[e for e in s.br_mask]}\n"
+            f"br_tag_rdy: {[e.rdy for e in s.br_tag]}\n"
+            f"br_tag: {[e.msg if e.en else '-' for e in s.br_tag]}\n"
+            f"deallocate_tag: {s.br_update.msg.tag if s.br_update.en else '-'}\n"
+        )

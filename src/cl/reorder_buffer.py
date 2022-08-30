@@ -13,9 +13,19 @@ from pymtl3 import (
     update,
     update_ff,
     clog2,
+    Bits
 )
-from src.common.consts import MEM_Q_SIZE, ROB_SIZE, ROB_SIZE, NUM_ISA_REGS, NUM_PHYS_REGS
-from src.common.interfaces import DualMicroOp
+from pymtl3.stdlib.ifcs import RecvIfcRTL, SendIfcRTL
+
+from src.common.consts import (
+    MEM_Q_SIZE,
+    NUM_BRANCHES,
+    ROB_SIZE,
+    ROB_SIZE,
+    NUM_ISA_REGS,
+    NUM_PHYS_REGS,
+)
+from src.common.interfaces import DualMicroOp, BranchUpdate
 
 
 ## TODO NOW: make it so that `valid` is only a flag, not set by the ROB. `Busy` the only one set by ROB
@@ -47,6 +57,10 @@ class ReorderBuffer(Component):
         s.instr_bank_next = [Wire(ROBEntry) for _ in range(ROB_SIZE // 2)]
         s.bank_full = OutPort(1)
         s.bank_empty = OutPort(1)
+
+        # for branch updates (mispredicted or predicted correctly)
+        s.br_update = RecvIfcRTL(BranchUpdate)
+        s.br_update.rdy //= Bits(1, 1)
 
         @update
         def comb_():
@@ -100,6 +114,7 @@ class ReorderBuffer(Component):
                             prd=s.write_in.uop1.prd,
                             stale=s.write_in.uop1.stale,
                             store_addr=0,
+                            br_mask=s.write_in.uop1.br_mask,
                         ),
                         uop2_entry=ROBEntryUop(
                             valid=s.write_in.uop2.valid,
@@ -108,6 +123,7 @@ class ReorderBuffer(Component):
                             prd=s.write_in.uop2.prd,
                             stale=s.write_in.uop2.stale,
                             store_addr=0,
+                            br_mask=s.write_in.uop2.br_mask,
                         ),
                     )
                     s.internal_rob_tail_next @= s.internal_rob_tail + 1  # wrap around
@@ -176,14 +192,26 @@ class ReorderBuffer(Component):
                         internal_store_rob_addr
                     ].uop2_entry.mem_q_idx @= s.op_complete.store_mem_q_idx
 
+            # BRANCH PREDICTION UPDATES (updating tags with branch outcomes)
+            tag_mask = Bits(NUM_BRANCHES)
+            tag_mask @= 1 << s.br_update.msg.tag if s.br_update.en else 0
+            for i in range(ROB_SIZE >> 1):
+                s.instr_bank_next[i].uop1_entry.br_mask @= (
+                    s.instr_bank[i].uop1_entry.br_mask & ~tag_mask
+                )
+                s.instr_bank_next[i].uop2_entry.br_mask @= (
+                    s.instr_bank[i].uop2_entry.br_mask & ~tag_mask
+                )
+
             # COMMITTING
             # committed store instructions write to memory
             # committed arithmetic instructions deallocate stale reg
 
-            # if the ROB's head entry uop1 is valid and not busy, commit it
+            # if the ROB's head entry uop1 is valid, not busy, and not under speculation, commit
             if (
                 s.instr_bank_next[s.internal_rob_head_next].uop1_entry.valid
                 & ~s.instr_bank_next[s.internal_rob_head_next].uop1_entry.busy
+                & (s.instr_bank_next[s.internal_rob_head_next].uop1_entry.br_mask == 0)
             ):
                 s.uop1_entry_next @= s.instr_bank_next[
                     s.internal_rob_head_next
@@ -196,6 +224,7 @@ class ReorderBuffer(Component):
             if (
                 s.instr_bank_next[s.internal_rob_head_next].uop2_entry.valid
                 & ~s.instr_bank_next[s.internal_rob_head_next].uop2_entry.busy
+                & (s.instr_bank_next[s.internal_rob_head_next].uop1_entry.br_mask == 0)
             ):
                 s.uop2_entry_next @= s.instr_bank_next[
                     s.internal_rob_head_next
@@ -245,6 +274,8 @@ class ROBEntryUop:
     # for store instructions
     mem_q_idx: mk_bits(clog2(MEM_Q_SIZE))
     store_addr: mk_bits(32)
+    # for branch prediction
+    br_mask: mk_bits(NUM_BRANCHES)
 
 
 @bitstruct

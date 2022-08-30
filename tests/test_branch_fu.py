@@ -20,14 +20,15 @@ def branch_input(draw, op):
     uop = MicroOp(0)
     uop.funct_unit @= BRANCH_FUNCT_UNIT
     uop.funct_op @= op
-    uop.pc @= draw(st.integers(min_value=0, max_value=2**32-1))
-    uop.imm @= draw(st.integers(min_value=0, max_value=2**32-1))
+    uop.pc @= draw(st.integers(min_value=0, max_value=2**32 - 1))
+    uop.imm @= draw(st.integers(min_value=0, max_value=2**32 - 1))
     uop.branch_taken @= draw(st.booleans())
 
     rs1 = draw(st.integers(min_value=-(2 ** (32 - 1)), max_value=2 ** (32 - 1)))
     rs2 = draw(st.integers(min_value=-(2 ** (32 - 1)), max_value=2 ** (32 - 1)))
 
     return uop, rs1, rs2
+
 
 # See Verilog debugging for a more inclusive testcase
 class TestALU(unittest.TestCase):
@@ -198,7 +199,6 @@ class TestALU(unittest.TestCase):
     #         s.assertEqual(s.dut.mispredict.en, 0)
     #     else:
     #         assert False, "should not reach here"
-
 
 
 if __name__ == "__main__":

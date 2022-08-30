@@ -11,10 +11,7 @@ from pymtl3 import (
 from pymtl3.stdlib.ifcs import RecvIfcRTL, SendIfcRTL
 from src.cl.icache import ICache
 
-from src.common.interfaces import (
-    BranchUpdate,
-    FetchPacket
-)
+from src.common.interfaces import BranchUpdate, FetchPacket
 from src.common.consts import (
     ICACHE_ADDR_WIDTH,
     INSTR_WIDTH,
@@ -57,7 +54,7 @@ class FetchStage(Component):
                 inst1=s.icache_data[INSTR_WIDTH : 2 * INSTR_WIDTH],
                 inst2=s.icache_data[0:INSTR_WIDTH],
                 pc=s.pc,
-                branch_taken=0, # TODO: branch prediction
+                branch_taken=0,  # TODO: branch prediction
                 valid=1,
             )
 

@@ -89,7 +89,7 @@ MEM_Q_SIZE = 16
 MEM_SIZE = 256
 WINDOW_SIZE = 2
 
-NUM_BRANCHES = 8 # maximum depth of nested branches
+NUM_BRANCHES = 8  # maximum depth of nested branches
 
 NUM_ISA_REGS = 32
 

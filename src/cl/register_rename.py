@@ -11,11 +11,13 @@ from pymtl3 import (
     zext,
     clog2,
 )
+from pymtl3.stdlib.ifcs import RecvIfcRTL, SendIfcRTL
 
 from src.common.interfaces import (
     LogicalRegs,
     PhysicalRegs,
     PRegBusy,
+    BranchUpdate
 )
 from src.common.consts import (
     NUM_ISA_REGS,
@@ -23,6 +25,7 @@ from src.common.consts import (
 )
 
 REG_RENAME_ERR = "Tried to rename a register when no physical registers are free. Halting not implemented yet."
+
 
 class RegisterRename(Component):
     def construct(s):
@@ -60,6 +63,10 @@ class RegisterRename(Component):
         s.pdst2 = Wire(clog2(NUM_PHYS_REGS))
 
         s.ONE = Bits(NUM_PHYS_REGS, 1)
+
+        # for deallocating and recalling state for predicted branches TODOL\
+        s.br_update = RecvIfcRTL(BranchUpdate)
+        s.br_update.rdy //= Bits(1,1)
 
         @update
         def rename_comb():

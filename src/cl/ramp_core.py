@@ -6,7 +6,7 @@ from src.cl.commit_unit import CommitUnit
 from src.cl.fetch_stage import FetchPacket, FetchStage
 from src.cl.decode import Decode
 from src.cl.dispatch import Dispatch
-from src.cl.reorder_buffer import ReorderBuffer, ExecToROB
+from src.cl.reorder_buffer import ReorderBuffer
 from src.cl.issue_queue import IssueQueue
 from src.cl.alu import ALU
 from src.cl.memory_unit import MemoryUnit
@@ -20,7 +20,7 @@ from src.common.consts import (
     MEM_Q_SIZE,
     MEM_SIZE,
     R_TYPE,
-    NUM_PHYS_REGS
+    NUM_PHYS_REGS,
 )
 from src.common.interfaces import MicroOp, DualMicroOp, NO_OP
 
@@ -99,7 +99,12 @@ class RampCore(Component):
         s.branch_unit.rs2_din //= s.register_file.rdata[1]
         s.branch_unit.uop //= s.int_issue_queue.uop_out
         # mispredict signal output br_update
-        # s.
+        s.fetch_stage.br_update.msg //= s.branch_unit.br_update.msg
+        s.fetch_stage.br_update.en //= s.branch_unit.br_update.en
+        s.decode.br_update.msg //= s.branch_unit.br_update.msg
+        s.decode.br_update.en //= s.branch_unit.br_update.en
+        s.reorder_buffer.br_update.msg //= s.branch_unit.br_update.msg
+        s.reorder_buffer.br_update.en //= s.branch_unit.br_update.en
 
         # (6) commit unit - commit the changes
         s.commit_unit = CommitUnit()
@@ -163,6 +168,13 @@ class RampCore(Component):
                 s.alu.b @= s.int_issue_queue.uop_out.imm
             else:
                 s.alu.b @= s.register_file.rdata[1]
+
+            # branch outcome logic
+            s.branch_unit.br_update.rdy @= (
+                s.fetch_stage.br_update.rdy &
+                s.decode.br_update.rdy &
+                s.reorder_buffer.br_update.rdy
+            )
 
     def line_trace(s):
         return (

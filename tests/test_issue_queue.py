@@ -24,14 +24,14 @@ class TestIssueQueue(unittest.TestCase):
         # runs before every test
         if not hasattr(s, "dut"):
             s.dut = IssueQueue()
-            s.dut.apply(DefaultPassGroup(textwave=True, linetrace=True))
+            s.dut.apply(DefaultPassGroup(textwave=False, linetrace=True))
         s.dut.sim_reset()
 
     def tearDown(s) -> None:
         # runs after every test
         if s.dut.sim_cycle_count():
             print("final:", s.dut.line_trace())
-            s.dut.print_textwave()
+            # s.dut.print_textwave()
 
     def test_multiple_add(s):
         # 1
@@ -236,16 +236,14 @@ class TestIssueQueue(unittest.TestCase):
 
         s.dut.duop_in @= DualMicroOp(uop1, uop2)
         s.dut.sim_tick()
-        s.assertEqual(s.dut.uop_out.to_bits(), 0)
+        s.assertEqual(s.dut.uop_out, uop1)
 
         s.dut.duop_in @= DualMicroOp(uop3, uop4)
         s.dut.sim_tick()
-        s.assertEqual(s.dut.uop_out, uop1)
+        s.assertEqual(s.dut.uop_out, uop2)
 
         # executing uops out-of-order, while maintaining age-based priority
         s.dut.duop_in @= DualMicroOp.from_bits(Bits(DualMicroOp.nbits, 0))
-        s.dut.sim_tick()
-        s.assertEqual(s.dut.uop_out, uop2)
         s.dut.sim_tick()
         s.assertEqual(s.dut.uop_out, uop4)
 

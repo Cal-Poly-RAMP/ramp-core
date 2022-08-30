@@ -7,6 +7,8 @@ from hypothesis import given, strategies as st
 
 # See Verilog debugging for a more inclusive testcase
 NTAGS = 8
+
+
 class TestBranchAllocate(unittest.TestCase):
     def setUp(s) -> None:
         # runs before every test
@@ -21,9 +23,11 @@ class TestBranchAllocate(unittest.TestCase):
             print("final:", s.dut.line_trace())
 
     # neither instruction are branches, with dealloc
-    @given(st.integers(min_value=0, max_value=2**NTAGS-1),
-            st.booleans(),
-            st.integers(min_value=0, max_value=NTAGS-1))
+    @given(
+        st.integers(min_value=0, max_value=2**NTAGS - 1),
+        st.booleans(),
+        st.integers(min_value=0, max_value=NTAGS - 1),
+    )
     def test_two_non_br(s, freelist, dealloc_en, dealloc_msg):
         s.dut.br_freelist @= Bits(NTAGS, freelist)
         s.dut.br_tag[0].rdy @= 0
@@ -47,9 +51,11 @@ class TestBranchAllocate(unittest.TestCase):
         assert s.dut.br_freelist == next_freelist
 
     # first instruction is a branch
-    @given(st.integers(min_value=0, max_value=2**NTAGS-1),
-            st.booleans(),
-            st.integers(min_value=0, max_value=NTAGS-1))
+    @given(
+        st.integers(min_value=0, max_value=2**NTAGS - 1),
+        st.booleans(),
+        st.integers(min_value=0, max_value=NTAGS - 1),
+    )
     def test_first_br(s, freelist, dealloc_en, dealloc_msg):
         s.dut.br_freelist @= Bits(NTAGS, freelist)
         s.dut.br_tag[0].rdy @= 1
@@ -63,7 +69,7 @@ class TestBranchAllocate(unittest.TestCase):
         next_freelist @= freelist & ~(1 << dealloc_msg) if dealloc_en else freelist
 
         s.dut.sim_eval_combinational()
-        if next_freelist == 2**NTAGS-1:
+        if next_freelist == 2**NTAGS - 1:
             assert s.dut.br_tag[0].en == 0
             assert s.dut.br_tag[1].en == 0
             assert s.dut.br_mask[0] == next_freelist
@@ -89,9 +95,11 @@ class TestBranchAllocate(unittest.TestCase):
         assert s.dut.br_freelist == next_freelist
 
     # second instruction is a branch
-    @given(st.integers(min_value=0, max_value=2**NTAGS-1),
-            st.booleans(),
-            st.integers(min_value=0, max_value=NTAGS-1))
+    @given(
+        st.integers(min_value=0, max_value=2**NTAGS - 1),
+        st.booleans(),
+        st.integers(min_value=0, max_value=NTAGS - 1),
+    )
     def test_second_br(s, freelist, dealloc_en, dealloc_msg):
         s.dut.br_freelist @= Bits(NTAGS, freelist)
         s.dut.br_tag[0].rdy @= 0
@@ -105,7 +113,7 @@ class TestBranchAllocate(unittest.TestCase):
         next_freelist @= freelist & ~(1 << dealloc_msg) if dealloc_en else freelist
 
         s.dut.sim_eval_combinational()
-        if next_freelist == 2**NTAGS-1:
+        if next_freelist == 2**NTAGS - 1:
             assert s.dut.br_tag[0].en == 0
             assert s.dut.br_tag[1].en == 0
             assert s.dut.br_mask[0] == next_freelist
@@ -130,9 +138,11 @@ class TestBranchAllocate(unittest.TestCase):
         assert s.dut.br_freelist == next_freelist
 
     # both instructions are branches
-    @given(st.integers(min_value=0, max_value=2**NTAGS-1),
-            st.booleans(),
-            st.integers(min_value=0, max_value=NTAGS-1))
+    @given(
+        st.integers(min_value=0, max_value=2**NTAGS - 1),
+        st.booleans(),
+        st.integers(min_value=0, max_value=NTAGS - 1),
+    )
     def test_both_br(s, freelist, dealloc_en, dealloc_msg):
         s.dut.br_freelist @= Bits(NTAGS, freelist)
         s.dut.br_tag[0].rdy @= 1
@@ -146,7 +156,7 @@ class TestBranchAllocate(unittest.TestCase):
         next_freelist @= freelist & ~(1 << dealloc_msg) if dealloc_en else freelist
 
         s.dut.sim_eval_combinational()
-        if "{:08b}".format(next_freelist.uint()).count('0') < 2:
+        if "{:08b}".format(next_freelist.uint()).count("0") < 2:
             # assert s.dut.br_tag[0].en == 0
             # assert s.dut.br_tag[1].en == 0
             assert s.dut.br_mask[0] == next_freelist
