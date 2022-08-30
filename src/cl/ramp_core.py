@@ -1,19 +1,7 @@
-from pymtl3 import Component, update, mk_bits
+from pymtl3 import Component, update, mk_bits, OutPort, Bits
+from pymtl3.stdlib.basic_rtl.registers import RegEnRst
+from pymtl3.stdlib.basic_rtl.register_files import RegisterFile
 
-from src.cl.decode import (
-    ALU_FUNCT_UNIT,
-    MEM_FUNCT_UNIT,
-    WINDOW_SIZE,
-    MEM_Q_SIZE,
-    MEM_SIZE,
-    NO_OP,
-    R_TYPE,
-    DualMicroOp,
-    NUM_PHYS_REGS,
-    Wire,
-    OutPort,
-    Bits,
-)
 from src.cl.commit_unit import CommitUnit
 from src.cl.fetch_stage import FetchPacket, FetchStage
 from src.cl.decode import Decode
@@ -25,8 +13,16 @@ from src.cl.memory_unit import MemoryUnit
 from src.cl.load_store_fu import LoadStoreFU
 from src.cl.branch_fu import BranchFU
 
-from pymtl3.stdlib.basic_rtl.registers import RegEnRst
-from pymtl3.stdlib.basic_rtl.register_files import RegisterFile
+from src.common.consts import (
+    ALU_FUNCT_UNIT,
+    MEM_FUNCT_UNIT,
+    WINDOW_SIZE,
+    MEM_Q_SIZE,
+    MEM_SIZE,
+    R_TYPE,
+    NUM_PHYS_REGS
+)
+from src.common.interfaces import MicroOp, DualMicroOp, NO_OP
 
 
 class RampCore(Component):
@@ -102,7 +98,7 @@ class RampCore(Component):
         s.branch_unit.rs1_din //= s.register_file.rdata[0]
         s.branch_unit.rs2_din //= s.register_file.rdata[1]
         s.branch_unit.uop //= s.int_issue_queue.uop_out
-        # mispredict signal output
+        # mispredict signal output br_update
         # s.
 
         # (6) commit unit - commit the changes

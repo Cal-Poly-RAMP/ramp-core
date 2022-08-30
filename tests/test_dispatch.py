@@ -3,14 +3,12 @@ from pymtl3 import *
 from hypothesis import given, strategies as st
 
 from src.cl.dispatch import Dispatch
-from src.cl.fetch_stage import FetchPacket
-from src.cl.decode import (
+from src.cl.decode import Decode
+
+from src.common.interfaces import DualMicroOp, MicroOp, NO_OP
+from src.common.consts import (
     B_TYPE,
     BRANCH_FUNCT_UNIT,
-    DualMicroOp,
-    MicroOp,
-    Decode,
-    NO_OP,
     INT_ISSUE_UNIT,
     MEM_ISSUE_UNIT,
 )

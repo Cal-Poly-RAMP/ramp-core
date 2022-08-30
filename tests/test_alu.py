@@ -1,7 +1,7 @@
 import unittest
 from pymtl3 import *
 from src.cl.alu import ALU
-from src.cl.decode import (
+from src.common.consts import (
     ALU_ADD,
     ALU_SLL,
     ALU_SLT,

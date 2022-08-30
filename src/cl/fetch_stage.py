@@ -11,8 +11,14 @@ from pymtl3 import (
 from pymtl3.stdlib.ifcs import RecvIfcRTL, SendIfcRTL
 from src.cl.icache import ICache
 
-ICACHE_ADDR_WIDTH = 8
-INSTR_WIDTH = 32
+from src.common.interfaces import (
+    BranchUpdate,
+    FetchPacket
+)
+from src.common.consts import (
+    ICACHE_ADDR_WIDTH,
+    INSTR_WIDTH,
+)
 
 # The fetch stage of the pipeline, responsible for fetching instructions and
 # branch prediction.
@@ -28,8 +34,8 @@ class FetchStage(Component):
         s.fetch_packet = OutPort(FetchPacket)
 
         # Getting mispredict redirect
-        s.mispredict = RecvIfcRTL(32)
-        s.mispredict.rdy //= Bits(1, 1)
+        s.br_update = RecvIfcRTL(BranchUpdate)
+        s.br_update.rdy //= Bits(1, 1)
 
         @update_ff
         def on_tick():
@@ -41,10 +47,10 @@ class FetchStage(Component):
 
         @update
         def combi():
-            if ~s.mispredict.en:
+            if ~s.br_update.msg.mispredict | ~s.br_update.en:
                 s.pc_next @= s.pc + 8  # TODO: branch prediction
             else:
-                s.pc_next @= s.mispredict.msg
+                s.pc_next @= s.br_update.msg.target
 
             s.icache_data @= s.icache.read_word(s.pc)
             s.fetch_packet @= FetchPacket(
@@ -57,12 +63,3 @@ class FetchStage(Component):
 
     def line_trace(s):
         return "PC: {}".format(s.pc) + "\n" + s.icache.line_trace()
-
-
-@bitstruct
-class FetchPacket:
-    pc: mk_bits(32)
-    branch_taken: mk_bits(1)
-    inst1: mk_bits(32)
-    inst2: mk_bits(32)
-    valid: mk_bits(1)

@@ -1,15 +1,16 @@
 from pymtl3 import *
-from src.cl.register_rename import NUM_PHYS_REGS, PHYS_REG_BITWIDTH
-from src.cl.ramp_core import RampCore
-from src.cl.fetch_stage import FetchPacket
 from pymtl3.stdlib.test_utils import config_model_with_cmdline_opts
-from src.cl.decode import (
-    MicroOp,
+
+from src.cl.ramp_core import RampCore
+
+from src.common.interfaces import MicroOp, FetchPacket
+from src.common.consts import (
     INT_ISSUE_UNIT,
     ALU_FUNCT_UNIT,
     R_TYPE,
     ALU_ADD,
     ALU_SUB,
+    NUM_PHYS_REGS,
 )
 
 

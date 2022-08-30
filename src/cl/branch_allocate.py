@@ -1,6 +1,7 @@
 # Responsible for allocating tags to branches, and branch masks for non-branches
 from pymtl3 import Component, OutPort, clog2, update, update_ff, Wire, Bits
 from pymtl3.stdlib.ifcs import RecvIfcRTL, SendIfcRTL
+from src.common.interfaces import BranchUpdate
 
 # TODO: should be able two back-to-back branches
 class BranchAllocate(Component):
@@ -13,7 +14,9 @@ class BranchAllocate(Component):
         s.br_freelist = Wire(ntags)
         s.br_freelist_next = Wire(ntags)
 
-        s.deallocate_tag = RecvIfcRTL(clog2(ntags))
+        # Getting deallocate tag
+        s.br_update = RecvIfcRTL(BranchUpdate)
+        s.br_update.rdy //= Bits(1, 1)
 
         s.full = Wire()
 
@@ -27,10 +30,9 @@ class BranchAllocate(Component):
         @update
         def updt():
             # deallocate executed branch
-            # breakpoint()
             s.br_freelist_next @= s.br_freelist
-            if s.deallocate_tag.en:
-                s.br_freelist_next[s.deallocate_tag.msg] @= 0
+            if s.br_update.en:
+                s.br_freelist_next[s.br_update.msg.tag] @= 0
 
             # allocate the first available bit in br_mask, if available
             # update freelist accordingly
@@ -53,4 +55,4 @@ class BranchAllocate(Component):
                 f"br_mask: {[e for e in s.br_mask]}\n"
                 f"br_tag_rdy: {[e.rdy for e in s.br_tag]}\n"
                 f"br_tag: {[e.msg if e.en else '-' for e in s.br_tag]}\n"
-                f"deallocate_tag: {s.deallocate_tag.msg if s.deallocate_tag.en else '-'}\n")
+                f"deallocate_tag: {s.br_update.msg.tag if s.br_update.en else '-'}\n")

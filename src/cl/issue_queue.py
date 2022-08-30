@@ -9,22 +9,18 @@ from pymtl3 import (
     zext,
     Bits,
 )
-from src.cl.register_rename import NUM_PHYS_REGS
-from src.cl.decode import (
+from src.common.consts import (
     B_TYPE,
     I_TYPE,
     INT_ISSUE_UNIT,
     J_TYPE,
-    NO_OP,
     R_TYPE,
     S_TYPE,
     U_TYPE,
-    DualMicroOp,
-    MicroOp,
+    NUM_PHYS_REGS,
+    ISSUE_QUEUE_DEPTH,
 )
-
-ISSUE_QUEUE_DEPTH = 16
-
+from src.common.interfaces import DualMicroOp, MicroOp, NO_OP
 
 class IssueQueue(Component):
     def construct(s):

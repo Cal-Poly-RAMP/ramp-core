@@ -12,37 +12,17 @@ from pymtl3 import (
     clog2,
 )
 
-NUM_ISA_REGS = 32
-ISA_REG_BITWIDTH = 5
-
-NUM_PHYS_REGS = 64
-PHYS_REG_BITWIDTH = 6
+from src.common.interfaces import (
+    LogicalRegs,
+    PhysicalRegs,
+    PRegBusy,
+)
+from src.common.consts import (
+    NUM_ISA_REGS,
+    NUM_PHYS_REGS,
+)
 
 REG_RENAME_ERR = "Tried to rename a register when no physical registers are free. Halting not implemented yet."
-
-
-@bitstruct
-class LogicalRegs:
-    lrd: mk_bits(ISA_REG_BITWIDTH)  # logical destination register
-    lrs1: mk_bits(ISA_REG_BITWIDTH)  # logical source register 1
-    lrs2: mk_bits(ISA_REG_BITWIDTH)  # logical source register 2
-
-
-@bitstruct
-class PhysicalRegs:
-    prd: mk_bits(
-        PHYS_REG_BITWIDTH
-    )  # physical dest register TODO: get bitwidth from phys reg file size
-    prs1: mk_bits(PHYS_REG_BITWIDTH)  # physical source register 1
-    prs2: mk_bits(PHYS_REG_BITWIDTH)  # physical source register 2
-    stale: mk_bits(PHYS_REG_BITWIDTH)  # stale physical register
-
-
-@bitstruct
-class PRegBusy:
-    prs1: mk_bits(1)
-    prs2: mk_bits(1)
-
 
 class RegisterRename(Component):
     def construct(s):
@@ -64,10 +44,10 @@ class RegisterRename(Component):
         s.ready_in = [InPort(clog2(NUM_PHYS_REGS)) for _ in range(2)]
 
         # map tables
-        s.map_table = [Wire(PHYS_REG_BITWIDTH) for _ in range(NUM_ISA_REGS)]
+        s.map_table = [Wire(clog2(NUM_PHYS_REGS)) for _ in range(NUM_ISA_REGS)]
 
-        s.map_table_wr1 = Wire(PHYS_REG_BITWIDTH)
-        s.map_table_wr2 = Wire(PHYS_REG_BITWIDTH)
+        s.map_table_wr1 = Wire(clog2(NUM_PHYS_REGS))
+        s.map_table_wr2 = Wire(clog2(NUM_PHYS_REGS))
 
         # internal freelist implemented as bit vector 1 -> free
         s.free_list_next = Wire(NUM_PHYS_REGS)  # -1 << 1
@@ -76,8 +56,8 @@ class RegisterRename(Component):
         # internal busy table
         s.busy_table_next = Wire(NUM_PHYS_REGS)
 
-        s.pdst1 = Wire(PHYS_REG_BITWIDTH)
-        s.pdst2 = Wire(PHYS_REG_BITWIDTH)
+        s.pdst1 = Wire(clog2(NUM_PHYS_REGS))
+        s.pdst2 = Wire(clog2(NUM_PHYS_REGS))
 
         s.ONE = Bits(NUM_PHYS_REGS, 1)
 

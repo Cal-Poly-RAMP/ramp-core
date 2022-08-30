@@ -17,106 +17,67 @@ from pymtl3 import (
     clog2,
 )
 from src.cl.fetch_stage import FetchPacket, INSTR_WIDTH
-from src.cl.register_rename import (
-    ISA_REG_BITWIDTH,
-    NUM_ISA_REGS,
-    NUM_PHYS_REGS,
-    PHYS_REG_BITWIDTH,
+from src.cl.register_rename import RegisterRename
+from src.cl.branch_allocate import BranchAllocate
+
+from src.common.interfaces import (
+    MicroOp,
+    DualMicroOp,
     LogicalRegs,
     PhysicalRegs,
     PRegBusy,
-    RegisterRename,
+
 )
-from src.cl.branch_allocate import BranchAllocate
+from src.common.consts import (
+    # fetch
+    INSTR_WIDTH,
+    # Decoding consts
+    OPCODE_SLICE,
+    RD_SLICE,
+    RS1_SLICE,
+    RS2_SLICE,
+    FUNCT3_SLICE,
+    INSTR_NOP,
+    RTYPE_OPCODE,
+    ITYPE_OPCODE1,
+    ITYPE_OPCODE2,
+    ITYPE_OPCODE3,
+    STYPE_OPCODE,
+    BTYPE_OPCODE,
+    UTYPE_OPCODE1,
+    UTYPE_OPCODE2,
+    JTYPE_OPCODE,
+    CSRTYPE_OPCODE,
+    # enumerations
+    # issue units
+    NA_ISSUE_UNIT,
+    INT_ISSUE_UNIT,
+    MEM_ISSUE_UNIT,
+    BRANCH_ISSUE_UNIT,
+    # functional units
+    NA_FUNCT_UNIT,
+    ALU_FUNCT_UNIT,
+    MEM_FUNCT_UNIT,
+    BRANCH_FUNCT_UNIT,
+    # instruction types
+    NA_TYPE,
+    R_TYPE,
+    I_TYPE,
+    S_TYPE,
+    B_TYPE,
+    U_TYPE,
+    J_TYPE,
+    CSR_TYPE,
+    # TODO: move to a file that makes sense, (circular import)
+    MEM_Q_SIZE,
+    WINDOW_SIZE,
+    NUM_BRANCHES, # maximum depth of nested branches
+    NUM_ISA_REGS,
+    NUM_PHYS_REGS,
 
-# Decoding consts
-OPCODE_SLICE = slice(0, 7)
-RD_SLICE = slice(7, 12)
-RS1_SLICE = slice(15, 20)
-RS2_SLICE = slice(20, 25)
-FUNCT3_SLICE = slice(12, 15)
-FUNCT7_SLICE = slice(25, 32)
-
-INSTR_NOP = 0x00000013  # a nop instruction
-
-RTYPE_OPCODE = 0b0110011
-ITYPE_OPCODE1 = 0b0010011
-ITYPE_OPCODE2 = 0b0000011
-ITYPE_OPCODE3 = 0b1100111
-STYPE_OPCODE = 0b0100011
-BTYPE_OPCODE = 0b1100011
-UTYPE_OPCODE1 = 0b0110111
-UTYPE_OPCODE2 = 0b0010111
-JTYPE_OPCODE = 0b1101111
-CSRTYPE_OPCODE = 0b1110011
-
-# enumerations
-# issue units
-NA_ISSUE_UNIT = 0b00
-INT_ISSUE_UNIT = 0b01
-MEM_ISSUE_UNIT = 0b10
-BRANCH_ISSUE_UNIT = 0b11
-
-# functional units
-NA_FUNCT_UNIT = 0b00
-ALU_FUNCT_UNIT = 0b01
-MEM_FUNCT_UNIT = 0b10
-BRANCH_FUNCT_UNIT = 0b11
-
-# instruction types
-NA_TYPE = 0b00
-R_TYPE = 0b001
-I_TYPE = 0b010
-S_TYPE = 0b011
-B_TYPE = 0b100
-U_TYPE = 0b101
-J_TYPE = 0b110
-CSR_TYPE = 0b111
-
-# ALU functions [funct7[5], funct3]
-ALU_ADD = Bits(4, 0b0000)
-ALU_SUB = Bits(4, 0b1000)
-ALU_OR = Bits(4, 0b0110)
-ALU_AND = Bits(4, 0b0111)
-ALU_XOR = Bits(4, 0b0100)
-ALU_SRL = Bits(4, 0b0101)
-ALU_SLL = Bits(4, 0b0001)
-ALU_SRA = Bits(4, 0b1101)
-ALU_SLT = Bits(4, 0b0010)
-ALU_SLTU = Bits(4, 0b0011)
-ALU_LUI_COPY = Bits(4, 0b1001)
-
-# memory functions [opcode[5], funct3]
-MEM_LB = Bits(4, 0b0000)
-MEM_LH = Bits(4, 0b0001)
-MEM_LW = Bits(4, 0b0010)
-MEM_LBU = Bits(4, 0b0100)
-MEM_LHU = Bits(4, 0b0101)
-MEM_LOAD = Bits(4, 0b0000)
-MEM_SB = Bits(4, 0b1000)
-MEM_SH = Bits(4, 0b1001)
-MEM_SW = Bits(4, 0b1010)
-MEM_STORE = Bits(4, 0b1000)
-MEM_FLAG = Bits(4, 0b1000)  # flag for determining load or store
-
-# branch functions [0, funct3]
-BFU_BEQ = Bits(4, 0b0000)
-BFU_BNE = Bits(4, 0b0001)
-BFU_BLT = Bits(4, 0b0100)
-BFU_BGE = Bits(4, 0b0101)
-BFU_BLTU = Bits(4, 0b0110)
-BFU_BGEU = Bits(4, 0b0111)
-
-# TODO: move to a file that makes sense, (circular import)
-ROB_ADDR_WIDTH = 5
-ROB_SIZE = 2**ROB_ADDR_WIDTH
-
-MEM_Q_SIZE = 16
-MEM_SIZE = 256
-WINDOW_SIZE = 2
-
-NUM_BRANCHES = 8 # maximum depth of nested branches
-
+    NUM_ISA_REGS,
+    NUM_PHYS_REGS,
+)
 
 class Decode(Component):
     # For decoding fetch packet into two micro-ops
@@ -377,68 +338,6 @@ class SingleInstDecode(Component):
                 s.uop.lrs1 @= 0
                 s.uop.lrd @= 0
                 s.uop.stale @= 0
-
-
-@bitstruct
-class MicroOp:
-    optype: mk_bits(3)  # micro-op type
-    inst: mk_bits(INSTR_WIDTH)  # instruction
-    pc: mk_bits(32)  # program counter TODO: just forward to ROB?
-    valid: mk_bits(1)  # whether this is a valid uop (not noop)
-
-    lrd: mk_bits(ISA_REG_BITWIDTH)  # logical destination register
-    lrs1: mk_bits(ISA_REG_BITWIDTH)  # logical source register 1
-    lrs2: mk_bits(ISA_REG_BITWIDTH)  # logical source register 2
-
-    prd: mk_bits(PHYS_REG_BITWIDTH)  # physical dest register
-    prs1: mk_bits(PHYS_REG_BITWIDTH)  # physical source register 1
-    prs2: mk_bits(PHYS_REG_BITWIDTH)  # physical source register 2
-    stale: mk_bits(PHYS_REG_BITWIDTH)  # stale physical register
-
-    # immediate TODO: encode to be smaller, and use sign extension TODO: 64 bit?
-    imm: mk_bits(32)
-
-    issue_unit: mk_bits(2)  # issue unit
-    funct_unit: mk_bits(2)  # functional unit
-    funct_op: mk_bits(4)  # functional unit operation
-
-    branch_taken: mk_bits(1)  # whether branch was taken
-    br_mask: mk_bits(NUM_BRANCHES) # bitmask corresponding to pred branches
-    br_tag: mk_bits(clog2(NUM_BRANCHES)) # branch tag (for branch instructions)
-
-    rob_idx: mk_bits(ROB_ADDR_WIDTH)  # index of instruction in ROB
-    mem_q_idx: mk_bits(clog2(MEM_Q_SIZE))  # index of instruction in memory queue
-
-    def __str__(s):
-        return (
-            f"optype: {s.optype} inst: {s.inst} pc: {s.pc}"
-            f" valid: {s.valid} imm: {s.imm}"
-            f" i_unit: {s.issue_unit} f_unit: {s.funct_unit} f_op: {s.funct_op}"
-            f" br_taken: {s.branch_taken} br_mask: {s.br_mask} br_tag: {s.br_tag}"
-            f" lr : {s.lrd.uint():02d}:{s.lrs1.uint():02d}:{s.lrs2.uint():02d}"
-            f" pr : {s.prd.uint():02d}:{s.prs1.uint():02d}:{s.prs2.uint():02d}"
-            f" stale: x{s.stale.uint():02d}"
-            f" rob_idx: {s.rob_idx}"
-        )
-
-    def __bool__(self):
-        return bool(self.valid)
-
-
-NO_OP = Bits(MicroOp.nbits, 0)  # no-op uop, invalid bit is automatically set to zero
-
-
-@bitstruct
-class DualMicroOp:
-    uop1: MicroOp
-    uop2: MicroOp
-
-    def __str__(s):
-        return f"{s.uop1}\n\t{s.uop2}"
-
-    def __bool__(self):
-        return bool(self.uop1) or bool(self.uop2)
-
 
 # Used for deriving data from instructions
 @bitstruct

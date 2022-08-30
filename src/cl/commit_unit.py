@@ -1,9 +1,11 @@
 from pymtl3 import Component, InPort, clog2, update, OutPort
-from src.cl.reorder_buffer import ROBEntry, ROBEntryUop
-from src.cl.decode import MEM_STORE, MEM_SW, S_TYPE, DualMicroOp, NUM_PHYS_REGS
-from src.cl.memory_unit import LoadStoreEntry
 from pymtl3.stdlib.ifcs import RecvIfcRTL, SendIfcRTL
 
+from src.cl.reorder_buffer import ROBEntry, ROBEntryUop
+from src.cl.memory_unit import LoadStoreEntry
+
+from src.common.consts import MEM_STORE, MEM_SW, S_TYPE, NUM_PHYS_REGS
+from src.common.interfaces import DualMicroOp
 
 class CommitUnit(Component):
     def construct(s, width=2):

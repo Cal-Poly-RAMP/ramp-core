@@ -14,8 +14,8 @@ from pymtl3 import (
     update_ff,
     clog2,
 )
-from src.cl.decode import MEM_Q_SIZE, ROB_ADDR_WIDTH, ROB_SIZE, DualMicroOp
-from src.cl.register_rename import ISA_REG_BITWIDTH, PHYS_REG_BITWIDTH
+from src.common.consts import MEM_Q_SIZE, ROB_SIZE, ROB_SIZE, NUM_ISA_REGS, NUM_PHYS_REGS
+from src.common.interfaces import DualMicroOp
 
 
 ## TODO NOW: make it so that `valid` is only a flag, not set by the ROB. `Busy` the only one set by ROB
@@ -35,12 +35,12 @@ class ReorderBuffer(Component):
         # Defining the instruction bank for storing inflight instructions
         # 1 smaller, because the uops are stored in sets of two in the ROB, but
         # indexed individually.
-        s.internal_rob_head = Wire(ROB_ADDR_WIDTH - 1)
-        s.internal_rob_head_next = Wire(ROB_ADDR_WIDTH - 1)
-        s.internal_rob_tail = Wire(ROB_ADDR_WIDTH - 1)
-        s.internal_rob_tail_next = Wire(ROB_ADDR_WIDTH - 1)
+        s.internal_rob_head = Wire(clog2(ROB_SIZE) - 1)
+        s.internal_rob_head_next = Wire(clog2(ROB_SIZE) - 1)
+        s.internal_rob_tail = Wire(clog2(ROB_SIZE) - 1)
+        s.internal_rob_tail_next = Wire(clog2(ROB_SIZE) - 1)
         # for updating microops with ROB index
-        s.rob_tail = OutPort(ROB_ADDR_WIDTH)
+        s.rob_tail = OutPort(clog2(ROB_SIZE))
 
         # a circular buffer of entries
         s.instr_bank = [Wire(ROBEntry) for _ in range(ROB_SIZE // 2)]
@@ -51,7 +51,7 @@ class ReorderBuffer(Component):
         @update
         def comb_():
             # indexed so that uop1 is at odd indices and uop2 is at even indices
-            s.rob_tail @= sext(s.internal_rob_tail, ROB_ADDR_WIDTH) << 1
+            s.rob_tail @= sext(s.internal_rob_tail, clog2(ROB_SIZE)) << 1
 
             # bank full if head == tail and value is busy
             s.bank_full @= (
@@ -239,8 +239,8 @@ class ROBEntryUop:
     valid: mk_bits(1)
     busy: mk_bits(1)
     optype: mk_bits(3)
-    prd: mk_bits(PHYS_REG_BITWIDTH)
-    stale: mk_bits(PHYS_REG_BITWIDTH)
+    prd: mk_bits(clog2(NUM_PHYS_REGS))
+    stale: mk_bits(clog2(NUM_PHYS_REGS))
     data: mk_bits(32)
     # for store instructions
     mem_q_idx: mk_bits(clog2(MEM_Q_SIZE))
@@ -258,15 +258,15 @@ class ROBEntry:
 @bitstruct
 class ExecToROB:
     # index of the operation just completed by int alu, and whether it is valid
-    int_rob_idx: mk_bits(ROB_ADDR_WIDTH)
+    int_rob_idx: mk_bits(clog2(ROB_SIZE))
     int_rob_complete: mk_bits(1)
     int_data: mk_bits(32)
     # index of the load operation just completed by mem unit, and whether it is valid
-    load_rob_idx: mk_bits(ROB_ADDR_WIDTH)
+    load_rob_idx: mk_bits(clog2(ROB_SIZE))
     load_rob_complete: mk_bits(1)
     load_data: mk_bits(32)
     # index of the store operation just completed by mem unit, and whether it is valid
-    store_rob_idx: mk_bits(ROB_ADDR_WIDTH)
+    store_rob_idx: mk_bits(clog2(ROB_SIZE))
     store_mem_q_idx: mk_bits(clog2(MEM_Q_SIZE))
     store_rob_complete: mk_bits(1)
     store_addr: mk_bits(32)

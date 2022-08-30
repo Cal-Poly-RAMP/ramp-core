@@ -1,6 +1,7 @@
 import unittest
 from pymtl3 import *
 from src.cl.branch_allocate import BranchAllocate
+from src.common.interfaces import BranchUpdate
 
 from hypothesis import given, strategies as st
 
@@ -27,8 +28,10 @@ class TestBranchAllocate(unittest.TestCase):
         s.dut.br_freelist @= Bits(NTAGS, freelist)
         s.dut.br_tag[0].rdy @= 0
         s.dut.br_tag[1].rdy @= 0
-        s.dut.deallocate_tag.en @= dealloc_en
-        s.dut.deallocate_tag.msg @= dealloc_msg
+
+        s.dut.br_update.en @= dealloc_en
+        s.dut.br_update.msg.tag @= dealloc_msg
+        s.dut.br_update.msg.mispredict @= 0
 
         next_freelist = freelist & ~(1 << dealloc_msg) if dealloc_en else freelist
 
@@ -51,8 +54,10 @@ class TestBranchAllocate(unittest.TestCase):
         s.dut.br_freelist @= Bits(NTAGS, freelist)
         s.dut.br_tag[0].rdy @= 1
         s.dut.br_tag[1].rdy @= 0
-        s.dut.deallocate_tag.en @= dealloc_en
-        s.dut.deallocate_tag.msg @= dealloc_msg
+
+        s.dut.br_update.en @= dealloc_en
+        s.dut.br_update.msg.tag @= dealloc_msg
+        s.dut.br_update.msg.mispredict @= 0
 
         next_freelist = Bits(NTAGS)
         next_freelist @= freelist & ~(1 << dealloc_msg) if dealloc_en else freelist
@@ -91,8 +96,10 @@ class TestBranchAllocate(unittest.TestCase):
         s.dut.br_freelist @= Bits(NTAGS, freelist)
         s.dut.br_tag[0].rdy @= 0
         s.dut.br_tag[1].rdy @= 1
-        s.dut.deallocate_tag.en @= dealloc_en
-        s.dut.deallocate_tag.msg @= dealloc_msg
+
+        s.dut.br_update.en @= dealloc_en
+        s.dut.br_update.msg.tag @= dealloc_msg
+        s.dut.br_update.msg.mispredict @= 0
 
         next_freelist = Bits(NTAGS)
         next_freelist @= freelist & ~(1 << dealloc_msg) if dealloc_en else freelist
@@ -130,8 +137,10 @@ class TestBranchAllocate(unittest.TestCase):
         s.dut.br_freelist @= Bits(NTAGS, freelist)
         s.dut.br_tag[0].rdy @= 1
         s.dut.br_tag[1].rdy @= 1
-        s.dut.deallocate_tag.en @= dealloc_en
-        s.dut.deallocate_tag.msg @= dealloc_msg
+
+        s.dut.br_update.en @= dealloc_en
+        s.dut.br_update.msg.tag @= dealloc_msg
+        s.dut.br_update.msg.mispredict @= 0
 
         next_freelist = Bits(NTAGS)
         next_freelist @= freelist & ~(1 << dealloc_msg) if dealloc_en else freelist

@@ -1,7 +1,9 @@
 import unittest
 from pymtl3 import *
 from src.cl.branch_fu import BranchFU
-from src.cl.decode import (
+
+from src.common.interfaces import MicroOp
+from src.common.consts import (
     BFU_BEQ,
     BFU_BNE,
     BFU_BLT,
@@ -9,7 +11,6 @@ from src.cl.decode import (
     BFU_BLTU,
     BFU_BGEU,
     BRANCH_FUNCT_UNIT,
-    MicroOp,
 )
 from hypothesis import given, strategies as st
 
@@ -53,18 +54,18 @@ class TestALU(unittest.TestCase):
         s.dut.sim_tick()
         # correctly predicted
         if rs1 == rs2 and uop.branch_taken:
-            s.assertEqual(s.dut.mispredict.en, 0)
+            s.assertEqual(s.dut.br_update.msg.mispredict, 0)
         # incorrectly predicted
         elif rs1 == rs2 and not uop.branch_taken:
-            s.assertEqual(s.dut.mispredict.en, 1)
-            s.assertEqual(s.dut.mispredict.msg, uop.pc + uop.imm)
+            s.assertEqual(s.dut.br_update.msg.mispredict, 1)
+            s.assertEqual(s.dut.br_update.msg.target, uop.pc + uop.imm)
         # incorrectly predicted
         elif rs1 != rs2 and uop.branch_taken:
-            s.assertEqual(s.dut.mispredict.en, 1)
-            s.assertEqual(s.dut.mispredict.msg, uop.pc + 8)
+            s.assertEqual(s.dut.br_update.msg.mispredict, 1)
+            s.assertEqual(s.dut.br_update.msg.target, uop.pc + 8)
         # correctly predicted
         elif rs1 != rs2 and not uop.branch_taken:
-            s.assertEqual(s.dut.mispredict.en, 0)
+            s.assertEqual(s.dut.br_update.msg.mispredict, 0)
         else:
             assert False, "should not reach here"
 
@@ -79,18 +80,18 @@ class TestALU(unittest.TestCase):
         s.dut.sim_tick()
         # correctly predicted
         if rs1 != rs2 and uop.branch_taken:
-            s.assertEqual(s.dut.mispredict.en, 0)
+            s.assertEqual(s.dut.br_update.msg.mispredict, 0)
         # incorrectly predicted
         elif rs1 != rs2 and not uop.branch_taken:
-            s.assertEqual(s.dut.mispredict.en, 1)
-            s.assertEqual(s.dut.mispredict.msg, uop.pc + uop.imm)
+            s.assertEqual(s.dut.br_update.msg.mispredict, 1)
+            s.assertEqual(s.dut.br_update.msg.target, uop.pc + uop.imm)
         # incorrectly predicted
         elif rs1 == rs2 and uop.branch_taken:
-            s.assertEqual(s.dut.mispredict.en, 1)
-            s.assertEqual(s.dut.mispredict.msg, uop.pc + 8)
+            s.assertEqual(s.dut.br_update.msg.mispredict, 1)
+            s.assertEqual(s.dut.br_update.msg.target, uop.pc + 8)
         # correctly predicted
         elif rs1 == rs2 and not uop.branch_taken:
-            s.assertEqual(s.dut.mispredict.en, 0)
+            s.assertEqual(s.dut.br_update.msg.mispredict, 0)
         else:
             assert False, "should not reach here"
 
@@ -105,18 +106,18 @@ class TestALU(unittest.TestCase):
         s.dut.sim_tick()
         # correctly predicted
         if rs1 < rs2 and uop.branch_taken:
-            s.assertEqual(s.dut.mispredict.en, 0)
+            s.assertEqual(s.dut.br_update.msg.mispredict, 0)
         # incorrectly predicted
         elif rs1 < rs2 and not uop.branch_taken:
-            s.assertEqual(s.dut.mispredict.en, 1)
-            s.assertEqual(s.dut.mispredict.msg, uop.pc + uop.imm)
+            s.assertEqual(s.dut.br_update.msg.mispredict, 1)
+            s.assertEqual(s.dut.br_update.msg.target, uop.pc + uop.imm)
         # incorrectly predicted
         elif rs1 >= rs2 and uop.branch_taken:
-            s.assertEqual(s.dut.mispredict.en, 1)
-            s.assertEqual(s.dut.mispredict.msg, uop.pc + 8)
+            s.assertEqual(s.dut.br_update.msg.mispredict, 1)
+            s.assertEqual(s.dut.br_update.msg.target, uop.pc + 8)
         # correctly predicted
         elif rs1 >= rs2 and not uop.branch_taken:
-            s.assertEqual(s.dut.mispredict.en, 0)
+            s.assertEqual(s.dut.br_update.msg.mispredict, 0)
         else:
             assert False, "should not reach here"
 
@@ -131,18 +132,18 @@ class TestALU(unittest.TestCase):
         s.dut.sim_tick()
         # correctly predicted
         if rs1 >= rs2 and uop.branch_taken:
-            s.assertEqual(s.dut.mispredict.en, 0)
+            s.assertEqual(s.dut.br_update.msg.mispredict, 0)
         # incorrectly predicted
         elif rs1 >= rs2 and not uop.branch_taken:
-            s.assertEqual(s.dut.mispredict.en, 1)
-            s.assertEqual(s.dut.mispredict.msg, uop.pc + uop.imm)
+            s.assertEqual(s.dut.br_update.msg.mispredict, 1)
+            s.assertEqual(s.dut.br_update.msg.target, uop.pc + uop.imm)
         # incorrectly predicted
         elif rs1 < rs2 and uop.branch_taken:
-            s.assertEqual(s.dut.mispredict.en, 1)
-            s.assertEqual(s.dut.mispredict.msg, uop.pc + 8)
+            s.assertEqual(s.dut.br_update.msg.mispredict, 1)
+            s.assertEqual(s.dut.br_update.msg.target, uop.pc + 8)
         # correctly predicted
         elif rs1 < rs2 and not uop.branch_taken:
-            s.assertEqual(s.dut.mispredict.en, 0)
+            s.assertEqual(s.dut.br_update.msg.mispredict, 0)
         else:
             assert False, "should not reach here"
 

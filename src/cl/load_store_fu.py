@@ -1,15 +1,15 @@
 from pymtl3 import Component, InPort, OutPort, update, sext, clog2, Bits, zext
 from pymtl3.stdlib.ifcs import RecvIfcRTL, SendIfcRTL
 
-from src.cl.decode import (
+from src.common.consts import (
     MEM_FLAG,
-    PHYS_REG_BITWIDTH,
+    NUM_PHYS_REGS,
     MEM_LOAD,
     MEM_STORE,
     MEM_SB,
     MEM_SH,
     MEM_SW,
-    ROB_ADDR_WIDTH,
+    ROB_SIZE,
     MEM_Q_SIZE,
 )
 from src.cl.memory_unit import LoadStoreEntry
@@ -20,9 +20,9 @@ class LoadStoreFU(Component):
     def construct(s):
         s.rs1_din = InPort(32)
         s.rs2_din = InPort(32)
-        s.prd_addr_in = InPort(PHYS_REG_BITWIDTH)
+        s.prd_addr_in = InPort(clog2(NUM_PHYS_REGS))
         s.imm_in = InPort(32)
-        s.rob_idx_in = InPort(ROB_ADDR_WIDTH)
+        s.rob_idx_in = InPort(clog2(ROB_SIZE))
         s.mem_q_idx_in = InPort(clog2(MEM_Q_SIZE))
         s.enable = InPort()
 

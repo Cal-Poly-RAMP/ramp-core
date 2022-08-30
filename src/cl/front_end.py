@@ -1,9 +1,11 @@
 from pymtl3 import Component, OutPort, update
 from pymtl3.stdlib.basic_rtl.registers import RegEnRst
-from src.cl.register_rename import NUM_PHYS_REGS
-from src.cl.decode import Decode, DualMicroOp
-from src.cl.fetch_stage import FetchStage, FetchPacket
 
+from src.cl.decode import Decode
+from src.cl.fetch_stage import FetchStage
+
+from src.common.consts import NUM_PHYS_REGS
+from src.common.interfaces import FetchPacket, DualMicroOp
 
 class FrontEnd(Component):
     def construct(s):

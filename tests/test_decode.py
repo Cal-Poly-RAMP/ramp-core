@@ -1,8 +1,9 @@
 import unittest
 from pymtl3 import *
 
-from src.cl.fetch_stage import FetchPacket
-from src.cl.decode import (
+from src.cl.decode import Decode
+from src.common.interfaces import MicroOp, FetchPacket, NO_OP
+from src.common.consts import (
     ALU_LUI_COPY,
     ALU_SLL,
     BRANCH_FUNCT_UNIT,
@@ -13,9 +14,6 @@ from src.cl.decode import (
     MEM_SW,
     NA_FUNCT_UNIT,
     NA_ISSUE_UNIT,
-    MicroOp,
-    Decode,
-    NO_OP,
     INT_ISSUE_UNIT,
     MEM_ISSUE_UNIT,
     NA_FUNCT_UNIT,

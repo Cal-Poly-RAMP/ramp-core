@@ -1,25 +1,18 @@
 import unittest
 from pymtl3 import DefaultPassGroup, concat
 from src.cl.front_end import FrontEnd
-from src.cl.decode import (
-    Decode,
-    DualMicroOp,
-    MicroOp,
-    NO_OP,
+
+from src.common.interfaces import MicroOp, FetchPacket
+from src.common.consts import (
     INT_ISSUE_UNIT,
     MEM_ISSUE_UNIT,
     ALU_FUNCT_UNIT,
     MEM_FUNCT_UNIT,
     R_TYPE,
     S_TYPE,
-    U_TYPE,
-    B_TYPE,
     I_TYPE,
-    J_TYPE,
-    CSR_TYPE,
     NA_TYPE,
 )
-from src.cl.fetch_stage import FetchPacket
 
 
 class TestFrontEnd(unittest.TestCase):

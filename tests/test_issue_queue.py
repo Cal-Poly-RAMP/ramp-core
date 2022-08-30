@@ -1,19 +1,20 @@
 import unittest
 from pymtl3 import *
-from src.cl.decode import (
+
+from src.cl.issue_queue import IssueQueue
+from src.fl.util import one_hot
+
+from src.common.interfaces import DualMicroOp, MicroOp
+from src.common.consts import (
     B_TYPE,
     I_TYPE,
     J_TYPE,
-    NO_OP,
     R_TYPE,
     S_TYPE,
     U_TYPE,
-    DualMicroOp,
-    MicroOp,
+    NUM_PHYS_REGS,
+    ISSUE_QUEUE_DEPTH,
 )
-from src.cl.register_rename import NUM_PHYS_REGS
-from src.cl.issue_queue import ISSUE_QUEUE_DEPTH, IssueQueue
-from src.fl.util import one_hot
 
 NPR = NUM_PHYS_REGS
 

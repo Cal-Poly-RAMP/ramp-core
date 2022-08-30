@@ -1,5 +1,5 @@
 from pymtl3 import Component, Bits, InPort, OutPort, update, zext, Wire
-from src.cl.decode import (
+from src.common.consts import (
     ALU_ADD,
     ALU_SLL,
     ALU_SLT,

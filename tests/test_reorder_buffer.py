@@ -1,11 +1,9 @@
 import unittest
 from pymtl3 import *
 
+from src.common.consts import ROB_SIZE
 from src.cl.reorder_buffer import ROBEntryUop, ReorderBuffer, ROBEntry, ExecToROB
-from src.cl.decode import (
-    DualMicroOp,
-    ROB_SIZE,
-)
+from src.cl.decode import DualMicroOp
 
 EMPTY_ROB_ENTRY = ROBEntry.from_bits(Bits(ROBEntry.nbits, 0))
 

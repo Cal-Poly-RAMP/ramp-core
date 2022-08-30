@@ -1,14 +1,11 @@
 from pymtl3 import Component, InPort, OutPort, update, mk_bits, zext, clog2
-from src.cl.decode import (
-    B_TYPE,
+from src.common.interfaces import DualMicroOp, MicroOp, NO_OP
+from src.common.consts import (
     BRANCH_FUNCT_UNIT,
     MEM_Q_SIZE,
-    DualMicroOp,
-    MicroOp,
-    NO_OP,
     INT_ISSUE_UNIT,
     MEM_ISSUE_UNIT,
-    ROB_ADDR_WIDTH,
+    ROB_SIZE,
 )
 
 
@@ -16,7 +13,7 @@ class Dispatch(Component):
     def construct(s):
         # Interface (dual uops in, dual uops out)
         s.in_ = InPort(DualMicroOp)
-        s.rob_idx = InPort(ROB_ADDR_WIDTH)  # for updating uops with ROB index
+        s.rob_idx = InPort(clog2(ROB_SIZE))  # for updating uops with ROB index
         s.mem_q_tail = InPort(clog2(MEM_Q_SIZE))
         s.to_rob = OutPort(DualMicroOp)  # for adding microops to ROB
 
@@ -67,7 +64,7 @@ class SingleDispatch(Component):
     def construct(s):
         # Interface (dual uops in, dual uops out)
         s.in_ = InPort(MicroOp)
-        s.rob_idx = InPort(ROB_ADDR_WIDTH)  # for updating uops with ROB index
+        s.rob_idx = InPort(clog2(ROB_SIZE))  # for updating uops with ROB index
         s.mem_q_idx = InPort(clog2(MEM_Q_SIZE))
         s.to_rob = OutPort(MicroOp)  # for adding microops to ROB
 

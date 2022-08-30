@@ -15,11 +15,11 @@ from pymtl3 import (
 )
 
 from src.cl.dram import DRAM
-from src.cl.decode import (
+from src.common.consts import (
     MEM_LOAD,
     MEM_Q_SIZE,
     MEM_STORE,
-    ROB_ADDR_WIDTH,
+    ROB_SIZE,
     MEM_FLAG,
     WINDOW_SIZE,
     MEM_SW,
@@ -115,7 +115,7 @@ class MemoryUnit(Component):
 @bitstruct
 class LoadEntry:
     data: mk_bits(32)
-    rob_idx: mk_bits(ROB_ADDR_WIDTH)
+    rob_idx: mk_bits(clog2(ROB_SIZE))
 
 
 @bitstruct
@@ -123,7 +123,7 @@ class LoadStoreEntry:
     op: mk_bits(4)  # same as decode MEM constants
     addr: mk_bits(32)
     data: mk_bits(32)
-    rob_idx: mk_bits(ROB_ADDR_WIDTH)
+    rob_idx: mk_bits(clog2(ROB_SIZE))
     mem_q_idx: mk_bits(clog2(MEM_Q_SIZE))
 
     # def __str__(s):
