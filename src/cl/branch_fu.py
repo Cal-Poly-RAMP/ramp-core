@@ -24,6 +24,8 @@ class BranchFU(Component):
         # TODO: redirect address for now, will contain more metedata later
         s.br_update = SendIfcRTL(BranchUpdate)
 
+        # TODO: Code for linking registers for JAL and JALR
+
         @update
         def updt():
             # for signed logic

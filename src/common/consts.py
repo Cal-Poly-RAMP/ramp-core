@@ -3,6 +3,7 @@ from pymtl3 import Bits
 # fetch
 ICACHE_ADDR_WIDTH = 8
 INSTR_WIDTH = 32
+DATA_WIDTH = 32
 
 # Decoding consts
 OPCODE_SLICE = slice(0, 7)

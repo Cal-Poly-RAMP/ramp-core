@@ -1,4 +1,4 @@
-from pymtl3 import *
+from pymtl3 import DefaultPassGroup, Bits
 from pymtl3.stdlib.test_utils import config_model_with_cmdline_opts
 
 from src.cl.ramp_core import RampCore
@@ -13,12 +13,12 @@ from src.common.consts import (
     NUM_PHYS_REGS,
 )
 
-
+LNTRC = True
 def test_system_dual_rtype(cmdline_opts):
     # Configure the model from command line flags
     dut = RampCore()
     dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
-    dut.apply(DefaultPassGroup(linetrace=True, vcdwave="vcd/test_ramp_core1"))
+    dut.apply(DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core1"))
     dut.sim_reset()
     # add x3, x2, x1
     # sub x13, x12, x11
@@ -165,7 +165,7 @@ def test_system_iu_type(cmdline_opts):
     # addi x2, x1, 0x000000af
     dut = RampCore()
     dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
-    dut.apply(DefaultPassGroup(linetrace=True, vcdwave="vcd/test_ramp_core2"))
+    dut.apply(DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core2"))
     dut.sim_reset()
 
     # Load Program
@@ -185,7 +185,7 @@ def test_system_multiple(cmdline_opts):
 
     dut = RampCore()
     dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
-    dut.apply(DefaultPassGroup(linetrace=True, vcdwave="vcd/test_ramp_core3"))
+    dut.apply(DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core3"))
     dut.sim_reset()
 
     # Load Program
@@ -217,7 +217,7 @@ def test_system_multiple2(cmdline_opts):
 
     dut = RampCore()
     dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
-    dut.apply(DefaultPassGroup(linetrace=True, vcdwave="vcd/test_ramp_core4"))
+    dut.apply(DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core4"))
     dut.sim_reset()
 
     # Load Program
@@ -234,7 +234,7 @@ def test_system5(cmdline_opts):
 
     dut = RampCore()
     dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
-    dut.apply(DefaultPassGroup(linetrace=True, vcdwave="vcd/test_ramp_core5"))
+    dut.apply(DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core5"))
     dut.sim_reset()
 
     # Load Program
@@ -250,7 +250,7 @@ def test_store(cmdline_opts):
     # Stores the number 42 to memory
     dut = RampCore()
     dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
-    dut.apply(DefaultPassGroup(linetrace=True, vcdwave="vcd/test_ramp_core_store"))
+    dut.apply(DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core_store"))
     dut.sim_reset()
 
     # Load Program
@@ -267,12 +267,12 @@ def test_load(cmdline_opts):
     # reads 0xdeadbeef from memory
     dut = RampCore()
     dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
-    dut.apply(DefaultPassGroup(linetrace=True, vcdwave="vcd/test_ramp_core_load"))
+    dut.apply(DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core_load"))
     dut.sim_reset()
 
     # load program
     dut.fetch_stage.icache.load_file("tests/input_files/test_load.bin")
-    dut.memory_unit.dram.mem[8] <<= 0xDEADBEEF
+    dut.memory_unit.dram.mem[2] <<= 0xDEADBEEF
 
     for _ in range(10):
         dut.sim_tick()
@@ -286,7 +286,7 @@ def test_load_store(cmdline_opts):
     # Stores the number 42 to memory, then loads it back into registers and adds
     dut = RampCore()
     dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
-    dut.apply(DefaultPassGroup(linetrace=True, vcdwave="vcd/test_ramp_core_load_store"))
+    dut.apply(DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core_load_store"))
     dut.sim_reset()
 
     # Load Program
@@ -299,11 +299,11 @@ def test_load_store(cmdline_opts):
     pr2 = dut.decode.register_rename.map_table[2]
     pr3 = dut.decode.register_rename.map_table[3]
     pr4 = dut.decode.register_rename.map_table[4]
-    assert dut.register_file.regs[pr1] == 7
+    assert dut.register_file.regs[pr1] == 8
     assert dut.register_file.regs[pr2] == 42
     assert dut.register_file.regs[pr3] == 42
     assert dut.register_file.regs[pr4] == 84
-    assert dut.memory_unit.dram.mem[2] == 42
+    assert dut.memory_unit.dram.mem[1] == 42
 
 
 def test_ls_subwords(cmdline_opts):
@@ -311,7 +311,7 @@ def test_ls_subwords(cmdline_opts):
     dut = RampCore()
     dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
     dut.apply(
-        DefaultPassGroup(linetrace=True, vcdwave="vcd/test_ramp_core_ls_subwords")
+        DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core_ls_subwords")
     )
     dut.sim_reset()
 
@@ -338,5 +338,105 @@ def test_ls_subwords(cmdline_opts):
     assert dut.register_file.regs[lr_to_pr[7]] == 0x0000BEEF
 
     assert dut.memory_unit.dram.mem[0] == 0x000000EF
-    assert dut.memory_unit.dram.mem[4] == 0x0000BEEF
-    assert dut.memory_unit.dram.mem[8] == 0xDEADBEEF
+    assert dut.memory_unit.dram.mem[1] == 0x0000BEEF
+    assert dut.memory_unit.dram.mem[2] == 0xDEADBEEF
+
+def test_bge(cmdline_opts):
+    # test always take bge without worrying about register renaming
+    dut = RampCore()
+    dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
+    dut.apply(DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core_bge"))
+    dut.sim_reset()
+
+    # Load Program - endless fibonacci loop
+    dut.fetch_stage.icache.load_file("tests/input_files/test_bge.bin")
+
+    for x in range(100):
+        dut.sim_tick()
+
+    mem = dut.memory_unit.dram.mem
+    for i in range(2, len(mem)):
+        if mem[i] == 0:
+            assert i > 5, "Fibonacci sequence too short"
+            break
+        assert mem[i] == mem[i - 1] + mem[i-2]
+
+def test_jal(cmdline_opts):
+    # test always take unconditional jump without worrying about register renaming
+    dut = RampCore()
+    dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
+    dut.apply(DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core_jal"))
+    dut.sim_reset()
+
+    # Load Program - endless fibonacci loop
+    dut.fetch_stage.icache.load_file("tests/input_files/test_jal.bin")
+
+    lr1 = 1
+    for x in range(100):
+        dut.sim_tick()
+
+    mem = dut.memory_unit.dram.mem
+    for i in range(2, len(mem)):
+        if mem[i] == 0:
+            assert i > 5, "Fibonacci sequence too short"
+            break
+        assert mem[i] == mem[i - 1] + mem[i-2]
+
+        # # checking the linked register
+        # pr1 = dut.decode.register_rename.map_table[lr1]
+        # assert dut.register_file.regs[pr1] == 18
+
+def test_beq(cmdline_opts):
+    # test beq take half the time, don't worry about caching register renaming
+    dut = RampCore()
+    dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
+    dut.apply(DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core_beq"))
+    dut.sim_reset()
+
+    # Load Program - sum odds and evens from 0 to 10
+    dut.fetch_stage.icache.load_file("tests/input_files/test_beq.bin")
+
+    # running program
+    for x in range(30):
+        dut.sim_tick()
+
+    odd_sum_lreg = 6
+    even_sum_lreg = 7
+    odd_sum_preg = dut.decode.register_rename.map_table[odd_sum_lreg]
+    even_sum_preg = dut.decode.register_rename.map_table[even_sum_lreg]
+    assert dut.register_file.regs[odd_sum_preg] == 25
+    assert dut.register_file.regs[even_sum_preg] == 30
+
+
+# def test_scalar_multiply(cmdline_opts):
+#     # test unconditional jump without worrying about register renaming
+#     dut = RampCore(memory_size=1024)
+#     dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
+#     dut.apply(DefaultPassGroup(linetrace=True, vcdwave="vcd/test_ramp_core_scalar_multiply"))
+#     dut.sim_reset()
+
+#     # Load Program - endless fibonacci loop
+#     dut.fetch_stage.icache.load_file("tests/input_files/test_scalar_multiply.bin")
+
+#     # initializing dram
+#     for i in range(1024):
+#         dut.memory_unit.dram.mem[i] <<= i
+
+#     # running program, until it is finished
+#     prd = dut.decode.register_rename.map_table[0x8]
+#     c = 0
+#     while dut.register_file.regs[prd] < 1024:
+#         prd = dut.decode.register_rename.map_table[0x8]
+#         dut.sim_tick()
+#         c += 1
+
+#     # checking results
+#     for i in range(1024):
+#         try:
+#             assert dut.memory_unit.dram.mem[i] == i * 10
+#         except AssertionError:
+#             print([x.uint() for x in dut.memory_unit.dram.mem])
+#             assert dut.memory_unit.dram.mem[i] == i * 10
+
+
+

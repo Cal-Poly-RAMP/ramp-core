@@ -37,7 +37,7 @@ from pymtl3.stdlib.ifcs import RecvIfcRTL, SendIfcRTL
 
 class MemoryUnit(Component):
     def construct(
-        s, queue_size=16, memory_size=256, window_size=2, reset_value=0, data=None
+        s, queue_size=16, memory_size=256, window_size=2, reset_value=0
     ):
         # checking that addresses work
         assert memory_size < (2**32)
@@ -67,7 +67,6 @@ class MemoryUnit(Component):
             rd_ports=1,
             wr_ports=1,
             reset_value=reset_value,
-            data=data,
         )
 
         @update

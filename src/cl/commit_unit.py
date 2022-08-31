@@ -4,8 +4,15 @@ from pymtl3.stdlib.ifcs import RecvIfcRTL, SendIfcRTL
 from src.cl.reorder_buffer import ROBEntry, ROBEntryUop
 from src.cl.memory_unit import LoadStoreEntry
 
-from src.common.consts import MEM_STORE, MEM_SW, S_TYPE, NUM_PHYS_REGS
-from src.common.interfaces import DualMicroOp
+from src.common.consts import (
+    MEM_STORE,
+    MEM_SW,
+    S_TYPE,
+    NUM_PHYS_REGS,
+    B_TYPE,
+    J_TYPE,
+)
+from src.common.interfaces import BranchUpdate
 
 
 class CommitUnit(Component):
@@ -21,6 +28,8 @@ class CommitUnit(Component):
         s.stale_out = [OutPort(clog2(NUM_PHYS_REGS)) for _ in range(width)]
         # for updating busy table
         s.ready_out = [OutPort(clog2(NUM_PHYS_REGS)) for _ in range(width)]
+        # for branch prediction
+        s.br_update = SendIfcRTL(BranchUpdate)
 
         s.commit_units = [SingleCommit() for _ in range(width)]
         s.commit_units[0].in_ //= s.in_.uop1_entry
@@ -35,6 +44,17 @@ class CommitUnit(Component):
             s.commit_units[x].stale_out //= s.stale_out[x]
             s.commit_units[x].ready_out //= s.ready_out[x]
 
+        @update
+        def br_updt():
+            # handling single branch prediction output, with multiple uops
+            # first uop that is a branch is the one that is committed
+            s.br_update.en @= 0
+            for x in range(width):
+                if s.commit_units[x].br_update.en:
+                    s.br_update.en @= 1
+                    s.br_update.msg @= s.commit_units[x].br_update.msg
+                    s.commit_units[x].br_update.rdy @= s.br_update.rdy
+                    break
 
 # For each uop in rob entry
 class SingleCommit(Component):
@@ -46,11 +66,12 @@ class SingleCommit(Component):
         s.reg_wb_en = OutPort(1)
         # writeback to memory
         s.store_out = SendIfcRTL(LoadStoreEntry)
-
         # for updating freelist
         s.stale_out = OutPort(clog2(NUM_PHYS_REGS))
         # for updating busy table
         s.ready_out = OutPort(clog2(NUM_PHYS_REGS))
+        # for branch prediction
+        s.br_update = SendIfcRTL(BranchUpdate)
 
         @update
         def comb_():
@@ -67,19 +88,32 @@ class SingleCommit(Component):
             s.store_out.msg.mem_q_idx @= 0
             s.store_out.msg.op @= MEM_STORE
 
-            # writeback loads / arithmetic to registers
-            if ~(s.in_.optype == S_TYPE) & s.in_.valid:
-                s.reg_wb_en @= 1
-                s.reg_wb_addr @= s.in_.prd
-                s.reg_wb_data @= s.in_.data
-                s.stale_out @= s.in_.stale
-                s.ready_out @= s.in_.prd
+            s.br_update.en @= 0
+            s.br_update.msg.target @= 0
+            s.br_update.msg.mispredict @= 0
+            s.br_update.msg.tag @= 0
 
-            # writeback stores to memory
-            elif s.in_.valid:
-                s.store_out.en @= 1
-                s.store_out.msg.addr @= s.in_.store_addr
-                s.store_out.msg.data @= s.in_.data
-                s.store_out.msg.mem_q_idx @= s.in_.mem_q_idx
-                s.stale_out @= 0
-                s.ready_out @= 0
+            # writeback loads / arithmetic to registers
+            if s.in_.valid:
+                # handling branchs TODO: need to handle JALR and linking registers (i-type)
+                if (s.in_.optype == B_TYPE) | (s.in_.optype == J_TYPE):
+                    s.br_update.en @= 1
+                    s.br_update.msg.target @= s.in_.br_target
+                    s.br_update.msg.mispredict @= s.in_.br_mispredict
+                    s.br_update.msg.tag @= s.in_.br_tag
+                # writeback stores to memory
+                elif s.in_.optype == S_TYPE:
+                    s.store_out.en @= 1
+                    s.store_out.msg.addr @= s.in_.store_addr
+                    s.store_out.msg.data @= s.in_.data
+                    s.store_out.msg.mem_q_idx @= s.in_.mem_q_idx
+                    s.stale_out @= 0
+                    s.ready_out @= 0
+                # writeback to registers
+                else:
+                    s.reg_wb_en @= 1
+                    s.reg_wb_addr @= s.in_.prd
+                    s.reg_wb_data @= s.in_.data
+                    s.stale_out @= s.in_.stale
+                    s.ready_out @= s.in_.prd
+

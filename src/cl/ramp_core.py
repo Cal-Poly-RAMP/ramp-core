@@ -68,14 +68,20 @@ class RampCore(Component):
         s.mem_issue_queue.duop_in //= s.dispatch.to_mem_issue
         s.mem_issue_queue.busy_table //= s.decode.busy_table
 
+        s.branch_issue_queue = IssueQueue()
+        s.branch_issue_queue.duop_in //= s.dispatch.to_branch_issue
+        s.branch_issue_queue.busy_table //= s.decode.busy_table
+
         # register file - physical registers
         s.register_file = RegisterFile(
-            mk_bits(32), nregs=NUM_PHYS_REGS, rd_ports=4, wr_ports=2, const_zero=True
+            mk_bits(32), nregs=NUM_PHYS_REGS, rd_ports=6, wr_ports=2, const_zero=True
         )
         s.register_file.raddr[0] //= s.int_issue_queue.uop_out.prs1
         s.register_file.raddr[1] //= s.int_issue_queue.uop_out.prs2
         s.register_file.raddr[2] //= s.mem_issue_queue.uop_out.prs1
         s.register_file.raddr[3] //= s.mem_issue_queue.uop_out.prs2
+        s.register_file.raddr[4] //= s.branch_issue_queue.uop_out.prs1
+        s.register_file.raddr[5] //= s.branch_issue_queue.uop_out.prs2
 
         # (5) execution stage - execute the microops
         # ALU functional unit
@@ -95,16 +101,9 @@ class RampCore(Component):
 
         # branch functional unit
         s.branch_unit = BranchFU()
-        s.branch_unit.rs1_din //= s.register_file.rdata[0]
-        s.branch_unit.rs2_din //= s.register_file.rdata[1]
-        s.branch_unit.uop //= s.int_issue_queue.uop_out
-        # mispredict signal output br_update
-        s.fetch_stage.br_update.msg //= s.branch_unit.br_update.msg
-        s.fetch_stage.br_update.en //= s.branch_unit.br_update.en
-        s.decode.br_update.msg //= s.branch_unit.br_update.msg
-        s.decode.br_update.en //= s.branch_unit.br_update.en
-        s.reorder_buffer.br_update.msg //= s.branch_unit.br_update.msg
-        s.reorder_buffer.br_update.en //= s.branch_unit.br_update.en
+        s.branch_unit.rs1_din //= s.register_file.rdata[4]
+        s.branch_unit.rs2_din //= s.register_file.rdata[5]
+        s.branch_unit.uop //= s.branch_issue_queue.uop_out
 
         # (6) commit unit - commit the changes
         s.commit_unit = CommitUnit()
@@ -115,10 +114,18 @@ class RampCore(Component):
             s.commit_unit.reg_wb_en[i] //= s.register_file.wen[i]
             s.commit_unit.stale_out[i] //= s.decode.stale_in[i]
             s.commit_unit.ready_out[i] //= s.decode.ready_in[i]
+        # mispredict signal output br_update
+        s.commit_unit.br_update.rdy //= Bits(1,1)
+        s.fetch_stage.br_update.msg //= s.commit_unit.br_update.msg
+        s.fetch_stage.br_update.en //= s.commit_unit.br_update.en
+        s.decode.br_update.msg //= s.commit_unit.br_update.msg
+        s.decode.br_update.en //= s.commit_unit.br_update.en
+        s.reorder_buffer.br_update.msg //= s.commit_unit.br_update.msg
+        s.reorder_buffer.br_update.en //= s.commit_unit.br_update.en
 
         # Memory
         s.memory_unit = MemoryUnit(
-            queue_size=MEM_Q_SIZE, memory_size=memory_size, window_size=3, data=data
+            queue_size=MEM_Q_SIZE, memory_size=memory_size, window_size=3
         )
         # allocate space in memory queue in decode unit
         s.memory_unit.allocate_in.msg //= s.decode.mem_q_allocate
@@ -151,6 +158,12 @@ class RampCore(Component):
         s.reorder_buffer.op_complete.load_rob_idx //= s.memory_unit.load_out.msg.rob_idx
         s.reorder_buffer.op_complete.load_data //= s.memory_unit.load_out.msg.data
         s.reorder_buffer.op_complete.load_rob_complete //= s.memory_unit.load_out.en
+        # BRANCH writeback
+        s.reorder_buffer.op_complete.br_rob_idx //= s.branch_issue_queue.uop_out.rob_idx
+        s.reorder_buffer.op_complete.br_rob_complete //= s.branch_unit.br_update.en
+        s.reorder_buffer.op_complete.br_mispredict //= s.branch_unit.br_update.msg.mispredict
+        s.reorder_buffer.op_complete.br_target //= s.branch_unit.br_update.msg.target
+        s.reorder_buffer.op_complete.br_tag //= s.branch_unit.br_update.msg.tag
 
         @update
         def update_cntrl():
@@ -169,24 +182,27 @@ class RampCore(Component):
             else:
                 s.alu.b @= s.register_file.rdata[1]
 
-            # branch outcome logic
-            s.branch_unit.br_update.rdy @= (
-                s.fetch_stage.br_update.rdy &
-                s.decode.br_update.rdy &
-                s.reorder_buffer.br_update.rdy
-            )
+            # # branch outcome logic
+            # s.branch_unit.br_update.rdy @= (
+            #     s.fetch_stage.br_update.rdy &
+            #     s.decode.br_update.rdy &
+            #     s.reorder_buffer.br_update.rdy
+            # )
 
     def line_trace(s):
         return (
-            f"\npr1: {s.pr1.line_trace()}\n\n"
+            f"\npc: {s.fetch_stage.pc}\n\n"
+            f"pr1: {s.pr1.line_trace()}\n\n"
             f"pr2: {s.pr2.line_trace()}\n\n"
             # f"pr3: {s.pr3.line_trace()}\n\n"
-            f"register_file:\t{[hex(r.uint()) for r in s.register_file.regs]}\n\n"
+            f"register_file:\t{[r.uint() for r in s.register_file.regs]}\n\n"
             f"busy_table:\t{[b.uint() for b in s.busy_table]}\n\n"
             f"map_table: {[b.uint() for b in s.decode.register_rename.map_table]}\n\n"
             f"free_list: {bin(s.decode.register_rename.free_list)}\n\n"
             f"int_issue_queue: {s.int_issue_queue.line_trace()}\n"
             f"alu: {s.alu.line_trace()}\n\n"
+            f"branch_issue_queue: {s.branch_issue_queue.line_trace()}\n"
+            f"branch_unit: {s.branch_unit.line_trace()}\n\n"
             f"mem_issue_queue: {s.mem_issue_queue.line_trace()}\n"
             f"load_store_fu: {s.load_store_unit.line_trace()}\n\n"
             f"commit out uop1: 0x{s.reorder_buffer.commit_out.uop1_entry.data}\n\n"

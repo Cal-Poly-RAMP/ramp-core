@@ -11,15 +11,10 @@ from pymtl3 import (
 )
 from pymtl3.stdlib.ifcs import RecvIfcRTL, SendIfcRTL
 
-
 class DRAM(Component):
     def construct(
-        s, Type, num_entries=32, rd_ports=1, wr_ports=1, reset_value=0, data=None
+        s, Type, num_entries=32, rd_ports=1, wr_ports=1, reset_value=0
     ):
-        if data:
-            assert len(data) == num_entries
-        assert num_entries > 0
-
         addr_type = mk_bits(max(1, clog2(num_entries)))
 
         s.raddr = [InPort(addr_type) for _ in range(rd_ports)]
@@ -30,16 +25,12 @@ class DRAM(Component):
         s.wen = [InPort(Bits1) for _ in range(wr_ports)]
 
         s.mem = [Wire(Type) for _ in range(num_entries)]
-        # Filling in memory with data if provided1
-        if data:
-            for i in range(num_entries):
-                assert type(data[i]) == Type
-                s.mem[i] //= data[i]
 
         @update
         def up_rf_read():
             for i in range(rd_ports):
-                s.rdata[i] @= s.mem[s.raddr[i]]
+                assert not (s.raddr[i] % (Type.nbits // 8)), f"Address must be {Type.nbits // 8}-byte aligned"
+                s.rdata[i] @= s.mem[s.raddr[i]//(Type.nbits // 8)]
 
         @update_ff
         def up_rf_write():
@@ -49,7 +40,8 @@ class DRAM(Component):
             else:
                 for i in range(wr_ports):
                     if s.wen[i]:
-                        s.mem[s.waddr[i]] <<= s.wdata[i]
+                        assert not (s.waddr[i] % (Type.nbits // 8)), f"Address must be {Type.nbits // 8}-byte aligned"
+                        s.mem[s.waddr[i]//(Type.nbits // 8)] <<= s.wdata[i]
 
     def line_trace(s):
         nshown = min(32, len(s.mem))

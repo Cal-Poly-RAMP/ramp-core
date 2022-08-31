@@ -5,7 +5,7 @@ import csv
 def one_hot(n: int, i: int) -> Bits:
     """
     One hot encoder.
-    n: number elements to output
+    n: bitlen to output
     i: input index
     """
     if n < 1:

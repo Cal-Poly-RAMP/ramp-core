@@ -13,7 +13,8 @@ from pymtl3 import (
     update,
     update_ff,
     clog2,
-    Bits
+    Bits,
+    zext
 )
 from pymtl3.stdlib.ifcs import RecvIfcRTL, SendIfcRTL
 
@@ -26,7 +27,6 @@ from src.common.consts import (
     NUM_PHYS_REGS,
 )
 from src.common.interfaces import DualMicroOp, BranchUpdate
-
 
 ## TODO NOW: make it so that `valid` is only a flag, not set by the ROB. `Busy` the only one set by ROB
 class ReorderBuffer(Component):
@@ -134,10 +134,9 @@ class ReorderBuffer(Component):
             # even though actual instruction bank is 2 wide,
             # uop1 and uop2 are indexed seperately (even and odd respectively)
             # rob indices must be calculated from these indices in the uop
-            internal_int_rob_addr = s.op_complete.int_rob_idx >> 1
-            internal_load_rob_addr = s.op_complete.load_rob_idx >> 1
-            internal_store_rob_addr = s.op_complete.store_rob_idx >> 1
+
             # INTEGER UPDATES
+            internal_int_rob_addr = s.op_complete.int_rob_idx >> 1
             if s.op_complete.int_rob_complete:
                 if s.op_complete.int_rob_idx % 2 == 0:
                     # even index, uop1 is completed
@@ -151,7 +150,9 @@ class ReorderBuffer(Component):
                     s.instr_bank_next[
                         internal_int_rob_addr
                     ].uop2_entry.data @= s.op_complete.int_data
+
             # LOAD UPDATES
+            internal_load_rob_addr = s.op_complete.load_rob_idx >> 1
             if s.op_complete.load_rob_complete:
                 if s.op_complete.load_rob_idx % 2 == 0:
                     # even index, uop1 is completed
@@ -165,7 +166,9 @@ class ReorderBuffer(Component):
                     s.instr_bank_next[
                         internal_load_rob_addr
                     ].uop2_entry.data @= s.op_complete.load_data
+
             # STORE UPDATES
+            internal_store_rob_addr = s.op_complete.store_rob_idx >> 1
             if s.op_complete.store_rob_complete:
                 if s.op_complete.store_rob_idx % 2 == 0:
                     # even index, uop1 is completed
@@ -192,16 +195,57 @@ class ReorderBuffer(Component):
                         internal_store_rob_addr
                     ].uop2_entry.mem_q_idx @= s.op_complete.store_mem_q_idx
 
+            # BRANCH UPDATES
+            internal_br_rob_addr = s.op_complete.br_rob_idx >> 1
+            if s.op_complete.br_rob_complete:
+                if s.op_complete.br_rob_idx % 2 == 0:
+                    # even index, uop1 is completed
+                    s.instr_bank_next[internal_br_rob_addr].uop1_entry.busy @= 0
+                    s.instr_bank_next[
+                        internal_br_rob_addr
+                    ].uop1_entry.br_target @= s.op_complete.br_target
+                    s.instr_bank_next[
+                        internal_br_rob_addr
+                    ].uop1_entry.br_tag @= s.op_complete.br_tag
+                    s.instr_bank_next[
+                        internal_br_rob_addr
+                    ].uop1_entry.br_mispredict @= s.op_complete.br_mispredict
+                else:
+                    # odd index, uop2 is completed
+                    s.instr_bank_next[internal_br_rob_addr].uop2_entry.busy @= 0
+                    s.instr_bank_next[
+                        internal_br_rob_addr
+                    ].uop2_entry.br_target @= s.op_complete.br_target
+                    s.instr_bank_next[
+                        internal_br_rob_addr
+                    ].uop2_entry.br_tag @= s.op_complete.br_tag
+                    s.instr_bank_next[
+                        internal_br_rob_addr
+                    ].uop2_entry.br_mispredict @= s.op_complete.br_mispredict
+
             # BRANCH PREDICTION UPDATES (updating tags with branch outcomes)
             tag_mask = Bits(NUM_BRANCHES)
-            tag_mask @= 1 << s.br_update.msg.tag if s.br_update.en else 0
-            for i in range(ROB_SIZE >> 1):
-                s.instr_bank_next[i].uop1_entry.br_mask @= (
-                    s.instr_bank[i].uop1_entry.br_mask & ~tag_mask
-                )
-                s.instr_bank_next[i].uop2_entry.br_mask @= (
-                    s.instr_bank[i].uop2_entry.br_mask & ~tag_mask
-                )
+            tag_mask @= Bits(NUM_BRANCHES, 1) << zext(s.br_update.msg.tag, NUM_BRANCHES)
+
+            if s.br_update.en:
+                for i in range(ROB_SIZE >> 1):
+                    # if the branch was predicted correctly, update bitmask
+                    if ~s.br_update.msg.mispredict:
+                        s.instr_bank_next[i].uop1_entry.br_mask @= (
+                            s.instr_bank[i].uop1_entry.br_mask & ~tag_mask
+                        )
+                        s.instr_bank_next[i].uop2_entry.br_mask @= (
+                            s.instr_bank[i].uop2_entry.br_mask & ~tag_mask
+                        )
+                    # if the branch was predicted incorrectly robentry is dependent on branch
+                    # invalidate robentry
+                    else:
+                        if s.instr_bank[i].uop1_entry.br_mask & tag_mask:
+                            s.instr_bank_next[i].uop1_entry.valid @= 0
+                            s.instr_bank_next[i].uop1_entry.busy @= 0
+                        if s.instr_bank[i].uop2_entry.br_mask & tag_mask:
+                            s.instr_bank_next[i].uop2_entry.valid @= 0
+                            s.instr_bank_next[i].uop2_entry.busy @= 0
 
             # COMMITTING
             # committed store instructions write to memory
@@ -236,8 +280,8 @@ class ReorderBuffer(Component):
 
             # if the ROB's head entry is not busy (committed), deallocate it
             if (
-                ~s.instr_bank_next[s.internal_rob_head_next].uop1_entry.busy
-                & ~s.instr_bank_next[s.internal_rob_head_next].uop2_entry.busy
+                ~s.instr_bank_next[s.internal_rob_head_next].uop1_entry.valid
+                & ~s.instr_bank_next[s.internal_rob_head_next].uop2_entry.valid
             ):
                 # if the circular buffer is not empty
                 if ~s.bank_empty:
@@ -275,6 +319,9 @@ class ROBEntryUop:
     mem_q_idx: mk_bits(clog2(MEM_Q_SIZE))
     store_addr: mk_bits(32)
     # for branch prediction
+    br_target: mk_bits(32)
+    br_tag: mk_bits(clog2(NUM_BRANCHES))
+    br_mispredict: mk_bits(1)
     br_mask: mk_bits(NUM_BRANCHES)
 
 
@@ -283,6 +330,9 @@ class ROBEntry:
     pc: mk_bits(32)
     uop1_entry: ROBEntryUop
     uop2_entry: ROBEntryUop
+
+    def __str__(s):
+        return f"{s.pc}|{s.uop1_entry}|{s.uop2_entry}"
 
 
 # TODO: replace with array of ROBEntryUOPs
@@ -302,3 +352,12 @@ class ExecToROB:
     store_rob_complete: mk_bits(1)
     store_addr: mk_bits(32)
     store_data: mk_bits(32)
+    # index of the operation just completed by branch, and whether it is valid
+    br_rob_idx: mk_bits(clog2(ROB_SIZE))
+    br_rob_complete: mk_bits(1)
+    br_target: mk_bits(32) # the target address
+    br_mispredict: mk_bits(1) # whether the branch was mispredicted
+    br_tag: mk_bits(clog2(NUM_BRANCHES)) # the tag of the branch
+
+    def __str__(self) -> str:
+        return f"Int: {self.int_rob_idx}|{self.int_rob_complete}|{self.int_data} Load: {self.load_rob_idx}|{self.load_rob_complete}|{self.load_data} Store: {self.store_rob_idx}|{self.store_mem_q_idx}|{self.store_rob_complete}|{self.store_addr}|{self.store_data}"

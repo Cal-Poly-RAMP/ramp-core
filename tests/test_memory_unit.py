@@ -1,5 +1,6 @@
-import unittest
+import unittest, pytest
 from pymtl3 import *
+
 
 from src.cl.memory_unit import MemoryUnit
 from src.cl.dram import DRAM
@@ -22,5 +23,6 @@ class TestMemoryUnit(unittest.TestCase):
             print("final:", s.dut.line_trace())
             s.dut.print_textwave()
 
-    def test_stuff(s):
-        assert True
+    def test_byte_aligned(s):
+        pass
+

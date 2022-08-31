@@ -19,18 +19,21 @@ class Dispatch(Component):
 
         s.to_int_issue = OutPort(DualMicroOp)  # for adding microops to int issue queue
         s.to_mem_issue = OutPort(DualMicroOp)  # for adding microops to mem issue queue
+        s.to_branch_issue = OutPort(DualMicroOp)  # for adding microops to branch issue queue
 
         s.uop1_dispatch = SingleDispatch()
         s.uop1_dispatch.in_ //= s.in_.uop1
         s.to_rob.uop1 //= s.uop1_dispatch.to_rob
         s.to_int_issue.uop1 //= s.uop1_dispatch.to_int_issue
         s.to_mem_issue.uop1 //= s.uop1_dispatch.to_mem_issue
+        s.to_branch_issue.uop1 //= s.uop1_dispatch.to_branch_issue
 
         s.uop2_dispatch = SingleDispatch()
         s.uop2_dispatch.in_ //= s.in_.uop2
         s.to_rob.uop2 //= s.uop2_dispatch.to_rob
         s.to_int_issue.uop2 //= s.uop2_dispatch.to_int_issue
         s.to_mem_issue.uop2 //= s.uop2_dispatch.to_mem_issue
+        s.to_branch_issue.uop2 //= s.uop2_dispatch.to_branch_issue
 
         @update
         def update_rob_idx():
@@ -70,10 +73,11 @@ class SingleDispatch(Component):
 
         s.to_int_issue = OutPort(MicroOp)  # for adding microops to int issue queue
         s.to_mem_issue = OutPort(MicroOp)  # for adding microops to mem issue queue
+        s.to_branch_issue = OutPort(MicroOp)  # for adding microops to branch issue queue
 
         @update
         def conditional_dispatch():
-            s.to_rob @= s.in_ if (s.in_.funct_unit != BRANCH_FUNCT_UNIT) else MicroOp(0)
+            s.to_rob @= s.in_
 
         @update
         def issue():
@@ -89,3 +93,9 @@ class SingleDispatch(Component):
                 s.to_mem_issue.mem_q_idx @= s.mem_q_idx
             else:
                 s.to_mem_issue @= NO_OP
+            if s.in_.funct_unit == BRANCH_FUNCT_UNIT:
+                s.to_branch_issue @= s.in_
+                s.to_branch_issue.rob_idx @= s.rob_idx
+                s.to_branch_issue.mem_q_idx @= 0
+            else:
+                s.to_branch_issue @= NO_OP
