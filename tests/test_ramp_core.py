@@ -360,6 +360,7 @@ def test_bge(cmdline_opts):
             assert i > 5, "Fibonacci sequence too short"
             break
         assert mem[i] == mem[i - 1] + mem[i-2]
+    assert False
 
 def test_jal(cmdline_opts):
     # test always take unconditional jump without worrying about register renaming

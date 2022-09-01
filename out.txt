@@ -2,9 +2,9 @@
 platform darwin -- Python 3.8.13, pytest-7.1.2, pluggy-1.0.0
 rootdir: /Users/curtisbucher/Desktop/ramp-core, configfile: pytest.ini
 plugins: hypothesis-6.47.1, xdist-2.5.0, forked-1.4.0, pymtl3-3.1.14, typeguard-2.13.3, rich-0.1.1, cov-3.0.0
-collected 12 items / 11 deselected / 1 selected
+collected 12 items
 
-tests/test_ramp_core.py F                                                [100%]
+tests/test_ramp_core.py ...........F                                     [100%]
 
 =================================== FAILURES ===================================
 ___________________________________ test_beq ___________________________________
@@ -15,7 +15,7 @@ cmdline_opts = {'dump_textwave': False, 'dump_vcd': '', 'dump_vtb': '', 'max_cyc
         # test beq take half the time, don't worry about caching register renaming
         dut = RampCore()
         dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
-        dut.apply(DefaultPassGroup(linetrace=True, vcdwave="vcd/test_ramp_core_beq"))
+        dut.apply(DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core_beq"))
         dut.sim_reset()
     
         # Load Program - sum odds and evens from 0 to 10
@@ -89,6 +89,8 @@ commit out uop1: 0x00000000
 
 commit out uop2: 0x00000000
 
+branch commit: -
+
 memory unit: 
 DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
 Load/Store Buffer
@@ -106,8 +108,8 @@ reorder buffer:
 	Write In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
 	Op Complete In: Int: 00|0|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00|0:0:0:00:00:00000000:0:00000000:00
-	External ROB head: 0 External ROB tail: 0
+	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00
+	External ROB head: 0 External ROB tail: 0 Internal ROB head: 0 Internal ROB tail: 0
 	Bank Full: 0 Bank Empty: 1
 	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']
 
@@ -167,6 +169,8 @@ commit out uop1: 0x00000000
 
 commit out uop2: 0x00000000
 
+branch commit: -
+
 memory unit: 
 DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
 Load/Store Buffer
@@ -184,8 +188,8 @@ reorder buffer:
 	Write In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
 	Op Complete In: Int: 00|0|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00|0:0:0:00:00:00000000:0:00000000:00
-	External ROB head: 0 External ROB tail: 0
+	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00
+	External ROB head: 0 External ROB tail: 0 Internal ROB head: 0 Internal ROB tail: 0
 	Bank Full: 0 Bank Empty: 1
 	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']
 
@@ -245,6 +249,8 @@ commit out uop1: 0x00000000
 
 commit out uop2: 0x00000000
 
+branch commit: -
+
 memory unit: 
 DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
 Load/Store Buffer
@@ -262,8 +268,8 @@ reorder buffer:
 	Write In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
 	Op Complete In: Int: 00|0|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00|0:0:0:00:00:00000000:0:00000000:00
-	External ROB head: 0 External ROB tail: 0
+	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00
+	External ROB head: 0 External ROB tail: 0 Internal ROB head: 0 Internal ROB tail: 0
 	Bank Full: 0 Bank Empty: 1
 	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']
 
@@ -323,6 +329,8 @@ commit out uop1: 0x00000000
 
 commit out uop2: 0x00000000
 
+branch commit: -
+
 memory unit: 
 DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
 Load/Store Buffer
@@ -340,8 +348,8 @@ reorder buffer:
 	Write In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000004 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
 	Op Complete In: Int: 00|0|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00|0:0:0:00:00:00000000:0:00000000:00
-	External ROB head: 0 External ROB tail: 0
+	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00
+	External ROB head: 0 External ROB tail: 0 Internal ROB head: 0 Internal ROB tail: 0
 	Bank Full: 0 Bank Empty: 1
 	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']
 
@@ -401,6 +409,8 @@ commit out uop1: 0x00000000
 
 commit out uop2: 0x00000000
 
+branch commit: -
+
 memory unit: 
 DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
 Load/Store Buffer
@@ -418,8 +428,8 @@ reorder buffer:
 	Write In: optype: 2 inst: 00000293 pc: 00000000 valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 05:00:00 pr : 01:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 2 inst: 00000313 pc: 00000004 valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 06:00:00 pr : 02:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
 	Op Complete In: Int: 00|0|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00|0:0:0:00:00:00000000:0:00000000:00
-	External ROB head: 0 External ROB tail: 0
+	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00
+	External ROB head: 0 External ROB tail: 0 Internal ROB head: 0 Internal ROB tail: 0
 	Bank Full: 0 Bank Empty: 1
 	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']
 
@@ -479,6 +489,8 @@ commit out uop1: 0x00000000
 
 commit out uop2: 0x00000000
 
+branch commit: -
+
 memory unit: 
 DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
 Load/Store Buffer
@@ -496,10 +508,10 @@ reorder buffer:
 	Write In: optype: 2 inst: 00000393 pc: 00000008 valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 07:00:00 pr : 03:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 2 inst: 00b00493 pc: 0000000c valid: 1 imm: 0000000b i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 09:00:00 pr : 04:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
 	Op Complete In: Int: 00|1|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00|0:0:0:00:00:00000000:0:00000000:00
-	External ROB head: 0 External ROB tail: 2
+	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00
+	External ROB head: 0 External ROB tail: 2 Internal ROB head: 0 Internal ROB tail: 1
 	Bank Full: 0 Bank Empty: 0
-	Instr Bank : ['00000000|1:1:2:01:00:00000000:0:00000000:00|1:1:2:02:00:00000000:0:00000000:00', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']
+	Instr Bank : ['00000000|1:1:2:01:00:00000000:0:00000000:00000000:0:0:00|1:1:2:02:00:00000000:0:00000000:00000000:0:0:00', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']
 
 
 
@@ -509,7 +521,7 @@ pc: 00000020
 pr1: [en|00000020:0:00128293:0012f413:1 > 00000018:0:00040a63:00530333:1]
 
 pr2: [en|optype: 4 inst: 00040a63 pc: 00000018 valid: 1 imm: 00000014 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 01 br_tag: 1 lr : 00:08:00 pr : 00:05:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 1 inst: 00530333 pc: 0000001c valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 06:06:05 pr : 06:02:01 stale: x02 rob_idx: 00 mem_q_idx: 0 > optype: 2 inst: 0012f413 pc: 00000010 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 00 br_tag: 0 lr : 08:05:00 pr : 05:01:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 1 inst: 00530333 pc: 0000001c valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 06:06:05 pr : 07:02:01 stale: x02 rob_idx: 00 mem_q_idx: 0 > optype: 2 inst: 0012f413 pc: 00000010 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 00 br_tag: 0 lr : 08:05:00 pr : 05:01:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	optype: 4 inst: 0292d463 pc: 00000014 valid: 1 imm: 00000028 i_unit: 3 f_unit: 3 f_op: 5 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:05:09 pr : 00:01:04 stale: x00 rob_idx: 00 mem_q_idx: 0]
 
 register_file:	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -518,7 +530,7 @@ busy_table:	[0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 
 map_table: [0, 0, 0, 0, 0, 1, 2, 3, 5, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-free_list: 0b1111111111111111111111111111111111111111111111111111111111000000
+free_list: 0b1111111111111111111111111111111111111111111111111111111110000000
 
 int_issue_queue: 
 	Issue Queue: ['00000393', '00b00493', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -557,6 +569,8 @@ commit out uop1: 0x00000000
 
 commit out uop2: 0x00000000
 
+branch commit: -
+
 memory unit: 
 DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
 Load/Store Buffer
@@ -572,12 +586,12 @@ Load/Store Buffer
 
 reorder buffer: 
 	Write In: optype: 2 inst: 0012f413 pc: 00000010 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 00 br_tag: 0 lr : 08:05:00 pr : 05:01:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
+		optype: 4 inst: 0292d463 pc: 00000014 valid: 1 imm: 00000028 i_unit: 3 f_unit: 3 f_op: 5 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:05:09 pr : 00:01:04 stale: x00 rob_idx: 00 mem_q_idx: 0 
 	Op Complete In: Int: 01|1|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|1:0:2:01:00:00000000:0:00000000:00|0:0:0:00:00:00000000:0:00000000:00
-	External ROB head: 0 External ROB tail: 4
+	Commit Out: 00000000|1:0:2:01:00:00000000:0:00000000:00000000:0:0:00|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00
+	External ROB head: 0 External ROB tail: 4 Internal ROB head: 0 Internal ROB tail: 2
 	Bank Full: 0 Bank Empty: 0
-	Instr Bank : ['00000000|0:0:2:01:00:00000000:0:00000000:00|1:1:2:02:00:00000000:0:00000000:00', '00000008|1:1:2:03:00:00000000:0:00000000:00|1:1:2:04:00:00000000:0:00000000:00', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']
+	Instr Bank : ['00000000|0:0:2:01:00:00000000:0:00000000:00000000:0:0:00|1:1:2:02:00:00000000:0:00000000:00000000:0:0:00', '00000008|1:1:2:03:00:00000000:0:00000000:00000000:0:0:00|1:1:2:04:00:00000000:0:00000000:00000000:0:0:00', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']
 
 
 
@@ -586,23 +600,23 @@ pc: 00000028
 
 pr1: [en|00000028:0:fe9ff06f:005383b3:1 > 00000020:0:00128293:0012f413:1]
 
-pr2: [en|optype: 2 inst: 00128293 pc: 00000020 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 05:05:00 pr : 07:01:00 stale: x01 rob_idx: 00 mem_q_idx: 0
-	optype: 2 inst: 0012f413 pc: 00000024 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 03 br_tag: 0 lr : 08:05:00 pr : 08:07:00 stale: x05 rob_idx: 00 mem_q_idx: 0 > optype: 4 inst: 00040a63 pc: 00000018 valid: 1 imm: 00000014 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 01 br_tag: 1 lr : 00:08:00 pr : 00:05:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 1 inst: 00530333 pc: 0000001c valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 06:06:05 pr : 06:02:01 stale: x02 rob_idx: 00 mem_q_idx: 0]
+pr2: [en|optype: 2 inst: 00128293 pc: 00000020 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 05:05:00 pr : 08:01:00 stale: x01 rob_idx: 00 mem_q_idx: 0
+	optype: 2 inst: 0012f413 pc: 00000024 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 03 br_tag: 0 lr : 08:05:00 pr : 09:08:00 stale: x05 rob_idx: 00 mem_q_idx: 0 > optype: 4 inst: 00040a63 pc: 00000018 valid: 1 imm: 00000014 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 01 br_tag: 1 lr : 00:08:00 pr : 00:05:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 1 inst: 00530333 pc: 0000001c valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 06:06:05 pr : 07:02:01 stale: x02 rob_idx: 00 mem_q_idx: 0]
 
 register_file:	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-busy_table:	[0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+busy_table:	[0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-map_table: [0, 0, 0, 0, 0, 1, 6, 3, 5, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+map_table: [0, 0, 0, 0, 0, 1, 7, 3, 5, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-free_list: 0b1111111111111111111111111111111111111111111111111111111110000000
+free_list: 0b1111111111111111111111111111111111111111111111111111111100000000
 
 int_issue_queue: 
 	Issue Queue: ['00b00493', '0012f413', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 	Tail: 2
 	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-		optype: 1 inst: 00530333 pc: 0000001c valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 06:06:05 pr : 06:02:01 stale: x02 rob_idx: 07 mem_q_idx: 0
+		optype: 1 inst: 00530333 pc: 0000001c valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 06:06:05 pr : 07:02:01 stale: x02 rob_idx: 07 mem_q_idx: 0
 	uop Out: optype: 2 inst: 00000393 pc: 00000008 valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 07:00:00 pr : 03:00:00 stale: x00 rob_idx: 02 mem_q_idx: 0
 	Queue Full: 0
 	Queue Empty: 0
@@ -635,6 +649,8 @@ commit out uop1: 0x00000000
 
 commit out uop2: 0x00000000
 
+branch commit: -
+
 memory unit: 
 DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
 Load/Store Buffer
@@ -649,13 +665,13 @@ Load/Store Buffer
 
 
 reorder buffer: 
-	Write In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-		optype: 1 inst: 00530333 pc: 0000001c valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 06:06:05 pr : 06:02:01 stale: x02 rob_idx: 00 mem_q_idx: 0 
+	Write In: optype: 4 inst: 00040a63 pc: 00000018 valid: 1 imm: 00000014 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 01 br_tag: 1 lr : 00:08:00 pr : 00:05:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+		optype: 1 inst: 00530333 pc: 0000001c valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 06:06:05 pr : 07:02:01 stale: x02 rob_idx: 00 mem_q_idx: 0 
 	Op Complete In: Int: 02|1|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00|1:0:2:02:00:00000000:0:00000000:00
-	External ROB head: 2 External ROB tail: 6
+	Commit Out: 00000004|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00|1:0:2:02:00:00000000:0:00000000:00000000:0:0:00
+	External ROB head: 2 External ROB tail: 6 Internal ROB head: 1 Internal ROB tail: 3
 	Bank Full: 0 Bank Empty: 0
-	Instr Bank : ['-', '00000008|1:1:2:03:00:00000000:0:00000000:00|1:1:2:04:00:00000000:0:00000000:00', '00000010|1:1:2:05:00:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']
+	Instr Bank : ['-', '00000008|1:1:2:03:00:00000000:0:00000000:00000000:0:0:00|1:1:2:04:00:00000000:0:00000000:00000000:0:0:00', '00000010|1:1:2:05:00:00000000:0:00000000:00000000:0:0:00|1:1:4:00:00:00000000:0:00000000:00000000:0:0:00', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']
 
 
 
@@ -665,22 +681,22 @@ pc: 00000030
 pr1: [en|00000030:0:00128293:0012f413:1 > 00000028:0:fe9ff06f:005383b3:1]
 
 pr2: [en|optype: 6 inst: fe9ff06f pc: 00000028 valid: 1 imm: ffffffe8 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 1 inst: 005383b3 pc: 0000002c valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 07:07:05 pr : 09:03:07 stale: x03 rob_idx: 00 mem_q_idx: 0 > optype: 2 inst: 00128293 pc: 00000020 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 05:05:00 pr : 07:01:00 stale: x01 rob_idx: 00 mem_q_idx: 0
-	optype: 2 inst: 0012f413 pc: 00000024 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 03 br_tag: 0 lr : 08:05:00 pr : 08:07:00 stale: x05 rob_idx: 00 mem_q_idx: 0]
+	optype: 1 inst: 005383b3 pc: 0000002c valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 07:07:05 pr : 10:03:08 stale: x03 rob_idx: 00 mem_q_idx: 0 > optype: 2 inst: 00128293 pc: 00000020 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 05:05:00 pr : 08:01:00 stale: x01 rob_idx: 00 mem_q_idx: 0
+	optype: 2 inst: 0012f413 pc: 00000024 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 03 br_tag: 0 lr : 08:05:00 pr : 09:08:00 stale: x05 rob_idx: 00 mem_q_idx: 0]
 
 register_file:	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-busy_table:	[0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+busy_table:	[0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-map_table: [0, 0, 0, 0, 0, 7, 6, 3, 8, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+map_table: [0, 0, 0, 0, 0, 8, 7, 3, 9, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-free_list: 0b1111111111111111111111111111111111111111111111111111111000000000
+free_list: 0b1111111111111111111111111111111111111111111111111111110000000000
 
 int_issue_queue: 
 	Issue Queue: ['0012f413', '00530333', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 	Tail: 2
-	duop In: optype: 2 inst: 00128293 pc: 00000020 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 05:05:00 pr : 07:01:00 stale: x01 rob_idx: 08 mem_q_idx: 0
-		optype: 2 inst: 0012f413 pc: 00000024 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 03 br_tag: 0 lr : 08:05:00 pr : 08:07:00 stale: x05 rob_idx: 09 mem_q_idx: 0
+	duop In: optype: 2 inst: 00128293 pc: 00000020 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 05:05:00 pr : 08:01:00 stale: x01 rob_idx: 08 mem_q_idx: 0
+		optype: 2 inst: 0012f413 pc: 00000024 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 03 br_tag: 0 lr : 08:05:00 pr : 09:08:00 stale: x05 rob_idx: 09 mem_q_idx: 0
 	uop Out: optype: 2 inst: 00b00493 pc: 0000000c valid: 1 imm: 0000000b i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 09:00:00 pr : 04:00:00 stale: x00 rob_idx: 03 mem_q_idx: 0
 	Queue Full: 0
 	Queue Empty: 0
@@ -713,6 +729,8 @@ commit out uop1: 0x00000000
 
 commit out uop2: 0x00000000
 
+branch commit: -
+
 memory unit: 
 DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
 Load/Store Buffer
@@ -727,13 +745,13 @@ Load/Store Buffer
 
 
 reorder buffer: 
-	Write In: optype: 2 inst: 00128293 pc: 00000020 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 05:05:00 pr : 07:01:00 stale: x01 rob_idx: 00 mem_q_idx: 0
-		optype: 2 inst: 0012f413 pc: 00000024 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 03 br_tag: 0 lr : 08:05:00 pr : 08:07:00 stale: x05 rob_idx: 00 mem_q_idx: 0 
+	Write In: optype: 2 inst: 00128293 pc: 00000020 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 05:05:00 pr : 08:01:00 stale: x01 rob_idx: 00 mem_q_idx: 0
+		optype: 2 inst: 0012f413 pc: 00000024 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 03 br_tag: 0 lr : 08:05:00 pr : 09:08:00 stale: x05 rob_idx: 00 mem_q_idx: 0 
 	Op Complete In: Int: 03|1|0000000b Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|1:0:2:03:00:00000000:0:00000000:00|0:0:0:00:00:00000000:0:00000000:00
-	External ROB head: 2 External ROB tail: 8
+	Commit Out: 00000008|1:0:2:03:00:00000000:0:00000000:00000000:0:0:00|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00
+	External ROB head: 2 External ROB tail: 8 Internal ROB head: 1 Internal ROB tail: 4
 	Bank Full: 0 Bank Empty: 0
-	Instr Bank : ['-', '00000008|0:0:2:03:00:00000000:0:00000000:00|1:1:2:04:00:00000000:0:00000000:00', '00000010|1:1:2:05:00:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '00000000|0:0:0:00:00:00000000:0:00000000:00|1:0:1:06:02:00000000:0:00000000:03', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']
+	Instr Bank : ['-', '00000008|0:0:2:03:00:00000000:0:00000000:00000000:0:0:00|1:1:2:04:00:00000000:0:00000000:00000000:0:0:00', '00000010|1:1:2:05:00:00000000:0:00000000:00000000:0:0:00|1:1:4:00:00:00000000:0:00000000:00000000:0:0:00', '00000018|1:1:4:00:00:00000000:0:00000000:00000000:0:0:01|1:1:1:07:02:00000000:0:00000000:00000000:0:0:03', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']
 
 
 
@@ -742,23 +760,23 @@ pc: 00000038
 
 pr1: [en|00000038:0:fd9ff06f:0000006f:1 > 00000030:0:00128293:0012f413:1]
 
-pr2: [en|optype: 2 inst: 00128293 pc: 00000030 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 05:05:00 pr : 10:07:00 stale: x07 rob_idx: 00 mem_q_idx: 0
-	optype: 2 inst: 0012f413 pc: 00000034 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 03 br_tag: 0 lr : 08:05:00 pr : 11:10:00 stale: x08 rob_idx: 00 mem_q_idx: 0 > optype: 6 inst: fe9ff06f pc: 00000028 valid: 1 imm: ffffffe8 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 1 inst: 005383b3 pc: 0000002c valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 07:07:05 pr : 09:03:07 stale: x03 rob_idx: 00 mem_q_idx: 0]
+pr2: [en|optype: 2 inst: 00128293 pc: 00000030 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 05:05:00 pr : 12:08:00 stale: x08 rob_idx: 00 mem_q_idx: 0
+	optype: 2 inst: 0012f413 pc: 00000034 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 03 br_tag: 0 lr : 08:05:00 pr : 13:12:00 stale: x09 rob_idx: 00 mem_q_idx: 0 > optype: 6 inst: fe9ff06f pc: 00000028 valid: 1 imm: ffffffe8 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 1 inst: 005383b3 pc: 0000002c valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 07:07:05 pr : 10:03:08 stale: x03 rob_idx: 00 mem_q_idx: 0]
 
 register_file:	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-busy_table:	[0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+busy_table:	[0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-map_table: [0, 0, 0, 0, 0, 7, 6, 9, 8, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+map_table: [0, 0, 0, 0, 0, 8, 7, 10, 9, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-free_list: 0b1111111111111111111111111111111111111111111111111111110000000000
+free_list: 0b1111111111111111111111111111111111111111111111111111000000000000
 
 int_issue_queue: 
 	Issue Queue: ['00530333', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 	Tail: 3
 	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-		optype: 1 inst: 005383b3 pc: 0000002c valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 07:07:05 pr : 09:03:07 stale: x03 rob_idx: 0b mem_q_idx: 0
+		optype: 1 inst: 005383b3 pc: 0000002c valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 07:07:05 pr : 10:03:08 stale: x03 rob_idx: 0b mem_q_idx: 0
 	uop Out: optype: 2 inst: 0012f413 pc: 00000010 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 00 br_tag: 0 lr : 08:05:00 pr : 05:01:00 stale: x00 rob_idx: 04 mem_q_idx: 0
 	Queue Full: 0
 	Queue Empty: 0
@@ -791,6 +809,8 @@ commit out uop1: 0x00000000
 
 commit out uop2: 0x0000000b
 
+branch commit: -
+
 memory unit: 
 DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
 Load/Store Buffer
@@ -805,13 +825,13 @@ Load/Store Buffer
 
 
 reorder buffer: 
-	Write In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-		optype: 1 inst: 005383b3 pc: 0000002c valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 07:07:05 pr : 09:03:07 stale: x03 rob_idx: 00 mem_q_idx: 0 
+	Write In: optype: 6 inst: fe9ff06f pc: 00000028 valid: 1 imm: ffffffe8 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+		optype: 1 inst: 005383b3 pc: 0000002c valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 07:07:05 pr : 10:03:08 stale: x03 rob_idx: 00 mem_q_idx: 0 
 	Op Complete In: Int: 04|1|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00|1:0:2:04:00:0000000b:0:00000000:00
-	External ROB head: 4 External ROB tail: a
+	Commit Out: 0000000c|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00|1:0:2:04:00:0000000b:0:00000000:00000000:0:0:00
+	External ROB head: 4 External ROB tail: a Internal ROB head: 2 Internal ROB tail: 5
 	Bank Full: 0 Bank Empty: 0
-	Instr Bank : ['-', '-', '00000010|1:1:2:05:00:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '00000000|0:0:0:00:00:00000000:0:00000000:00|1:0:1:06:02:00000000:0:00000000:03', '00000020|1:1:2:07:01:00000000:0:00000000:03|1:1:2:08:05:00000000:0:00000000:03', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']
+	Instr Bank : ['-', '-', '00000010|1:1:2:05:00:00000000:0:00000000:00000000:0:0:00|1:1:4:00:00:00000000:0:00000000:00000000:0:0:00', '00000018|1:1:4:00:00:00000000:0:00000000:00000000:0:0:01|1:1:1:07:02:00000000:0:00000000:00000000:0:0:03', '00000020|1:1:2:08:01:00000000:0:00000000:00000000:0:0:03|1:1:2:09:05:00000000:0:00000000:00000000:0:0:03', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']
 
 
 
@@ -820,24 +840,24 @@ pc: 00000040
 
 pr1: [en|00000040:0:00000000:00000000:1 > 00000038:0:fd9ff06f:0000006f:1]
 
-pr2: [en|optype: 6 inst: fd9ff06f pc: 00000038 valid: 1 imm: ffffffd8 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 02 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 6 inst: 0000006f pc: 0000003c valid: 1 imm: 00000000 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 02 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 2 inst: 00128293 pc: 00000030 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 05:05:00 pr : 10:07:00 stale: x07 rob_idx: 00 mem_q_idx: 0
-	optype: 2 inst: 0012f413 pc: 00000034 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 03 br_tag: 0 lr : 08:05:00 pr : 11:10:00 stale: x08 rob_idx: 00 mem_q_idx: 0]
+pr2: [en|optype: 6 inst: fd9ff06f pc: 00000038 valid: 1 imm: ffffffd8 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 6 inst: 0000006f pc: 0000003c valid: 1 imm: 00000000 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 2 inst: 00128293 pc: 00000030 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 05:05:00 pr : 12:08:00 stale: x08 rob_idx: 00 mem_q_idx: 0
+	optype: 2 inst: 0012f413 pc: 00000034 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 03 br_tag: 0 lr : 08:05:00 pr : 13:12:00 stale: x09 rob_idx: 00 mem_q_idx: 0]
 
 register_file:	[0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-busy_table:	[0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+busy_table:	[0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-map_table: [0, 0, 0, 0, 0, 10, 6, 9, 11, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+map_table: [0, 0, 0, 0, 0, 12, 7, 10, 13, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-free_list: 0b1111111111111111111111111111111111111111111111111111000000000000
+free_list: 0b1111111111111111111111111111111111111111111111111100000000000000
 
 int_issue_queue: 
 	Issue Queue: ['00128293', '0012f413', '005383b3', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 	Tail: 3
-	duop In: optype: 2 inst: 00128293 pc: 00000030 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 05:05:00 pr : 10:07:00 stale: x07 rob_idx: 0c mem_q_idx: 0
-		optype: 2 inst: 0012f413 pc: 00000034 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 03 br_tag: 0 lr : 08:05:00 pr : 11:10:00 stale: x08 rob_idx: 0d mem_q_idx: 0
-	uop Out: optype: 1 inst: 00530333 pc: 0000001c valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 06:06:05 pr : 06:02:01 stale: x02 rob_idx: 07 mem_q_idx: 0
+	duop In: optype: 2 inst: 00128293 pc: 00000030 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 05:05:00 pr : 12:08:00 stale: x08 rob_idx: 0c mem_q_idx: 0
+		optype: 2 inst: 0012f413 pc: 00000034 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 03 br_tag: 0 lr : 08:05:00 pr : 13:12:00 stale: x09 rob_idx: 0d mem_q_idx: 0
+	uop Out: optype: 1 inst: 00530333 pc: 0000001c valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 06:06:05 pr : 07:02:01 stale: x02 rob_idx: 07 mem_q_idx: 0
 	Queue Full: 0
 	Queue Empty: 0
 
@@ -869,6 +889,8 @@ commit out uop1: 0x00000000
 
 commit out uop2: 0x00000000
 
+branch commit: -
+
 memory unit: 
 DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
 Load/Store Buffer
@@ -883,39 +905,39 @@ Load/Store Buffer
 
 
 reorder buffer: 
-	Write In: optype: 2 inst: 00128293 pc: 00000030 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 05:05:00 pr : 10:07:00 stale: x07 rob_idx: 00 mem_q_idx: 0
-		optype: 2 inst: 0012f413 pc: 00000034 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 03 br_tag: 0 lr : 08:05:00 pr : 11:10:00 stale: x08 rob_idx: 00 mem_q_idx: 0 
+	Write In: optype: 2 inst: 00128293 pc: 00000030 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 05:05:00 pr : 12:08:00 stale: x08 rob_idx: 00 mem_q_idx: 0
+		optype: 2 inst: 0012f413 pc: 00000034 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 03 br_tag: 0 lr : 08:05:00 pr : 13:12:00 stale: x09 rob_idx: 00 mem_q_idx: 0 
 	Op Complete In: Int: 07|1|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|1:0:2:05:00:00000000:0:00000000:00|0:0:0:00:00:00000000:0:00000000:00
-	External ROB head: 6 External ROB tail: c
+	Commit Out: 00000010|1:0:2:05:00:00000000:0:00000000:00000000:0:0:00|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00
+	External ROB head: 4 External ROB tail: c Internal ROB head: 2 Internal ROB tail: 6
 	Bank Full: 0 Bank Empty: 0
-	Instr Bank : ['-', '-', '-', '00000000|0:0:0:00:00:00000000:0:00000000:00|1:0:1:06:02:00000000:0:00000000:03', '00000020|1:1:2:07:01:00000000:0:00000000:03|1:1:2:08:05:00000000:0:00000000:03', '00000000|0:0:0:00:00:00000000:0:00000000:00|1:0:1:09:03:00000000:0:00000000:03', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']
+	Instr Bank : ['-', '-', '00000010|0:0:2:05:00:00000000:0:00000000:00000000:0:0:00|1:1:4:00:00:00000000:0:00000000:00000000:0:0:00', '00000018|1:1:4:00:00:00000000:0:00000000:00000000:0:0:01|1:1:1:07:02:00000000:0:00000000:00000000:0:0:03', '00000020|1:1:2:08:01:00000000:0:00000000:00000000:0:0:03|1:1:2:09:05:00000000:0:00000000:00000000:0:0:03', '00000028|1:1:6:00:00:00000000:0:00000000:00000000:0:0:03|1:1:1:0a:03:00000000:0:00000000:00000000:0:0:03', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']
 
 
 
  12: 
-pc: 00000010
+pc: 00000048
 
-pr1: [en|00000010:0:0012f413:0292d463:1 > 00000040:0:00000000:00000000:1]
+pr1: [en|00000048:0:00000000:00000000:1 > 00000040:0:00000000:00000000:1]
 
-pr2: [en|optype: 0 inst: 00000000 pc: 00000040 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 02 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000044 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 02 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 6 inst: fd9ff06f pc: 00000038 valid: 1 imm: ffffffd8 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 02 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 6 inst: 0000006f pc: 0000003c valid: 1 imm: 00000000 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 02 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
+pr2: [en|optype: 0 inst: 00000000 pc: 00000040 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 00000044 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 6 inst: fd9ff06f pc: 00000038 valid: 1 imm: ffffffd8 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 6 inst: 0000006f pc: 0000003c valid: 1 imm: 00000000 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
 
 register_file:	[0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-busy_table:	[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+busy_table:	[0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-map_table: [0, 0, 0, 0, 0, 10, 6, 9, 11, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+map_table: [0, 0, 0, 0, 0, 12, 7, 10, 13, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-free_list: 0b1111111111111111111111111111111111111111111111111111000000000000
+free_list: 0b1111111111111111111111111111111111111111111111110000000000000000
 
 int_issue_queue: 
 	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 	Tail: 4
 	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	uop Out: optype: 2 inst: 00128293 pc: 00000020 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 05:05:00 pr : 07:01:00 stale: x01 rob_idx: 08 mem_q_idx: 0
+	uop Out: optype: 2 inst: 00128293 pc: 00000020 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 05:05:00 pr : 08:01:00 stale: x01 rob_idx: 08 mem_q_idx: 0
 	Queue Full: 0
 	Queue Empty: 0
 
@@ -924,8 +946,8 @@ alu: op: 0 a: 00000000 b: 00000001 out: 00000001
 branch_issue_queue: 
 	Issue Queue: ['00040a63', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 	Tail: 1
-	duop In: optype: 6 inst: fd9ff06f pc: 00000038 valid: 1 imm: ffffffd8 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 02 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 0e mem_q_idx: 0
-		optype: 6 inst: 0000006f pc: 0000003c valid: 1 imm: 00000000 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 02 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 0f mem_q_idx: 0
+	duop In: optype: 6 inst: fd9ff06f pc: 00000038 valid: 1 imm: ffffffd8 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 0e mem_q_idx: 0
+		optype: 6 inst: 0000006f pc: 0000003c valid: 1 imm: 00000000 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 0f mem_q_idx: 0
 	uop Out: optype: 4 inst: 0292d463 pc: 00000014 valid: 1 imm: 00000028 i_unit: 3 f_unit: 3 f_op: 5 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:05:09 pr : 00:01:04 stale: x00 rob_idx: 05 mem_q_idx: 0
 	Queue Full: 0
 	Queue Empty: 1
@@ -947,6 +969,8 @@ commit out uop1: 0x00000000
 
 commit out uop2: 0x00000000
 
+branch commit: -
+
 memory unit: 
 DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
 Load/Store Buffer
@@ -961,32 +985,32 @@ Load/Store Buffer
 
 
 reorder buffer: 
-	Write In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
+	Write In: optype: 6 inst: fd9ff06f pc: 00000038 valid: 1 imm: ffffffd8 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+		optype: 6 inst: 0000006f pc: 0000003c valid: 1 imm: 00000000 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
 	Op Complete In: Int: 08|1|00000001 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00|0:0:0:00:00:00000000:0:00000000:00
-	External ROB head: 8 External ROB tail: e
+	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00
+	External ROB head: 4 External ROB tail: e Internal ROB head: 2 Internal ROB tail: 7
 	Bank Full: 0 Bank Empty: 0
-	Instr Bank : ['-', '-', '-', '-', '-', '-', '00000030|1:1:2:0a:07:00000000:0:00000000:03|1:1:2:0b:08:00000000:0:00000000:03', '-', '-', '-', '-', '-', '-', '-', '-', '-']
+	Instr Bank : ['-', '-', '00000010|0:0:2:05:00:00000000:0:00000000:00000000:0:0:00|1:1:4:00:00:00000000:0:00000000:00000000:0:0:00', '00000018|1:1:4:00:00:00000000:0:00000000:00000000:0:0:01|1:0:1:07:02:00000000:0:00000000:00000000:0:0:03', '00000020|1:1:2:08:01:00000000:0:00000000:00000000:0:0:03|1:1:2:09:05:00000000:0:00000000:00000000:0:0:03', '00000028|1:0:6:00:00:00000000:0:00000000:00000010:0:1:03|1:1:1:0a:03:00000000:0:00000000:00000000:0:0:03', '00000030|1:1:2:0c:08:00000000:0:00000000:00000000:0:0:03|1:1:2:0d:09:00000000:0:00000000:00000000:0:0:03', '-', '-', '-', '-', '-', '-', '-', '-', '-']
 
 
 
  13: 
-pc: 00000018
+pc: 00000050
 
-pr1: [en|00000018:0:00040a63:00530333:1 > 00000010:0:0012f413:0292d463:1]
+pr1: [en|00000050:0:00000000:00000000:1 > 00000048:0:00000000:00000000:1]
 
-pr2: [en|optype: 2 inst: 0012f413 pc: 00000010 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 00 br_tag: 0 lr : 08:05:00 pr : 12:10:00 stale: x11 rob_idx: 00 mem_q_idx: 0
-	optype: 4 inst: 0292d463 pc: 00000014 valid: 1 imm: 00000028 i_unit: 3 f_unit: 3 f_op: 5 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:05:09 pr : 00:10:04 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 0 inst: 00000000 pc: 00000040 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 02 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000044 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 02 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
+pr2: [en|optype: 0 inst: 00000000 pc: 00000048 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 02 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 0000004c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 02 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 0 inst: 00000000 pc: 00000040 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 00000044 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
 
 register_file:	[0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-busy_table:	[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+busy_table:	[0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-map_table: [0, 0, 0, 0, 0, 10, 6, 9, 11, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+map_table: [0, 0, 0, 0, 0, 12, 7, 10, 13, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-free_list: 0b1111111111111111111111111111111111111111111111111111000000000000
+free_list: 0b1111111111111111111111111111111111111111111111110000000000000000
 
 int_issue_queue: 
 	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -1025,6 +1049,8 @@ commit out uop1: 0x00000000
 
 commit out uop2: 0x00000000
 
+branch commit: 0000001c:0:0
+
 memory unit: 
 DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
 Load/Store Buffer
@@ -1039,37 +1065,37 @@ Load/Store Buffer
 
 
 reorder buffer: 
-	Write In: optype: 0 inst: 00000000 pc: 00000040 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 02 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-		optype: 0 inst: 00000000 pc: 00000044 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 02 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
+	Write In: optype: 0 inst: 00000000 pc: 00000040 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+		optype: 0 inst: 00000000 pc: 00000044 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
 	Op Complete In: Int: 00|0|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00|0:0:0:00:00:00000000:0:00000000:00
-	External ROB head: a External ROB tail: e
+	Commit Out: 00000014|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00|1:0:4:00:00:00000000:0:00000000:0000001c:0:0:00
+	External ROB head: 6 External ROB tail: 0 Internal ROB head: 3 Internal ROB tail: 8
 	Bank Full: 0 Bank Empty: 0
-	Instr Bank : ['-', '-', '-', '-', '-', '-', '00000030|1:1:2:0a:07:00000000:0:00000000:02|1:1:2:0b:08:00000000:0:00000000:02', '-', '-', '-', '-', '-', '-', '-', '-', '-']
+	Instr Bank : ['-', '-', '-', '00000018|1:1:4:00:00:00000000:0:00000000:00000000:0:0:01|1:0:1:07:02:00000000:0:00000000:00000000:0:0:03', '00000020|1:0:2:08:01:00000001:0:00000000:00000000:0:0:03|1:1:2:09:05:00000000:0:00000000:00000000:0:0:03', '00000028|1:0:6:00:00:00000000:0:00000000:00000010:0:1:03|1:1:1:0a:03:00000000:0:00000000:00000000:0:0:03', '00000030|1:1:2:0c:08:00000000:0:00000000:00000000:0:0:03|1:1:2:0d:09:00000000:0:00000000:00000000:0:0:03', '00000038|1:1:6:00:00:00000000:0:00000000:00000000:0:0:03|1:1:6:00:00:00000000:0:00000000:00000000:0:0:03', '-', '-', '-', '-', '-', '-', '-', '-']
 
 
 
  14: 
-pc: 0000002c
+pc: 00000058
 
-pr1: [en|0000002c:0:005383b3:00128293:1 > 00000018:0:00040a63:00530333:1]
+pr1: [en|00000058:0:00000000:00000000:1 > 00000050:0:00000000:00000000:1]
 
-pr2: [en|optype: 4 inst: 00040a63 pc: 00000018 valid: 1 imm: 00000014 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:08:00 pr : 00:12:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 1 inst: 00530333 pc: 0000001c valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 01 br_tag: 0 lr : 06:06:05 pr : 13:06:10 stale: x06 rob_idx: 00 mem_q_idx: 0 > optype: 2 inst: 0012f413 pc: 00000010 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 00 br_tag: 0 lr : 08:05:00 pr : 12:10:00 stale: x11 rob_idx: 00 mem_q_idx: 0
-	optype: 4 inst: 0292d463 pc: 00000014 valid: 1 imm: 00000028 i_unit: 3 f_unit: 3 f_op: 5 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:05:09 pr : 00:10:04 stale: x00 rob_idx: 00 mem_q_idx: 0]
+pr2: [en|optype: 0 inst: 00000000 pc: 00000050 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 00000054 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 0 inst: 00000000 pc: 00000048 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 02 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 0000004c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 02 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
 
 register_file:	[0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-busy_table:	[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+busy_table:	[0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-map_table: [0, 0, 0, 0, 0, 10, 6, 9, 12, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+map_table: [0, 0, 0, 0, 0, 12, 7, 10, 13, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-free_list: 0b1111111111111111111111111111111111111111111111111110000000000000
+free_list: 0b1111111111111111111111111111111111111111111111110000000000000000
 
 int_issue_queue: 
 	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 	Tail: 4
-	duop In: optype: 2 inst: 0012f413 pc: 00000010 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 00 br_tag: 0 lr : 08:05:00 pr : 12:10:00 stale: x11 rob_idx: 0e mem_q_idx: 0
+	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	Queue Full: 0
@@ -1081,8 +1107,8 @@ branch_issue_queue:
 	Issue Queue: ['0000006f', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 	Tail: 1
 	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-		optype: 4 inst: 0292d463 pc: 00000014 valid: 1 imm: 00000028 i_unit: 3 f_unit: 3 f_op: 5 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:05:09 pr : 00:10:04 stale: x00 rob_idx: 0f mem_q_idx: 0
-	uop Out: optype: 6 inst: fd9ff06f pc: 00000038 valid: 1 imm: ffffffd8 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 02 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 0e mem_q_idx: 0
+		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	uop Out: optype: 6 inst: fd9ff06f pc: 00000038 valid: 1 imm: ffffffd8 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 0e mem_q_idx: 0
 	Queue Full: 0
 	Queue Empty: 1
 
@@ -1103,6 +1129,8 @@ commit out uop1: 0x00000000
 
 commit out uop2: 0x00000000
 
+branch commit: 0000002c:1:1
+
 memory unit: 
 DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
 Load/Store Buffer
@@ -1117,38 +1145,118 @@ Load/Store Buffer
 
 
 reorder buffer: 
-	Write In: optype: 2 inst: 0012f413 pc: 00000010 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 00 br_tag: 0 lr : 08:05:00 pr : 12:10:00 stale: x11 rob_idx: 00 mem_q_idx: 0
-		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
+	Write In: optype: 0 inst: 00000000 pc: 00000048 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 02 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+		optype: 0 inst: 00000000 pc: 0000004c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 02 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
 	Op Complete In: Int: 00|0|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00|0:0:0:00:00:00000000:0:00000000:00
-	External ROB head: c External ROB tail: e
+	Commit Out: 00000018|1:0:4:00:00:00000000:0:00000000:0000002c:1:1:00|1:0:1:07:02:00000000:0:00000000:00000000:0:0:02
+	External ROB head: 8 External ROB tail: 0 Internal ROB head: 4 Internal ROB tail: 8
+	Bank Full: 0 Bank Empty: 0
+	Instr Bank : ['-', '-', '-', '-', '00000020|1:0:2:08:01:00000001:0:00000000:00000000:0:0:02|1:1:2:09:05:00000000:0:00000000:00000000:0:0:02', '00000028|1:0:6:00:00:00000000:0:00000000:00000010:0:1:02|1:1:1:0a:03:00000000:0:00000000:00000000:0:0:02', '00000030|1:1:2:0c:08:00000000:0:00000000:00000000:0:0:02|1:1:2:0d:09:00000000:0:00000000:00000000:0:0:02', '00000038|1:1:6:00:00:00000000:0:00000000:00000000:0:0:02|1:1:6:00:00:00000000:0:00000000:00000000:0:0:02', '-', '-', '-', '-', '-', '-', '-', '-']
+
+
+
+ 15: 
+pc: 0000002c
+
+pr1: [en|0000002c:0:005383b3:00128293:1 > 00000058:0:00000000:00000000:1]
+
+pr2: [en|optype: 0 inst: 00000000 pc: 00000058 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 0000005c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 0 inst: 00000000 pc: 00000050 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 00000054 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
+
+register_file:	[0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+busy_table:	[0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+map_table: [0, 0, 0, 0, 0, 12, 7, 10, 13, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+free_list: 0b1111111111111111111111111111111111111111111111110000000000000100
+
+int_issue_queue: 
+	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 4
+	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	Queue Full: 0
+	Queue Empty: 0
+
+alu: op: 0 a: 00000000 b: 00000000 out: 00000000
+
+branch_issue_queue: 
+	Issue Queue: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 0
+	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	uop Out: optype: 6 inst: 0000006f pc: 0000003c valid: 1 imm: 00000000 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 03 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 0f mem_q_idx: 0
+	Queue Full: 0
+	Queue Empty: 0
+
+branch_unit: rs1: 00000000 rs2: 00000000 mispredict: 1 target: 0000003c tag: 0
+
+mem_issue_queue: 
+	Issue Queue: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 0
+	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	Queue Full: 0
+	Queue Empty: 1
+
+load_store_fu: load out: - store out: -
+
+commit out uop1: 0x00000000
+
+commit out uop2: 0x00000000
+
+branch commit: -
+
+memory unit: 
+DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
+Load/Store Buffer
+	buffer: ['0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0']
+	buffer_rdy: ['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0']
+	head: 0 tail: 0
+	allocate in: 00
+	update in: ['-', '-', '-'] update idx in: ['-', '-', '-']
+	out: -
+	full: 0 empty: 1
+	n_elements: 0
+
+
+reorder buffer: 
+	Write In: optype: 0 inst: 00000000 pc: 00000050 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+		optype: 0 inst: 00000000 pc: 00000054 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
+	Op Complete In: Int: 00|0|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
+	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00
+	External ROB head: a External ROB tail: 0 Internal ROB head: 5 Internal ROB tail: 8
 	Bank Full: 0 Bank Empty: 0
 	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']
 
 
 
- 15: 
-pc: 00000010
+ 16: 
+pc: 00000034
 
-pr1: [en|00000010:0:0012f413:0292d463:1 > 0000002c:0:005383b3:00128293:1]
+pr1: [en|00000034:0:0012f413:fd9ff06f:1 > 0000002c:0:005383b3:00128293:1]
 
-pr2: [en|optype: 1 inst: 005383b3 pc: 0000002c valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 07:07:05 pr : 14:09:10 stale: x09 rob_idx: 00 mem_q_idx: 0
-	optype: 2 inst: 00128293 pc: 00000030 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 05:05:00 pr : 15:10:00 stale: x10 rob_idx: 00 mem_q_idx: 0 > optype: 4 inst: 00040a63 pc: 00000018 valid: 1 imm: 00000014 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:08:00 pr : 00:12:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 1 inst: 00530333 pc: 0000001c valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 01 br_tag: 0 lr : 06:06:05 pr : 13:06:10 stale: x06 rob_idx: 00 mem_q_idx: 0]
+pr2: [en|optype: 1 inst: 005383b3 pc: 0000002c valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 07:07:05 pr : 02:10:12 stale: x10 rob_idx: 00 mem_q_idx: 0
+	optype: 2 inst: 00128293 pc: 00000030 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 05:05:00 pr : 16:12:00 stale: x12 rob_idx: 00 mem_q_idx: 0 > optype: 0 inst: 00000000 pc: 00000058 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 0000005c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
 
 register_file:	[0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-busy_table:	[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+busy_table:	[0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-map_table: [0, 0, 0, 0, 0, 10, 13, 9, 12, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+map_table: [0, 0, 0, 0, 0, 12, 7, 10, 13, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-free_list: 0b1111111111111111111111111111111111111111111111111100000000000000
+free_list: 0b1111111111111111111111111111111111111111111111110000000000000100
 
 int_issue_queue: 
-	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '0012f413', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-	Tail: 5
+	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 4
 	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-		optype: 1 inst: 00530333 pc: 0000001c valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 01 br_tag: 0 lr : 06:06:05 pr : 13:06:10 stale: x06 rob_idx: 11 mem_q_idx: 0
+		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	Queue Full: 0
 	Queue Empty: 0
@@ -1156,86 +1264,8 @@ int_issue_queue:
 alu: op: 0 a: 00000000 b: 00000000 out: 00000000
 
 branch_issue_queue: 
-	Issue Queue: ['0292d463', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-	Tail: 1
-	duop In: optype: 4 inst: 00040a63 pc: 00000018 valid: 1 imm: 00000014 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:08:00 pr : 00:12:00 stale: x00 rob_idx: 10 mem_q_idx: 0
-		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	uop Out: optype: 6 inst: 0000006f pc: 0000003c valid: 1 imm: 00000000 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 02 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 0f mem_q_idx: 0
-	Queue Full: 0
-	Queue Empty: 1
-
-branch_unit: rs1: 00000000 rs2: 00000000 mispredict: 1 target: 0000003c tag: 0
-
-mem_issue_queue: 
 	Issue Queue: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 	Tail: 0
-	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	Queue Full: 0
-	Queue Empty: 1
-
-load_store_fu: load out: - store out: -
-
-commit out uop1: 0x00000000
-
-commit out uop2: 0x00000000
-
-memory unit: 
-DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
-Load/Store Buffer
-	buffer: ['0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0']
-	buffer_rdy: ['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0']
-	head: 0 tail: 0
-	allocate in: 00
-	update in: ['-', '-', '-'] update idx in: ['-', '-', '-']
-	out: -
-	full: 0 empty: 1
-	n_elements: 0
-
-
-reorder buffer: 
-	Write In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-		optype: 1 inst: 00530333 pc: 0000001c valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 01 br_tag: 0 lr : 06:06:05 pr : 13:06:10 stale: x06 rob_idx: 00 mem_q_idx: 0 
-	Op Complete In: Int: 00|0|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00|0:0:0:00:00:00000000:0:00000000:00
-	External ROB head: e External ROB tail: 0
-	Bank Full: 0 Bank Empty: 0
-	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '00000010|1:1:2:0c:0b:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '-', '-', '-', '-', '-', '-', '-', '-']
-
-
-
- 16: 
-pc: 0000003c
-
-pr1: [en|0000003c:0:0000006f:00000000:1 > 00000010:0:0012f413:0292d463:1]
-
-pr2: [en|optype: 2 inst: 0012f413 pc: 00000010 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 00 br_tag: 0 lr : 08:05:00 pr : 16:15:00 stale: x12 rob_idx: 00 mem_q_idx: 0
-	optype: 4 inst: 0292d463 pc: 00000014 valid: 1 imm: 00000028 i_unit: 3 f_unit: 3 f_op: 5 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:05:09 pr : 00:15:04 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 1 inst: 005383b3 pc: 0000002c valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 07:07:05 pr : 14:09:10 stale: x09 rob_idx: 00 mem_q_idx: 0
-	optype: 2 inst: 00128293 pc: 00000030 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 05:05:00 pr : 15:10:00 stale: x10 rob_idx: 00 mem_q_idx: 0]
-
-register_file:	[0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-
-busy_table:	[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-
-map_table: [0, 0, 0, 0, 0, 15, 13, 14, 12, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-
-free_list: 0b1111111111111111111111111111111111111111111111110000000000000000
-
-int_issue_queue: 
-	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '0012f413', '00530333', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-	Tail: 6
-	duop In: optype: 1 inst: 005383b3 pc: 0000002c valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 07:07:05 pr : 14:09:10 stale: x09 rob_idx: 12 mem_q_idx: 0
-		optype: 2 inst: 00128293 pc: 00000030 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 05:05:00 pr : 15:10:00 stale: x10 rob_idx: 13 mem_q_idx: 0
-	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	Queue Full: 0
-	Queue Empty: 0
-
-alu: op: 0 a: 00000000 b: 00000000 out: 00000000
-
-branch_issue_queue: 
-	Issue Queue: ['0292d463', '00040a63', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-	Tail: 2
 	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
@@ -1259,6 +1289,8 @@ commit out uop1: 0x00000000
 
 commit out uop2: 0x00000000
 
+branch commit: -
+
 memory unit: 
 DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
 Load/Store Buffer
@@ -1273,38 +1305,38 @@ Load/Store Buffer
 
 
 reorder buffer: 
-	Write In: optype: 1 inst: 005383b3 pc: 0000002c valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 07:07:05 pr : 14:09:10 stale: x09 rob_idx: 00 mem_q_idx: 0
-		optype: 2 inst: 00128293 pc: 00000030 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 05:05:00 pr : 15:10:00 stale: x10 rob_idx: 00 mem_q_idx: 0 
+	Write In: optype: 0 inst: 00000000 pc: 00000058 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+		optype: 0 inst: 00000000 pc: 0000005c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
 	Op Complete In: Int: 00|0|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00|0:0:0:00:00:00000000:0:00000000:00
-	External ROB head: e External ROB tail: 2
+	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00
+	External ROB head: c External ROB tail: 0 Internal ROB head: 6 Internal ROB tail: 8
 	Bank Full: 0 Bank Empty: 0
-	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '00000010|1:1:2:0c:0b:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '00000000|0:0:0:00:00:00000000:0:00000000:00|1:0:1:0d:06:00000000:0:00000000:01', '-', '-', '-', '-', '-', '-', '-']
+	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']
 
 
 
  17: 
-pc: 00000044
+pc: 0000003c
 
-pr1: [en|00000044:0:00000000:00000000:1 > 0000003c:0:0000006f:00000000:1]
+pr1: [en|0000003c:0:0000006f:00000000:1 > 00000034:0:0012f413:fd9ff06f:1]
 
-pr2: [en|optype: 6 inst: 0000006f pc: 0000003c valid: 1 imm: 00000000 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 01 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000040 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 01 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 2 inst: 0012f413 pc: 00000010 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 00 br_tag: 0 lr : 08:05:00 pr : 16:15:00 stale: x12 rob_idx: 00 mem_q_idx: 0
-	optype: 4 inst: 0292d463 pc: 00000014 valid: 1 imm: 00000028 i_unit: 3 f_unit: 3 f_op: 5 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:05:09 pr : 00:15:04 stale: x00 rob_idx: 00 mem_q_idx: 0]
+pr2: [en|optype: 2 inst: 0012f413 pc: 00000034 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 00 br_tag: 0 lr : 08:05:00 pr : 17:16:00 stale: x13 rob_idx: 00 mem_q_idx: 0
+	optype: 6 inst: fd9ff06f pc: 00000038 valid: 1 imm: ffffffd8 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 1 inst: 005383b3 pc: 0000002c valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 07:07:05 pr : 02:10:12 stale: x10 rob_idx: 00 mem_q_idx: 0
+	optype: 2 inst: 00128293 pc: 00000030 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 05:05:00 pr : 16:12:00 stale: x12 rob_idx: 00 mem_q_idx: 0]
 
 register_file:	[0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-busy_table:	[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+busy_table:	[0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-map_table: [0, 0, 0, 0, 0, 15, 13, 14, 16, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+map_table: [0, 0, 0, 0, 0, 16, 7, 2, 13, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 free_list: 0b1111111111111111111111111111111111111111111111100000000000000000
 
 int_issue_queue: 
-	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '0012f413', '00530333', '005383b3', '00128293', 0, 0, 0, 0, 0, 0, 0, 0]
-	Tail: 8
-	duop In: optype: 2 inst: 0012f413 pc: 00000010 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 00 br_tag: 0 lr : 08:05:00 pr : 16:15:00 stale: x12 rob_idx: 14 mem_q_idx: 0
-		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 4
+	duop In: optype: 1 inst: 005383b3 pc: 0000002c valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 07:07:05 pr : 02:10:12 stale: x10 rob_idx: 10 mem_q_idx: 0
+		optype: 2 inst: 00128293 pc: 00000030 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 05:05:00 pr : 16:12:00 stale: x12 rob_idx: 11 mem_q_idx: 0
 	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	Queue Full: 0
 	Queue Empty: 0
@@ -1312,10 +1344,10 @@ int_issue_queue:
 alu: op: 0 a: 00000000 b: 00000000 out: 00000000
 
 branch_issue_queue: 
-	Issue Queue: ['0292d463', '00040a63', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-	Tail: 2
+	Issue Queue: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 0
 	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-		optype: 4 inst: 0292d463 pc: 00000014 valid: 1 imm: 00000028 i_unit: 3 f_unit: 3 f_op: 5 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:05:09 pr : 00:15:04 stale: x00 rob_idx: 15 mem_q_idx: 0
+		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	Queue Full: 0
 	Queue Empty: 0
@@ -1337,6 +1369,8 @@ commit out uop1: 0x00000000
 
 commit out uop2: 0x00000000
 
+branch commit: -
+
 memory unit: 
 DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
 Load/Store Buffer
@@ -1351,37 +1385,37 @@ Load/Store Buffer
 
 
 reorder buffer: 
-	Write In: optype: 2 inst: 0012f413 pc: 00000010 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 00 br_tag: 0 lr : 08:05:00 pr : 16:15:00 stale: x12 rob_idx: 00 mem_q_idx: 0
-		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
+	Write In: optype: 1 inst: 005383b3 pc: 0000002c valid: 1 imm: 00000000 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 07:07:05 pr : 02:10:12 stale: x10 rob_idx: 00 mem_q_idx: 0
+		optype: 2 inst: 00128293 pc: 00000030 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 05:05:00 pr : 16:12:00 stale: x12 rob_idx: 00 mem_q_idx: 0 
 	Op Complete In: Int: 00|0|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00|0:0:0:00:00:00000000:0:00000000:00
-	External ROB head: e External ROB tail: 4
+	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00
+	External ROB head: e External ROB tail: 0 Internal ROB head: 7 Internal ROB tail: 8
 	Bank Full: 0 Bank Empty: 0
-	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '00000010|1:1:2:0c:0b:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '00000000|0:0:0:00:00:00000000:0:00000000:00|1:0:1:0d:06:00000000:0:00000000:01', '0000002c|1:1:1:0e:09:00000000:0:00000000:00|1:1:2:0f:0a:00000000:0:00000000:00', '-', '-', '-', '-', '-', '-']
+	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']
 
 
 
  18: 
-pc: 0000004c
+pc: 00000044
 
-pr1: [en|0000004c:0:00000000:00000000:1 > 00000044:0:00000000:00000000:1]
+pr1: [en|00000044:0:00000000:00000000:1 > 0000003c:0:0000006f:00000000:1]
 
-pr2: [en|optype: 0 inst: 00000000 pc: 00000044 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 01 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000048 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 01 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 6 inst: 0000006f pc: 0000003c valid: 1 imm: 00000000 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 01 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000040 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 01 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
+pr2: [en|optype: 6 inst: 0000006f pc: 0000003c valid: 1 imm: 00000000 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 00000040 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 2 inst: 0012f413 pc: 00000034 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 00 br_tag: 0 lr : 08:05:00 pr : 17:16:00 stale: x13 rob_idx: 00 mem_q_idx: 0
+	optype: 6 inst: fd9ff06f pc: 00000038 valid: 1 imm: ffffffd8 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
 
 register_file:	[0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-busy_table:	[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+busy_table:	[0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-map_table: [0, 0, 0, 0, 0, 15, 13, 14, 16, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+map_table: [0, 0, 0, 0, 0, 16, 7, 2, 17, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-free_list: 0b1111111111111111111111111111111111111111111111100000000000000000
+free_list: 0b1111111111111111111111111111111111111111111110000000000000000000
 
 int_issue_queue: 
-	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '0012f413', '00530333', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0]
-	Tail: 9
-	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '005383b3', '00128293', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 6
+	duop In: optype: 2 inst: 0012f413 pc: 00000034 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 00 br_tag: 0 lr : 08:05:00 pr : 17:16:00 stale: x13 rob_idx: 12 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	Queue Full: 0
@@ -1390,10 +1424,10 @@ int_issue_queue:
 alu: op: 0 a: 00000000 b: 00000000 out: 00000000
 
 branch_issue_queue: 
-	Issue Queue: ['0292d463', '00040a63', '0292d463', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-	Tail: 3
-	duop In: optype: 6 inst: 0000006f pc: 0000003c valid: 1 imm: 00000000 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 01 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 16 mem_q_idx: 0
-		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	Issue Queue: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 0
+	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+		optype: 6 inst: fd9ff06f pc: 00000038 valid: 1 imm: ffffffd8 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 13 mem_q_idx: 0
 	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	Queue Full: 0
 	Queue Empty: 0
@@ -1415,6 +1449,8 @@ commit out uop1: 0x00000000
 
 commit out uop2: 0x00000000
 
+branch commit: -
+
 memory unit: 
 DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
 Load/Store Buffer
@@ -1429,36 +1465,36 @@ Load/Store Buffer
 
 
 reorder buffer: 
-	Write In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-		optype: 0 inst: 00000000 pc: 00000040 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 01 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
+	Write In: optype: 2 inst: 0012f413 pc: 00000034 valid: 1 imm: 00000001 i_unit: 1 f_unit: 1 f_op: 7 br_taken: 0 br_mask: 00 br_tag: 0 lr : 08:05:00 pr : 17:16:00 stale: x13 rob_idx: 00 mem_q_idx: 0
+		optype: 6 inst: fd9ff06f pc: 00000038 valid: 1 imm: ffffffd8 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
 	Op Complete In: Int: 00|0|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00|0:0:0:00:00:00000000:0:00000000:00
-	External ROB head: e External ROB tail: 6
+	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00
+	External ROB head: 0 External ROB tail: 2 Internal ROB head: 8 Internal ROB tail: 9
 	Bank Full: 0 Bank Empty: 0
-	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '00000010|1:1:2:0c:0b:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '00000000|0:0:0:00:00:00000000:0:00000000:00|1:0:1:0d:06:00000000:0:00000000:01', '0000002c|1:1:1:0e:09:00000000:0:00000000:00|1:1:2:0f:0a:00000000:0:00000000:00', '00000010|1:1:2:10:0c:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '-', '-', '-', '-', '-']
+	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '-', '0000002c|1:1:1:02:0a:00000000:0:00000000:00000000:0:0:00|1:1:2:10:0c:00000000:0:00000000:00000000:0:0:00', '-', '-', '-', '-', '-', '-', '-']
 
 
 
  19: 
-pc: 00000054
+pc: 0000004c
 
-pr1: [en|00000054:0:00000000:00000000:1 > 0000004c:0:00000000:00000000:1]
+pr1: [en|0000004c:0:00000000:00000000:1 > 00000044:0:00000000:00000000:1]
 
-pr2: [en|optype: 0 inst: 00000000 pc: 0000004c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000050 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 0 inst: 00000000 pc: 00000044 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 01 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000048 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 01 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
+pr2: [en|optype: 0 inst: 00000000 pc: 00000044 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 00000048 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 6 inst: 0000006f pc: 0000003c valid: 1 imm: 00000000 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 00000040 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
 
 register_file:	[0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-busy_table:	[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+busy_table:	[0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-map_table: [0, 0, 0, 0, 0, 15, 13, 14, 16, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+map_table: [0, 0, 0, 0, 0, 16, 7, 2, 17, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-free_list: 0b1111111111111111111111111111111111111111111111100000000000000000
+free_list: 0b1111111111111111111111111111111111111111111100000000000000000000
 
 int_issue_queue: 
-	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '0012f413', '00530333', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0]
-	Tail: 9
+	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 7
 	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
@@ -1468,15 +1504,15 @@ int_issue_queue:
 alu: op: 0 a: 00000000 b: 00000000 out: 00000000
 
 branch_issue_queue: 
-	Issue Queue: ['0292d463', '00040a63', '0292d463', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-	Tail: 3
-	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	Issue Queue: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 0
+	duop In: optype: 6 inst: 0000006f pc: 0000003c valid: 1 imm: 00000000 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 14 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	uop Out: optype: 6 inst: 0000006f pc: 0000003c valid: 1 imm: 00000000 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 01 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 16 mem_q_idx: 0
+	uop Out: optype: 6 inst: fd9ff06f pc: 00000038 valid: 1 imm: ffffffd8 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 13 mem_q_idx: 0
 	Queue Full: 0
 	Queue Empty: 0
 
-branch_unit: rs1: 00000000 rs2: 00000000 mispredict: 1 target: 0000003c tag: 0
+branch_unit: rs1: 00000000 rs2: 00000000 mispredict: 1 target: 00000010 tag: 0
 
 mem_issue_queue: 
 	Issue Queue: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -1493,6 +1529,8 @@ commit out uop1: 0x00000000
 
 commit out uop2: 0x00000000
 
+branch commit: -
+
 memory unit: 
 DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
 Load/Store Buffer
@@ -1507,36 +1545,36 @@ Load/Store Buffer
 
 
 reorder buffer: 
-	Write In: optype: 0 inst: 00000000 pc: 00000044 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 01 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-		optype: 0 inst: 00000000 pc: 00000048 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 01 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
+	Write In: optype: 6 inst: 0000006f pc: 0000003c valid: 1 imm: 00000000 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+		optype: 0 inst: 00000000 pc: 00000040 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
 	Op Complete In: Int: 00|0|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00|0:0:0:00:00:00000000:0:00000000:00
-	External ROB head: e External ROB tail: 6
+	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00
+	External ROB head: 0 External ROB tail: 4 Internal ROB head: 8 Internal ROB tail: a
 	Bank Full: 0 Bank Empty: 0
-	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '00000010|1:1:2:0c:0b:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '00000000|0:0:0:00:00:00000000:0:00000000:00|1:0:1:0d:06:00000000:0:00000000:01', '0000002c|1:1:1:0e:09:00000000:0:00000000:00|1:1:2:0f:0a:00000000:0:00000000:00', '00000010|1:1:2:10:0c:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '-', '-', '-', '-', '-']
+	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '-', '0000002c|1:1:1:02:0a:00000000:0:00000000:00000000:0:0:00|1:1:2:10:0c:00000000:0:00000000:00000000:0:0:00', '00000034|1:1:2:11:0d:00000000:0:00000000:00000000:0:0:00|1:1:6:00:00:00000000:0:00000000:00000000:0:0:00', '-', '-', '-', '-', '-', '-']
 
 
 
  20: 
-pc: 0000003c
+pc: 00000054
 
-pr1: [en|0000003c:0:0000006f:00000000:1 > 00000054:0:00000000:00000000:1]
+pr1: [en|00000054:0:00000000:00000000:1 > 0000004c:0:00000000:00000000:1]
 
-pr2: [en|optype: 0 inst: 00000000 pc: 00000054 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000058 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 0 inst: 00000000 pc: 0000004c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000050 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
+pr2: [en|optype: 0 inst: 00000000 pc: 0000004c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 00000050 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 0 inst: 00000000 pc: 00000044 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 00000048 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
 
 register_file:	[0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-busy_table:	[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+busy_table:	[0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-map_table: [0, 0, 0, 0, 0, 15, 13, 14, 16, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+map_table: [0, 0, 0, 0, 0, 16, 7, 2, 17, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-free_list: 0b1111111111111111111111111111111111111111111111100000000000000000
+free_list: 0b1111111111111111111111111111111111111111111100000000000000000000
 
 int_issue_queue: 
-	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '0012f413', '00530333', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0]
-	Tail: 9
+	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 7
 	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
@@ -1546,15 +1584,15 @@ int_issue_queue:
 alu: op: 0 a: 00000000 b: 00000000 out: 00000000
 
 branch_issue_queue: 
-	Issue Queue: ['0292d463', '00040a63', '0292d463', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-	Tail: 3
+	Issue Queue: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 0
 	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	uop Out: optype: 6 inst: 0000006f pc: 0000003c valid: 1 imm: 00000000 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 14 mem_q_idx: 0
 	Queue Full: 0
 	Queue Empty: 0
 
-branch_unit: rs1: 00000000 rs2: 00000000 mispredict: none target: none tag: none
+branch_unit: rs1: 00000000 rs2: 00000000 mispredict: 1 target: 0000003c tag: 0
 
 mem_issue_queue: 
 	Issue Queue: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -1571,6 +1609,8 @@ commit out uop1: 0x00000000
 
 commit out uop2: 0x00000000
 
+branch commit: -
+
 memory unit: 
 DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
 Load/Store Buffer
@@ -1585,36 +1625,36 @@ Load/Store Buffer
 
 
 reorder buffer: 
-	Write In: optype: 0 inst: 00000000 pc: 0000004c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-		optype: 0 inst: 00000000 pc: 00000050 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
+	Write In: optype: 0 inst: 00000000 pc: 00000044 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+		optype: 0 inst: 00000000 pc: 00000048 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
 	Op Complete In: Int: 00|0|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00|0:0:0:00:00:00000000:0:00000000:00
-	External ROB head: e External ROB tail: 6
+	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00
+	External ROB head: 0 External ROB tail: 6 Internal ROB head: 8 Internal ROB tail: b
 	Bank Full: 0 Bank Empty: 0
-	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '00000010|1:1:2:0c:0b:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '-', '0000002c|1:1:1:0e:09:00000000:0:00000000:00|1:1:2:0f:0a:00000000:0:00000000:00', '00000010|1:1:2:10:0c:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '-', '-', '-', '-', '-']
+	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '-', '0000002c|1:1:1:02:0a:00000000:0:00000000:00000000:0:0:00|1:1:2:10:0c:00000000:0:00000000:00000000:0:0:00', '00000034|1:1:2:11:0d:00000000:0:00000000:00000000:0:0:00|1:0:6:00:00:00000000:0:00000000:00000010:0:1:00', '0000003c|1:1:6:00:00:00000000:0:00000000:00000000:0:0:00|0:1:0:00:00:00000000:0:00000000:00000000:0:0:00', '-', '-', '-', '-', '-']
 
 
 
  21: 
-pc: 00000044
+pc: 0000005c
 
-pr1: [en|00000044:0:00000000:00000000:1 > 0000003c:0:0000006f:00000000:1]
+pr1: [en|0000005c:0:00000000:00000000:1 > 00000054:0:00000000:00000000:1]
 
-pr2: [en|optype: 6 inst: 0000006f pc: 0000003c valid: 1 imm: 00000000 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000040 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 0 inst: 00000000 pc: 00000054 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000058 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
+pr2: [en|optype: 0 inst: 00000000 pc: 00000054 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 00000058 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 0 inst: 00000000 pc: 0000004c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 00000050 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
 
 register_file:	[0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-busy_table:	[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+busy_table:	[0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-map_table: [0, 0, 0, 0, 0, 15, 13, 14, 16, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+map_table: [0, 0, 0, 0, 0, 16, 7, 2, 17, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-free_list: 0b1111111111111111111111111111111111111111111111100000000000000000
+free_list: 0b1111111111111111111111111111111111111111111100000000000000000000
 
 int_issue_queue: 
-	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '0012f413', '00530333', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0]
-	Tail: 9
+	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 7
 	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
@@ -1624,8 +1664,8 @@ int_issue_queue:
 alu: op: 0 a: 00000000 b: 00000000 out: 00000000
 
 branch_issue_queue: 
-	Issue Queue: ['0292d463', '00040a63', '0292d463', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-	Tail: 3
+	Issue Queue: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 0
 	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
@@ -1649,6 +1689,8 @@ commit out uop1: 0x00000000
 
 commit out uop2: 0x00000000
 
+branch commit: -
+
 memory unit: 
 DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
 Load/Store Buffer
@@ -1663,36 +1705,36 @@ Load/Store Buffer
 
 
 reorder buffer: 
-	Write In: optype: 0 inst: 00000000 pc: 00000054 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-		optype: 0 inst: 00000000 pc: 00000058 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
+	Write In: optype: 0 inst: 00000000 pc: 0000004c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+		optype: 0 inst: 00000000 pc: 00000050 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
 	Op Complete In: Int: 00|0|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00|0:0:0:00:00:00000000:0:00000000:00
-	External ROB head: e External ROB tail: 6
+	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00
+	External ROB head: 0 External ROB tail: 6 Internal ROB head: 8 Internal ROB tail: b
 	Bank Full: 0 Bank Empty: 0
-	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '00000010|1:1:2:0c:0b:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '-', '0000002c|1:1:1:0e:09:00000000:0:00000000:00|1:1:2:0f:0a:00000000:0:00000000:00', '00000010|1:1:2:10:0c:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '-', '-', '-', '-', '-']
+	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '-', '0000002c|1:1:1:02:0a:00000000:0:00000000:00000000:0:0:00|1:1:2:10:0c:00000000:0:00000000:00000000:0:0:00', '00000034|1:1:2:11:0d:00000000:0:00000000:00000000:0:0:00|1:0:6:00:00:00000000:0:00000000:00000010:0:1:00', '0000003c|1:0:6:00:00:00000000:0:00000000:0000003c:0:1:00|0:1:0:00:00:00000000:0:00000000:00000000:0:0:00', '-', '-', '-', '-', '-']
 
 
 
  22: 
-pc: 0000004c
+pc: 00000064
 
-pr1: [en|0000004c:0:00000000:00000000:1 > 00000044:0:00000000:00000000:1]
+pr1: [en|00000064:0:00000000:00000000:1 > 0000005c:0:00000000:00000000:1]
 
-pr2: [en|optype: 0 inst: 00000000 pc: 00000044 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000048 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 6 inst: 0000006f pc: 0000003c valid: 1 imm: 00000000 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000040 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
+pr2: [en|optype: 0 inst: 00000000 pc: 0000005c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 00000060 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 0 inst: 00000000 pc: 00000054 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 00000058 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
 
 register_file:	[0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-busy_table:	[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+busy_table:	[0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-map_table: [0, 0, 0, 0, 0, 15, 13, 14, 16, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+map_table: [0, 0, 0, 0, 0, 16, 7, 2, 17, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-free_list: 0b1111111111111111111111111111111111111111111111100000000000000000
+free_list: 0b1111111111111111111111111111111111111111111100000000000000000000
 
 int_issue_queue: 
-	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '0012f413', '00530333', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0]
-	Tail: 9
+	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 7
 	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
@@ -1702,9 +1744,9 @@ int_issue_queue:
 alu: op: 0 a: 00000000 b: 00000000 out: 00000000
 
 branch_issue_queue: 
-	Issue Queue: ['0292d463', '00040a63', '0292d463', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-	Tail: 3
-	duop In: optype: 6 inst: 0000006f pc: 0000003c valid: 1 imm: 00000000 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 16 mem_q_idx: 0
+	Issue Queue: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 0
+	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	Queue Full: 0
@@ -1727,6 +1769,8 @@ commit out uop1: 0x00000000
 
 commit out uop2: 0x00000000
 
+branch commit: -
+
 memory unit: 
 DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
 Load/Store Buffer
@@ -1741,36 +1785,36 @@ Load/Store Buffer
 
 
 reorder buffer: 
-	Write In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-		optype: 0 inst: 00000000 pc: 00000040 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
+	Write In: optype: 0 inst: 00000000 pc: 00000054 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+		optype: 0 inst: 00000000 pc: 00000058 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
 	Op Complete In: Int: 00|0|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00|0:0:0:00:00:00000000:0:00000000:00
-	External ROB head: e External ROB tail: 6
+	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00
+	External ROB head: 0 External ROB tail: 6 Internal ROB head: 8 Internal ROB tail: b
 	Bank Full: 0 Bank Empty: 0
-	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '00000010|1:1:2:0c:0b:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '-', '0000002c|1:1:1:0e:09:00000000:0:00000000:00|1:1:2:0f:0a:00000000:0:00000000:00', '00000010|1:1:2:10:0c:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '-', '-', '-', '-', '-']
+	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '-', '0000002c|1:1:1:02:0a:00000000:0:00000000:00000000:0:0:00|1:1:2:10:0c:00000000:0:00000000:00000000:0:0:00', '00000034|1:1:2:11:0d:00000000:0:00000000:00000000:0:0:00|1:0:6:00:00:00000000:0:00000000:00000010:0:1:00', '0000003c|1:0:6:00:00:00000000:0:00000000:0000003c:0:1:00|0:1:0:00:00:00000000:0:00000000:00000000:0:0:00', '-', '-', '-', '-', '-']
 
 
 
  23: 
-pc: 00000054
+pc: 0000006c
 
-pr1: [en|00000054:0:00000000:00000000:1 > 0000004c:0:00000000:00000000:1]
+pr1: [en|0000006c:0:00000000:00000000:1 > 00000064:0:00000000:00000000:1]
 
-pr2: [en|optype: 0 inst: 00000000 pc: 0000004c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000050 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 0 inst: 00000000 pc: 00000044 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000048 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
+pr2: [en|optype: 0 inst: 00000000 pc: 00000064 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 00000068 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 0 inst: 00000000 pc: 0000005c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 00000060 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
 
 register_file:	[0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-busy_table:	[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+busy_table:	[0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-map_table: [0, 0, 0, 0, 0, 15, 13, 14, 16, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+map_table: [0, 0, 0, 0, 0, 16, 7, 2, 17, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-free_list: 0b1111111111111111111111111111111111111111111111100000000000000000
+free_list: 0b1111111111111111111111111111111111111111111100000000000000000000
 
 int_issue_queue: 
-	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '0012f413', '00530333', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0]
-	Tail: 9
+	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 7
 	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
@@ -1780,15 +1824,15 @@ int_issue_queue:
 alu: op: 0 a: 00000000 b: 00000000 out: 00000000
 
 branch_issue_queue: 
-	Issue Queue: ['0292d463', '00040a63', '0292d463', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-	Tail: 3
+	Issue Queue: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 0
 	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	uop Out: optype: 6 inst: 0000006f pc: 0000003c valid: 1 imm: 00000000 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 16 mem_q_idx: 0
+	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	Queue Full: 0
 	Queue Empty: 0
 
-branch_unit: rs1: 00000000 rs2: 00000000 mispredict: 1 target: 0000003c tag: 0
+branch_unit: rs1: 00000000 rs2: 00000000 mispredict: none target: none tag: none
 
 mem_issue_queue: 
 	Issue Queue: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -1805,6 +1849,8 @@ commit out uop1: 0x00000000
 
 commit out uop2: 0x00000000
 
+branch commit: -
+
 memory unit: 
 DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
 Load/Store Buffer
@@ -1819,36 +1865,36 @@ Load/Store Buffer
 
 
 reorder buffer: 
-	Write In: optype: 0 inst: 00000000 pc: 00000044 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-		optype: 0 inst: 00000000 pc: 00000048 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
+	Write In: optype: 0 inst: 00000000 pc: 0000005c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+		optype: 0 inst: 00000000 pc: 00000060 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
 	Op Complete In: Int: 00|0|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00|0:0:0:00:00:00000000:0:00000000:00
-	External ROB head: e External ROB tail: 6
+	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00
+	External ROB head: 0 External ROB tail: 6 Internal ROB head: 8 Internal ROB tail: b
 	Bank Full: 0 Bank Empty: 0
-	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '00000010|1:1:2:0c:0b:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '-', '0000002c|1:1:1:0e:09:00000000:0:00000000:00|1:1:2:0f:0a:00000000:0:00000000:00', '00000010|1:1:2:10:0c:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '-', '-', '-', '-', '-']
+	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '-', '0000002c|1:1:1:02:0a:00000000:0:00000000:00000000:0:0:00|1:1:2:10:0c:00000000:0:00000000:00000000:0:0:00', '00000034|1:1:2:11:0d:00000000:0:00000000:00000000:0:0:00|1:0:6:00:00:00000000:0:00000000:00000010:0:1:00', '0000003c|1:0:6:00:00:00000000:0:00000000:0000003c:0:1:00|0:1:0:00:00:00000000:0:00000000:00000000:0:0:00', '-', '-', '-', '-', '-']
 
 
 
  24: 
-pc: 0000003c
+pc: 00000074
 
-pr1: [en|0000003c:0:0000006f:00000000:1 > 00000054:0:00000000:00000000:1]
+pr1: [en|00000074:0:00000000:00000000:1 > 0000006c:0:00000000:00000000:1]
 
-pr2: [en|optype: 0 inst: 00000000 pc: 00000054 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000058 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 0 inst: 00000000 pc: 0000004c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000050 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
+pr2: [en|optype: 0 inst: 00000000 pc: 0000006c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 00000070 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 0 inst: 00000000 pc: 00000064 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 00000068 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
 
 register_file:	[0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-busy_table:	[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+busy_table:	[0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-map_table: [0, 0, 0, 0, 0, 15, 13, 14, 16, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+map_table: [0, 0, 0, 0, 0, 16, 7, 2, 17, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-free_list: 0b1111111111111111111111111111111111111111111111100000000000000000
+free_list: 0b1111111111111111111111111111111111111111111100000000000000000000
 
 int_issue_queue: 
-	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '0012f413', '00530333', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0]
-	Tail: 9
+	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 7
 	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
@@ -1858,8 +1904,8 @@ int_issue_queue:
 alu: op: 0 a: 00000000 b: 00000000 out: 00000000
 
 branch_issue_queue: 
-	Issue Queue: ['0292d463', '00040a63', '0292d463', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-	Tail: 3
+	Issue Queue: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 0
 	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
@@ -1883,6 +1929,8 @@ commit out uop1: 0x00000000
 
 commit out uop2: 0x00000000
 
+branch commit: -
+
 memory unit: 
 DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
 Load/Store Buffer
@@ -1897,36 +1945,36 @@ Load/Store Buffer
 
 
 reorder buffer: 
-	Write In: optype: 0 inst: 00000000 pc: 0000004c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-		optype: 0 inst: 00000000 pc: 00000050 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
+	Write In: optype: 0 inst: 00000000 pc: 00000064 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+		optype: 0 inst: 00000000 pc: 00000068 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
 	Op Complete In: Int: 00|0|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00|0:0:0:00:00:00000000:0:00000000:00
-	External ROB head: e External ROB tail: 6
+	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00
+	External ROB head: 0 External ROB tail: 6 Internal ROB head: 8 Internal ROB tail: b
 	Bank Full: 0 Bank Empty: 0
-	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '00000010|1:1:2:0c:0b:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '-', '0000002c|1:1:1:0e:09:00000000:0:00000000:00|1:1:2:0f:0a:00000000:0:00000000:00', '00000010|1:1:2:10:0c:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '-', '-', '-', '-', '-']
+	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '-', '0000002c|1:1:1:02:0a:00000000:0:00000000:00000000:0:0:00|1:1:2:10:0c:00000000:0:00000000:00000000:0:0:00', '00000034|1:1:2:11:0d:00000000:0:00000000:00000000:0:0:00|1:0:6:00:00:00000000:0:00000000:00000010:0:1:00', '0000003c|1:0:6:00:00:00000000:0:00000000:0000003c:0:1:00|0:1:0:00:00:00000000:0:00000000:00000000:0:0:00', '-', '-', '-', '-', '-']
 
 
 
  25: 
-pc: 00000044
+pc: 0000007c
 
-pr1: [en|00000044:0:00000000:00000000:1 > 0000003c:0:0000006f:00000000:1]
+pr1: [en|0000007c:0:00000000:00000000:1 > 00000074:0:00000000:00000000:1]
 
-pr2: [en|optype: 6 inst: 0000006f pc: 0000003c valid: 1 imm: 00000000 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000040 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 0 inst: 00000000 pc: 00000054 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000058 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
+pr2: [en|optype: 0 inst: 00000000 pc: 00000074 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 00000078 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 0 inst: 00000000 pc: 0000006c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 00000070 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
 
 register_file:	[0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-busy_table:	[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+busy_table:	[0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-map_table: [0, 0, 0, 0, 0, 15, 13, 14, 16, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+map_table: [0, 0, 0, 0, 0, 16, 7, 2, 17, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-free_list: 0b1111111111111111111111111111111111111111111111100000000000000000
+free_list: 0b1111111111111111111111111111111111111111111100000000000000000000
 
 int_issue_queue: 
-	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '0012f413', '00530333', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0]
-	Tail: 9
+	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 7
 	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
@@ -1936,8 +1984,8 @@ int_issue_queue:
 alu: op: 0 a: 00000000 b: 00000000 out: 00000000
 
 branch_issue_queue: 
-	Issue Queue: ['0292d463', '00040a63', '0292d463', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-	Tail: 3
+	Issue Queue: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 0
 	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
@@ -1961,6 +2009,8 @@ commit out uop1: 0x00000000
 
 commit out uop2: 0x00000000
 
+branch commit: -
+
 memory unit: 
 DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
 Load/Store Buffer
@@ -1975,36 +2025,36 @@ Load/Store Buffer
 
 
 reorder buffer: 
-	Write In: optype: 0 inst: 00000000 pc: 00000054 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-		optype: 0 inst: 00000000 pc: 00000058 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
+	Write In: optype: 0 inst: 00000000 pc: 0000006c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+		optype: 0 inst: 00000000 pc: 00000070 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
 	Op Complete In: Int: 00|0|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00|0:0:0:00:00:00000000:0:00000000:00
-	External ROB head: e External ROB tail: 6
+	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00
+	External ROB head: 0 External ROB tail: 6 Internal ROB head: 8 Internal ROB tail: b
 	Bank Full: 0 Bank Empty: 0
-	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '00000010|1:1:2:0c:0b:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '-', '0000002c|1:1:1:0e:09:00000000:0:00000000:00|1:1:2:0f:0a:00000000:0:00000000:00', '00000010|1:1:2:10:0c:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '-', '-', '-', '-', '-']
+	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '-', '0000002c|1:1:1:02:0a:00000000:0:00000000:00000000:0:0:00|1:1:2:10:0c:00000000:0:00000000:00000000:0:0:00', '00000034|1:1:2:11:0d:00000000:0:00000000:00000000:0:0:00|1:0:6:00:00:00000000:0:00000000:00000010:0:1:00', '0000003c|1:0:6:00:00:00000000:0:00000000:0000003c:0:1:00|0:1:0:00:00:00000000:0:00000000:00000000:0:0:00', '-', '-', '-', '-', '-']
 
 
 
  26: 
-pc: 0000004c
+pc: 00000084
 
-pr1: [en|0000004c:0:00000000:00000000:1 > 00000044:0:00000000:00000000:1]
+pr1: [en|00000084:0:00000000:00000000:1 > 0000007c:0:00000000:00000000:1]
 
-pr2: [en|optype: 0 inst: 00000000 pc: 00000044 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000048 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 6 inst: 0000006f pc: 0000003c valid: 1 imm: 00000000 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000040 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
+pr2: [en|optype: 0 inst: 00000000 pc: 0000007c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 00000080 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 0 inst: 00000000 pc: 00000074 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 00000078 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
 
 register_file:	[0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-busy_table:	[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+busy_table:	[0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-map_table: [0, 0, 0, 0, 0, 15, 13, 14, 16, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+map_table: [0, 0, 0, 0, 0, 16, 7, 2, 17, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-free_list: 0b1111111111111111111111111111111111111111111111100000000000000000
+free_list: 0b1111111111111111111111111111111111111111111100000000000000000000
 
 int_issue_queue: 
-	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '0012f413', '00530333', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0]
-	Tail: 9
+	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 7
 	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
@@ -2014,9 +2064,9 @@ int_issue_queue:
 alu: op: 0 a: 00000000 b: 00000000 out: 00000000
 
 branch_issue_queue: 
-	Issue Queue: ['0292d463', '00040a63', '0292d463', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-	Tail: 3
-	duop In: optype: 6 inst: 0000006f pc: 0000003c valid: 1 imm: 00000000 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 16 mem_q_idx: 0
+	Issue Queue: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 0
+	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	Queue Full: 0
@@ -2039,6 +2089,8 @@ commit out uop1: 0x00000000
 
 commit out uop2: 0x00000000
 
+branch commit: -
+
 memory unit: 
 DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
 Load/Store Buffer
@@ -2053,36 +2105,36 @@ Load/Store Buffer
 
 
 reorder buffer: 
-	Write In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-		optype: 0 inst: 00000000 pc: 00000040 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
+	Write In: optype: 0 inst: 00000000 pc: 00000074 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+		optype: 0 inst: 00000000 pc: 00000078 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
 	Op Complete In: Int: 00|0|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00|0:0:0:00:00:00000000:0:00000000:00
-	External ROB head: e External ROB tail: 6
+	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00
+	External ROB head: 0 External ROB tail: 6 Internal ROB head: 8 Internal ROB tail: b
 	Bank Full: 0 Bank Empty: 0
-	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '00000010|1:1:2:0c:0b:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '-', '0000002c|1:1:1:0e:09:00000000:0:00000000:00|1:1:2:0f:0a:00000000:0:00000000:00', '00000010|1:1:2:10:0c:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '-', '-', '-', '-', '-']
+	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '-', '0000002c|1:1:1:02:0a:00000000:0:00000000:00000000:0:0:00|1:1:2:10:0c:00000000:0:00000000:00000000:0:0:00', '00000034|1:1:2:11:0d:00000000:0:00000000:00000000:0:0:00|1:0:6:00:00:00000000:0:00000000:00000010:0:1:00', '0000003c|1:0:6:00:00:00000000:0:00000000:0000003c:0:1:00|0:1:0:00:00:00000000:0:00000000:00000000:0:0:00', '-', '-', '-', '-', '-']
 
 
 
  27: 
-pc: 00000054
+pc: 0000008c
 
-pr1: [en|00000054:0:00000000:00000000:1 > 0000004c:0:00000000:00000000:1]
+pr1: [en|0000008c:0:00000000:00000000:1 > 00000084:0:00000000:00000000:1]
 
-pr2: [en|optype: 0 inst: 00000000 pc: 0000004c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000050 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 0 inst: 00000000 pc: 00000044 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000048 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
+pr2: [en|optype: 0 inst: 00000000 pc: 00000084 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 00000088 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 0 inst: 00000000 pc: 0000007c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 00000080 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
 
 register_file:	[0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-busy_table:	[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+busy_table:	[0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-map_table: [0, 0, 0, 0, 0, 15, 13, 14, 16, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+map_table: [0, 0, 0, 0, 0, 16, 7, 2, 17, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-free_list: 0b1111111111111111111111111111111111111111111111100000000000000000
+free_list: 0b1111111111111111111111111111111111111111111100000000000000000000
 
 int_issue_queue: 
-	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '0012f413', '00530333', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0]
-	Tail: 9
+	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 7
 	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
@@ -2092,15 +2144,15 @@ int_issue_queue:
 alu: op: 0 a: 00000000 b: 00000000 out: 00000000
 
 branch_issue_queue: 
-	Issue Queue: ['0292d463', '00040a63', '0292d463', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-	Tail: 3
+	Issue Queue: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 0
 	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	uop Out: optype: 6 inst: 0000006f pc: 0000003c valid: 1 imm: 00000000 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 16 mem_q_idx: 0
+	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	Queue Full: 0
 	Queue Empty: 0
 
-branch_unit: rs1: 00000000 rs2: 00000000 mispredict: 1 target: 0000003c tag: 0
+branch_unit: rs1: 00000000 rs2: 00000000 mispredict: none target: none tag: none
 
 mem_issue_queue: 
 	Issue Queue: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -2117,6 +2169,8 @@ commit out uop1: 0x00000000
 
 commit out uop2: 0x00000000
 
+branch commit: -
+
 memory unit: 
 DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
 Load/Store Buffer
@@ -2131,36 +2185,36 @@ Load/Store Buffer
 
 
 reorder buffer: 
-	Write In: optype: 0 inst: 00000000 pc: 00000044 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-		optype: 0 inst: 00000000 pc: 00000048 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
+	Write In: optype: 0 inst: 00000000 pc: 0000007c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+		optype: 0 inst: 00000000 pc: 00000080 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
 	Op Complete In: Int: 00|0|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00|0:0:0:00:00:00000000:0:00000000:00
-	External ROB head: e External ROB tail: 6
+	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00
+	External ROB head: 0 External ROB tail: 6 Internal ROB head: 8 Internal ROB tail: b
 	Bank Full: 0 Bank Empty: 0
-	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '00000010|1:1:2:0c:0b:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '-', '0000002c|1:1:1:0e:09:00000000:0:00000000:00|1:1:2:0f:0a:00000000:0:00000000:00', '00000010|1:1:2:10:0c:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '-', '-', '-', '-', '-']
+	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '-', '0000002c|1:1:1:02:0a:00000000:0:00000000:00000000:0:0:00|1:1:2:10:0c:00000000:0:00000000:00000000:0:0:00', '00000034|1:1:2:11:0d:00000000:0:00000000:00000000:0:0:00|1:0:6:00:00:00000000:0:00000000:00000010:0:1:00', '0000003c|1:0:6:00:00:00000000:0:00000000:0000003c:0:1:00|0:1:0:00:00:00000000:0:00000000:00000000:0:0:00', '-', '-', '-', '-', '-']
 
 
 
  28: 
-pc: 0000003c
+pc: 00000094
 
-pr1: [en|0000003c:0:0000006f:00000000:1 > 00000054:0:00000000:00000000:1]
+pr1: [en|00000094:0:00000000:00000000:1 > 0000008c:0:00000000:00000000:1]
 
-pr2: [en|optype: 0 inst: 00000000 pc: 00000054 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000058 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 0 inst: 00000000 pc: 0000004c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000050 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
+pr2: [en|optype: 0 inst: 00000000 pc: 0000008c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 00000090 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 0 inst: 00000000 pc: 00000084 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 00000088 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
 
 register_file:	[0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-busy_table:	[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+busy_table:	[0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-map_table: [0, 0, 0, 0, 0, 15, 13, 14, 16, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+map_table: [0, 0, 0, 0, 0, 16, 7, 2, 17, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-free_list: 0b1111111111111111111111111111111111111111111111100000000000000000
+free_list: 0b1111111111111111111111111111111111111111111100000000000000000000
 
 int_issue_queue: 
-	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '0012f413', '00530333', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0]
-	Tail: 9
+	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 7
 	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
@@ -2170,8 +2224,8 @@ int_issue_queue:
 alu: op: 0 a: 00000000 b: 00000000 out: 00000000
 
 branch_issue_queue: 
-	Issue Queue: ['0292d463', '00040a63', '0292d463', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-	Tail: 3
+	Issue Queue: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 0
 	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
@@ -2195,6 +2249,8 @@ commit out uop1: 0x00000000
 
 commit out uop2: 0x00000000
 
+branch commit: -
+
 memory unit: 
 DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
 Load/Store Buffer
@@ -2209,36 +2265,36 @@ Load/Store Buffer
 
 
 reorder buffer: 
-	Write In: optype: 0 inst: 00000000 pc: 0000004c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-		optype: 0 inst: 00000000 pc: 00000050 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
+	Write In: optype: 0 inst: 00000000 pc: 00000084 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+		optype: 0 inst: 00000000 pc: 00000088 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
 	Op Complete In: Int: 00|0|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00|0:0:0:00:00:00000000:0:00000000:00
-	External ROB head: e External ROB tail: 6
+	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00
+	External ROB head: 0 External ROB tail: 6 Internal ROB head: 8 Internal ROB tail: b
 	Bank Full: 0 Bank Empty: 0
-	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '00000010|1:1:2:0c:0b:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '-', '0000002c|1:1:1:0e:09:00000000:0:00000000:00|1:1:2:0f:0a:00000000:0:00000000:00', '00000010|1:1:2:10:0c:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '-', '-', '-', '-', '-']
+	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '-', '0000002c|1:1:1:02:0a:00000000:0:00000000:00000000:0:0:00|1:1:2:10:0c:00000000:0:00000000:00000000:0:0:00', '00000034|1:1:2:11:0d:00000000:0:00000000:00000000:0:0:00|1:0:6:00:00:00000000:0:00000000:00000010:0:1:00', '0000003c|1:0:6:00:00:00000000:0:00000000:0000003c:0:1:00|0:1:0:00:00:00000000:0:00000000:00000000:0:0:00', '-', '-', '-', '-', '-']
 
 
 
  29: 
-pc: 00000044
+pc: 0000009c
 
-pr1: [en|00000044:0:00000000:00000000:1 > 0000003c:0:0000006f:00000000:1]
+pr1: [en|0000009c:0:00000000:00000000:1 > 00000094:0:00000000:00000000:1]
 
-pr2: [en|optype: 6 inst: 0000006f pc: 0000003c valid: 1 imm: 00000000 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000040 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 0 inst: 00000000 pc: 00000054 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000058 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
+pr2: [en|optype: 0 inst: 00000000 pc: 00000094 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 00000098 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 0 inst: 00000000 pc: 0000008c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 00000090 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
 
 register_file:	[0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-busy_table:	[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+busy_table:	[0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-map_table: [0, 0, 0, 0, 0, 15, 13, 14, 16, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+map_table: [0, 0, 0, 0, 0, 16, 7, 2, 17, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-free_list: 0b1111111111111111111111111111111111111111111111100000000000000000
+free_list: 0b1111111111111111111111111111111111111111111100000000000000000000
 
 int_issue_queue: 
-	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '0012f413', '00530333', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0]
-	Tail: 9
+	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 7
 	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
@@ -2248,8 +2304,8 @@ int_issue_queue:
 alu: op: 0 a: 00000000 b: 00000000 out: 00000000
 
 branch_issue_queue: 
-	Issue Queue: ['0292d463', '00040a63', '0292d463', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-	Tail: 3
+	Issue Queue: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 0
 	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
@@ -2273,6 +2329,8 @@ commit out uop1: 0x00000000
 
 commit out uop2: 0x00000000
 
+branch commit: -
+
 memory unit: 
 DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
 Load/Store Buffer
@@ -2287,36 +2345,36 @@ Load/Store Buffer
 
 
 reorder buffer: 
-	Write In: optype: 0 inst: 00000000 pc: 00000054 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-		optype: 0 inst: 00000000 pc: 00000058 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
+	Write In: optype: 0 inst: 00000000 pc: 0000008c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+		optype: 0 inst: 00000000 pc: 00000090 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
 	Op Complete In: Int: 00|0|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00|0:0:0:00:00:00000000:0:00000000:00
-	External ROB head: e External ROB tail: 6
+	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00
+	External ROB head: 0 External ROB tail: 6 Internal ROB head: 8 Internal ROB tail: b
 	Bank Full: 0 Bank Empty: 0
-	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '00000010|1:1:2:0c:0b:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '-', '0000002c|1:1:1:0e:09:00000000:0:00000000:00|1:1:2:0f:0a:00000000:0:00000000:00', '00000010|1:1:2:10:0c:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '-', '-', '-', '-', '-']
+	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '-', '0000002c|1:1:1:02:0a:00000000:0:00000000:00000000:0:0:00|1:1:2:10:0c:00000000:0:00000000:00000000:0:0:00', '00000034|1:1:2:11:0d:00000000:0:00000000:00000000:0:0:00|1:0:6:00:00:00000000:0:00000000:00000010:0:1:00', '0000003c|1:0:6:00:00:00000000:0:00000000:0000003c:0:1:00|0:1:0:00:00:00000000:0:00000000:00000000:0:0:00', '-', '-', '-', '-', '-']
 
 
 
  30: 
-pc: 0000004c
+pc: 000000a4
 
-pr1: [en|0000004c:0:00000000:00000000:1 > 00000044:0:00000000:00000000:1]
+pr1: [en|000000a4:0:00000000:00000000:1 > 0000009c:0:00000000:00000000:1]
 
-pr2: [en|optype: 0 inst: 00000000 pc: 00000044 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000048 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 6 inst: 0000006f pc: 0000003c valid: 1 imm: 00000000 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000040 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
+pr2: [en|optype: 0 inst: 00000000 pc: 0000009c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 000000a0 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 0 inst: 00000000 pc: 00000094 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 00000098 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
 
 register_file:	[0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-busy_table:	[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+busy_table:	[0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-map_table: [0, 0, 0, 0, 0, 15, 13, 14, 16, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+map_table: [0, 0, 0, 0, 0, 16, 7, 2, 17, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-free_list: 0b1111111111111111111111111111111111111111111111100000000000000000
+free_list: 0b1111111111111111111111111111111111111111111100000000000000000000
 
 int_issue_queue: 
-	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '0012f413', '00530333', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0]
-	Tail: 9
+	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 7
 	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
@@ -2326,9 +2384,9 @@ int_issue_queue:
 alu: op: 0 a: 00000000 b: 00000000 out: 00000000
 
 branch_issue_queue: 
-	Issue Queue: ['0292d463', '00040a63', '0292d463', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-	Tail: 3
-	duop In: optype: 6 inst: 0000006f pc: 0000003c valid: 1 imm: 00000000 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 16 mem_q_idx: 0
+	Issue Queue: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 0
+	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	Queue Full: 0
@@ -2351,6 +2409,8 @@ commit out uop1: 0x00000000
 
 commit out uop2: 0x00000000
 
+branch commit: -
+
 memory unit: 
 DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
 Load/Store Buffer
@@ -2365,36 +2425,36 @@ Load/Store Buffer
 
 
 reorder buffer: 
-	Write In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-		optype: 0 inst: 00000000 pc: 00000040 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
+	Write In: optype: 0 inst: 00000000 pc: 00000094 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+		optype: 0 inst: 00000000 pc: 00000098 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
 	Op Complete In: Int: 00|0|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00|0:0:0:00:00:00000000:0:00000000:00
-	External ROB head: e External ROB tail: 6
+	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00
+	External ROB head: 0 External ROB tail: 6 Internal ROB head: 8 Internal ROB tail: b
 	Bank Full: 0 Bank Empty: 0
-	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '00000010|1:1:2:0c:0b:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '-', '0000002c|1:1:1:0e:09:00000000:0:00000000:00|1:1:2:0f:0a:00000000:0:00000000:00', '00000010|1:1:2:10:0c:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '-', '-', '-', '-', '-']
+	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '-', '0000002c|1:1:1:02:0a:00000000:0:00000000:00000000:0:0:00|1:1:2:10:0c:00000000:0:00000000:00000000:0:0:00', '00000034|1:1:2:11:0d:00000000:0:00000000:00000000:0:0:00|1:0:6:00:00:00000000:0:00000000:00000010:0:1:00', '0000003c|1:0:6:00:00:00000000:0:00000000:0000003c:0:1:00|0:1:0:00:00:00000000:0:00000000:00000000:0:0:00', '-', '-', '-', '-', '-']
 
 
 
  31: 
-pc: 00000054
+pc: 000000ac
 
-pr1: [en|00000054:0:00000000:00000000:1 > 0000004c:0:00000000:00000000:1]
+pr1: [en|000000ac:0:00000000:00000000:1 > 000000a4:0:00000000:00000000:1]
 
-pr2: [en|optype: 0 inst: 00000000 pc: 0000004c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000050 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 0 inst: 00000000 pc: 00000044 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000048 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
+pr2: [en|optype: 0 inst: 00000000 pc: 000000a4 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 000000a8 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 0 inst: 00000000 pc: 0000009c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 000000a0 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
 
 register_file:	[0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-busy_table:	[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+busy_table:	[0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-map_table: [0, 0, 0, 0, 0, 15, 13, 14, 16, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+map_table: [0, 0, 0, 0, 0, 16, 7, 2, 17, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-free_list: 0b1111111111111111111111111111111111111111111111100000000000000000
+free_list: 0b1111111111111111111111111111111111111111111100000000000000000000
 
 int_issue_queue: 
-	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '0012f413', '00530333', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0]
-	Tail: 9
+	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 7
 	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
@@ -2404,86 +2464,8 @@ int_issue_queue:
 alu: op: 0 a: 00000000 b: 00000000 out: 00000000
 
 branch_issue_queue: 
-	Issue Queue: ['0292d463', '00040a63', '0292d463', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-	Tail: 3
-	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	uop Out: optype: 6 inst: 0000006f pc: 0000003c valid: 1 imm: 00000000 i_unit: 3 f_unit: 3 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 16 mem_q_idx: 0
-	Queue Full: 0
-	Queue Empty: 0
-
-branch_unit: rs1: 00000000 rs2: 00000000 mispredict: 1 target: 0000003c tag: 0
-
-mem_issue_queue: 
 	Issue Queue: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 	Tail: 0
-	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	Queue Full: 0
-	Queue Empty: 1
-
-load_store_fu: load out: - store out: -
-
-commit out uop1: 0x00000000
-
-commit out uop2: 0x00000000
-
-memory unit: 
-DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
-Load/Store Buffer
-	buffer: ['0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0']
-	buffer_rdy: ['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0']
-	head: 0 tail: 0
-	allocate in: 00
-	update in: ['-', '-', '-'] update idx in: ['-', '-', '-']
-	out: -
-	full: 0 empty: 1
-	n_elements: 0
-
-
-reorder buffer: 
-	Write In: optype: 0 inst: 00000000 pc: 00000044 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-		optype: 0 inst: 00000000 pc: 00000048 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
-	Op Complete In: Int: 00|0|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00|0:0:0:00:00:00000000:0:00000000:00
-	External ROB head: e External ROB tail: 6
-	Bank Full: 0 Bank Empty: 0
-	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '00000010|1:1:2:0c:0b:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '-', '0000002c|1:1:1:0e:09:00000000:0:00000000:00|1:1:2:0f:0a:00000000:0:00000000:00', '00000010|1:1:2:10:0c:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '-', '-', '-', '-', '-']
-
-
-
- 32: 
-pc: 0000003c
-
-pr1: [en|0000003c:0:0000006f:00000000:1 > 00000054:0:00000000:00000000:1]
-
-pr2: [en|optype: 0 inst: 00000000 pc: 00000054 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000058 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 0 inst: 00000000 pc: 0000004c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	optype: 0 inst: 00000000 pc: 00000050 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
-
-register_file:	[0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-
-busy_table:	[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-
-map_table: [0, 0, 0, 0, 0, 15, 13, 14, 16, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-
-free_list: 0b1111111111111111111111111111111111111111111111100000000000000000
-
-int_issue_queue: 
-	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '0012f413', '00530333', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0]
-	Tail: 9
-	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-	Queue Full: 0
-	Queue Empty: 0
-
-alu: op: 0 a: 00000000 b: 00000000 out: 00000000
-
-branch_issue_queue: 
-	Issue Queue: ['0292d463', '00040a63', '0292d463', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-	Tail: 3
 	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
 	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
@@ -2507,6 +2489,8 @@ commit out uop1: 0x00000000
 
 commit out uop2: 0x00000000
 
+branch commit: -
+
 memory unit: 
 DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
 Load/Store Buffer
@@ -2521,16 +2505,96 @@ Load/Store Buffer
 
 
 reorder buffer: 
-	Write In: optype: 0 inst: 00000000 pc: 0000004c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
-		optype: 0 inst: 00000000 pc: 00000050 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
+	Write In: optype: 0 inst: 00000000 pc: 0000009c valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+		optype: 0 inst: 00000000 pc: 000000a0 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
 	Op Complete In: Int: 00|0|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
-	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00|0:0:0:00:00:00000000:0:00000000:00
-	External ROB head: e External ROB tail: 6
+	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00
+	External ROB head: 0 External ROB tail: 6 Internal ROB head: 8 Internal ROB tail: b
 	Bank Full: 0 Bank Empty: 0
-	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '00000010|1:1:2:0c:0b:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '-', '0000002c|1:1:1:0e:09:00000000:0:00000000:00|1:1:2:0f:0a:00000000:0:00000000:00', '00000010|1:1:2:10:0c:00000000:0:00000000:00|0:1:0:00:00:00000000:0:00000000:00', '-', '-', '-', '-', '-']
+	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '-', '0000002c|1:1:1:02:0a:00000000:0:00000000:00000000:0:0:00|1:1:2:10:0c:00000000:0:00000000:00000000:0:0:00', '00000034|1:1:2:11:0d:00000000:0:00000000:00000000:0:0:00|1:0:6:00:00:00000000:0:00000000:00000010:0:1:00', '0000003c|1:0:6:00:00:00000000:0:00000000:0000003c:0:1:00|0:1:0:00:00:00000000:0:00000000:00000000:0:0:00', '-', '-', '-', '-', '-']
+
+
+
+ 32: 
+pc: 000000b4
+
+pr1: [en|000000b4:0:00000000:00000000:1 > 000000ac:0:00000000:00000000:1]
+
+pr2: [en|optype: 0 inst: 00000000 pc: 000000ac valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 000000b0 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 > optype: 0 inst: 00000000 pc: 000000a4 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	optype: 0 inst: 00000000 pc: 000000a8 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0]
+
+register_file:	[0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+busy_table:	[0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+map_table: [0, 0, 0, 0, 0, 16, 7, 2, 17, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+free_list: 0b1111111111111111111111111111111111111111111100000000000000000000
+
+int_issue_queue: 
+	Issue Queue: ['0012f413', '005383b3', '00128293', '0012f413', '005383b3', '00128293', '0012f413', 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 7
+	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	Queue Full: 0
+	Queue Empty: 0
+
+alu: op: 0 a: 00000000 b: 00000000 out: 00000000
+
+branch_issue_queue: 
+	Issue Queue: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 0
+	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	Queue Full: 0
+	Queue Empty: 0
+
+branch_unit: rs1: 00000000 rs2: 00000000 mispredict: none target: none tag: none
+
+mem_issue_queue: 
+	Issue Queue: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	Tail: 0
+	duop In: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+		optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	uop Out: optype: 0 inst: 00000000 pc: 00000000 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+	Queue Full: 0
+	Queue Empty: 1
+
+load_store_fu: load out: - store out: -
+
+commit out uop1: 0x00000000
+
+commit out uop2: 0x00000000
+
+branch commit: -
+
+memory unit: 
+DRAM: ['0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0', '0x0'](+224 more)
+Load/Store Buffer
+	buffer: ['0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0', '0:00000000:00000000:00:0']
+	buffer_rdy: ['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0']
+	head: 0 tail: 0
+	allocate in: 00
+	update in: ['-', '-', '-'] update idx in: ['-', '-', '-']
+	out: -
+	full: 0 empty: 1
+	n_elements: 0
+
+
+reorder buffer: 
+	Write In: optype: 0 inst: 00000000 pc: 000000a4 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0
+		optype: 0 inst: 00000000 pc: 000000a8 valid: 0 imm: 00000000 i_unit: 0 f_unit: 0 f_op: 0 br_taken: 0 br_mask: 00 br_tag: 0 lr : 00:00:00 pr : 00:00:00 stale: x00 rob_idx: 00 mem_q_idx: 0 
+	Op Complete In: Int: 00|0|00000000 Load: 00|0|00000000 Store: 00|0|0|00000000|00000000 
+	Commit Out: 00000000|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00|0:0:0:00:00:00000000:0:00000000:00000000:0:0:00
+	External ROB head: 0 External ROB tail: 6 Internal ROB head: 8 Internal ROB tail: b
+	Bank Full: 0 Bank Empty: 0
+	Instr Bank : ['-', '-', '-', '-', '-', '-', '-', '-', '0000002c|1:1:1:02:0a:00000000:0:00000000:00000000:0:0:00|1:1:2:10:0c:00000000:0:00000000:00000000:0:0:00', '00000034|1:1:2:11:0d:00000000:0:00000000:00000000:0:0:00|1:0:6:00:00:00000000:0:00000000:00000010:0:1:00', '0000003c|1:0:6:00:00:00000000:0:00000000:0000003c:0:1:00|0:1:0:00:00:00000000:0:00000000:00000000:0:0:00', '-', '-', '-', '-', '-']
 
 
 
 =========================== short test summary info ============================
 FAILED tests/test_ramp_core.py::test_beq - assert Bits32(0x00000000) == 25
-======================= 1 failed, 11 deselected in 0.73s =======================
+========================= 1 failed, 11 passed in 3.94s =========================

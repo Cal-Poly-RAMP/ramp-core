@@ -123,6 +123,20 @@ class Decode(Component):
         s.d2.uop //= s.dual_uop.uop2
         s.d2.valid //= s.fetch_packet.valid
 
+        # for allocating branch tags and assigning branch masks
+        # TODO: there will be problems if only one instruction in the window is
+        # properly allocated a branch tag, and the other is not (full)
+        s.branch_allocate = BranchAllocate(ntags=8, window_size=2)
+        # branch tags out...
+        s.d1.br_mask //= s.branch_allocate.br_mask[0]
+        s.d1.br_tag //= s.branch_allocate.br_tag[0].msg
+        s.d2.br_mask //= s.branch_allocate.br_mask[1]
+        s.d2.br_tag //= s.branch_allocate.br_tag[1].msg
+
+        # for deallocating branch tags
+        s.branch_allocate.br_update.msg //= s.br_update.msg
+        s.branch_allocate.br_update.en //= s.br_update.en
+
         # for allocating physical registers and assigning them logical registers
         # TODO: there will be problems if only one instruction in the window is
         # properly allocated registers, and the other is not (full)
@@ -154,20 +168,11 @@ class Decode(Component):
         # for deallocating branch tags
         s.register_rename.br_update.msg //= s.br_update.msg
         s.register_rename.br_update.en //= s.br_update.en
+        s.register_rename.inst1_br_tag.msg //= s.branch_allocate.br_tag[0].msg
+        s.register_rename.inst1_br_tag.en //= s.branch_allocate.br_tag[0].en
+        s.register_rename.inst2_br_tag.msg //= s.branch_allocate.br_tag[1].msg
+        s.register_rename.inst2_br_tag.en //= s.branch_allocate.br_tag[1].en
 
-        # for allocating branch tags and assigning branch masks
-        # TODO: there will be problems if only one instruction in the window is
-        # properly allocated a branch tag, and the other is not (full)
-        s.branch_allocate = BranchAllocate(ntags=8, window_size=2)
-        # branch tags out...
-        s.d1.br_mask //= s.branch_allocate.br_mask[0]
-        s.d1.br_tag //= s.branch_allocate.br_tag[0].msg
-        s.d2.br_mask //= s.branch_allocate.br_mask[1]
-        s.d2.br_tag //= s.branch_allocate.br_tag[1].msg
-
-        # for deallocating branch tags
-        s.branch_allocate.br_update.msg //= s.br_update.msg
-        s.branch_allocate.br_update.en //= s.br_update.en
 
         # from commit stage...
         for x in range(2):

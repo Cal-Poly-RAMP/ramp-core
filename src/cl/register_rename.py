@@ -20,6 +20,7 @@ from src.common.interfaces import (
     BranchUpdate
 )
 from src.common.consts import (
+    NUM_BRANCHES,
     NUM_ISA_REGS,
     NUM_PHYS_REGS,
 )
@@ -40,6 +41,9 @@ class RegisterRename(Component):
 
         s.free_list = OutPort(NUM_PHYS_REGS)
         s.busy_table = OutPort(NUM_PHYS_REGS)
+        # branch tags for caching state
+        s.inst1_br_tag = RecvIfcRTL(clog2(NUM_BRANCHES))
+        s.inst2_br_tag = RecvIfcRTL(clog2(NUM_BRANCHES))
 
         # register to be freed (from commit stage)
         s.stale_in = [InPort(clog2(NUM_PHYS_REGS)) for _ in range(2)]
@@ -64,9 +68,16 @@ class RegisterRename(Component):
 
         s.ONE = Bits(NUM_PHYS_REGS, 1)
 
-        # for deallocating and recalling state for predicted branches TODOL\
+        # for deallocating and recalling state for predicted branches
         s.br_update = RecvIfcRTL(BranchUpdate)
         s.br_update.rdy //= Bits(1,1)
+
+        # for caching the state of the register rename unit
+        # entry entered upon branch prediction, recalled upon misprediction, deallocated upon correct prediction
+        # indexed with branch tags
+        s.state_cache = [Wire(CacheEntry) for _ in range(NUM_BRANCHES)]
+        s.state_cache_w1 = Wire(CacheEntry)
+        s.state_cache_w2 = Wire(CacheEntry)
 
         @update
         def rename_comb():
@@ -177,22 +188,44 @@ class RegisterRename(Component):
                         s.ONE << zext(s.ready_in[i], NUM_PHYS_REGS)
                     )
 
+            # # caching state upon branch
+            # if s.inst1_br_tag.en:
+            #     s.state_cache_w1 @= CacheEntry(
+            #         map_table = s.map_table,
+            #         busy_table = s.busy_table,
+            #         free_list = s.free_list,
+            #     )
+
         @update_ff
         def rename_ff():
             s.free_list <<= s.free_list_next
             s.busy_table <<= s.busy_table_next
-            s.map_table[s.inst1_lregs.lrd] <<= s.map_table_wr1
-            s.map_table[s.inst2_lregs.lrd] <<= s.map_table_wr2
-            assert s.map_table[0] == 0
-            assert ~((s.inst1_lregs.lrd == 0) ^ (s.map_table_wr1 == 0))
-            assert ~((s.inst2_lregs.lrd == 0) ^ (s.map_table_wr2 == 0))
 
-            # # resetting
+            # caching state upon branch
+            s.map_table[s.inst1_lregs.lrd] <<= s.map_table_wr1
+            if s.inst1_br_tag.en:
+                s.state_cache[s.inst1_br_tg.msg] <<= CacheEntry(
+                    map_table = s.map_table,
+                    busy_table = s.busy_table,
+                    free_list = s.free_list,
+                )
+            s.map_table[s.inst2_lregs.lrd] <<= s.map_table_wr2
+            if s.inst2_br_tag.en:
+                s.state_cache[s.inst2_br_tag.msg] <<= CacheEntry(
+                    map_table = s.map_table,
+                    busy_table = s.busy_table,
+                    free_list = s.free_list,
+                )
+
+            # resetting
             if s.reset == 1:
                 for x in range(NUM_ISA_REGS):
                     s.map_table[x] <<= 0
 
-            # checking zero always points to zero
+            assert s.map_table[0] == 0
+            assert ~((s.inst1_lregs.lrd == 0) ^ (s.map_table_wr1 == 0))
+            assert ~((s.inst2_lregs.lrd == 0) ^ (s.map_table_wr2 == 0))
+
 
     def line_trace(s):
         return (
@@ -206,3 +239,9 @@ class RegisterRename(Component):
                 s.map_table_wr1, s.map_table_wr2
             )
         )
+
+@bitstruct
+class CacheEntry:
+    map_table: mk_bits(clog2(NUM_PHYS_REGS) * NUM_ISA_REGS)
+    busy_table: mk_bits(NUM_PHYS_REGS)
+    free_list: mk_bits(NUM_PHYS_REGS)

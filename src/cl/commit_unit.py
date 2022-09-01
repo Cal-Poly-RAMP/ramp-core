@@ -19,6 +19,10 @@ class CommitUnit(Component):
     def construct(s, width=2):
         # committed entries from ROB
         s.in_ = InPort(ROBEntry)
+        # TODO: remove after debugging
+        s.pc = OutPort(32)
+        s.pc //= s.in_.pc
+
         s.reg_wb_addr = [OutPort(clog2(NUM_PHYS_REGS)) for _ in range(width)]
         s.reg_wb_data = [OutPort(32) for _ in range(width)]
         s.reg_wb_en = [OutPort(1) for _ in range(width)]

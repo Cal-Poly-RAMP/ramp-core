@@ -38,8 +38,11 @@ class ReorderBuffer(Component):
         s.uop1_entry_next = Wire(ROBEntryUop)
         s.uop2_entry = Wire(ROBEntryUop)
         s.uop2_entry_next = Wire(ROBEntryUop)
+        s.pc_entry = Wire(32)
+        s.pc_entry_next = Wire(32)
         s.commit_out.uop1_entry //= s.uop1_entry
         s.commit_out.uop2_entry //= s.uop2_entry
+        s.commit_out.pc //= s.pc_entry
         s.op_complete = InPort(ExecToROB)  # for updating completed microops in ROB
 
         # Defining the instruction bank for storing inflight instructions
@@ -84,7 +87,8 @@ class ReorderBuffer(Component):
             s.internal_rob_head_next @= s.internal_rob_head
             s.internal_rob_tail_next @= s.internal_rob_tail
             s.uop1_entry_next @= ROBEntryUop(0)
-            s.uop1_entry_next @= ROBEntryUop(0)
+            s.uop2_entry_next @= ROBEntryUop(0)
+            s.pc_entry_next @= 0
             for i in range(ROB_SIZE // 2):
                 s.instr_bank_next[i] @= s.instr_bank[i]
 
@@ -252,18 +256,7 @@ class ReorderBuffer(Component):
             # committed arithmetic instructions deallocate stale reg
 
             # if the ROB's head entry uop1 is valid, not busy, and not under speculation, commit
-            if (
-                s.instr_bank_next[s.internal_rob_head_next].uop1_entry.valid
-                & ~s.instr_bank_next[s.internal_rob_head_next].uop1_entry.busy
-                & (s.instr_bank_next[s.internal_rob_head_next].uop1_entry.br_mask == 0)
-            ):
-                s.uop1_entry_next @= s.instr_bank_next[
-                    s.internal_rob_head_next
-                ].uop1_entry
-                s.instr_bank_next[s.internal_rob_head_next].uop1_entry.valid @= 0
-            # otherwise do not commit it
-            else:
-                s.uop1_entry_next @= ROBEntryUop(0)
+            s.pc_entry_next @= 0
             # if the ROB's head entry uop2 is valid and not busy, commit it
             if (
                 s.instr_bank_next[s.internal_rob_head_next].uop2_entry.valid
@@ -273,10 +266,30 @@ class ReorderBuffer(Component):
                 s.uop2_entry_next @= s.instr_bank_next[
                     s.internal_rob_head_next
                 ].uop2_entry
+                s.pc_entry_next @= s.instr_bank_next[
+                    s.internal_rob_head_next
+                ].pc + 4
                 s.instr_bank_next[s.internal_rob_head_next].uop2_entry.valid @= 0
             # otherwise do not commit it
             else:
                 s.uop2_entry_next @= ROBEntryUop(0)
+
+            if (
+                s.instr_bank_next[s.internal_rob_head_next].uop1_entry.valid
+                & ~s.instr_bank_next[s.internal_rob_head_next].uop1_entry.busy
+                & (s.instr_bank_next[s.internal_rob_head_next].uop1_entry.br_mask == 0)
+            ):
+                s.uop1_entry_next @= s.instr_bank_next[
+                    s.internal_rob_head_next
+                ].uop1_entry
+                s.pc_entry_next @= s.instr_bank_next[
+                    s.internal_rob_head_next
+                ].pc
+                s.instr_bank_next[s.internal_rob_head_next].uop1_entry.valid @= 0
+            # otherwise do not commit it
+            else:
+                s.uop1_entry_next @= ROBEntryUop(0)
+
 
             # if the ROB's head entry is not busy (committed), deallocate it
             if (
@@ -295,13 +308,14 @@ class ReorderBuffer(Component):
             s.internal_rob_tail <<= s.internal_rob_tail_next
             s.uop1_entry <<= s.uop1_entry_next
             s.uop2_entry <<= s.uop2_entry_next
+            s.pc_entry <<= s.pc_entry_next
             for i in range(ROB_SIZE // 2):
                 s.instr_bank[i] <<= s.instr_bank_next[i]
 
     def line_trace(s):
         return (
             f"\n\tWrite In: {s.write_in.uop1}\n\t\t{s.write_in.uop2} \n\tOp Complete In: {s.op_complete} \n\tCommit Out: {s.commit_out}"
-            f"\n\tExternal ROB head: {s.internal_rob_head * 2} External ROB tail: {s.internal_rob_tail * 2}"
+            f"\n\tExternal ROB head: {s.internal_rob_head * 2} External ROB tail: {s.internal_rob_tail * 2} Internal ROB head: {s.internal_rob_head} Internal ROB tail: {s.internal_rob_tail}"
             f"\n\tBank Full: {s.bank_full} Bank Empty: {s.bank_empty}"
             f"\n\tInstr Bank : {[str(x) if (x.uop1_entry.valid | x.uop2_entry.valid) else '-' for x in s.instr_bank]}\n"
         )

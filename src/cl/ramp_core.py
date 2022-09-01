@@ -207,6 +207,7 @@ class RampCore(Component):
             f"load_store_fu: {s.load_store_unit.line_trace()}\n\n"
             f"commit out uop1: 0x{s.reorder_buffer.commit_out.uop1_entry.data}\n\n"
             f"commit out uop2: 0x{s.reorder_buffer.commit_out.uop2_entry.data}\n\n"
+            f"branch commit: {s.fetch_stage.br_update.msg if s.fetch_stage.br_update.en else '-'}\n\n"
             f"memory unit: \n{s.memory_unit.line_trace()}\n\n"
             f"reorder buffer: {s.reorder_buffer.line_trace()}\n\n"
         )
