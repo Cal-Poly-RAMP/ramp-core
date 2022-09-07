@@ -183,9 +183,10 @@ class RegisterRename(Component):
             s.busy_table <<= s.busy_table_next
             s.map_table[s.inst1_lregs.lrd] <<= s.map_table_wr1
             s.map_table[s.inst2_lregs.lrd] <<= s.map_table_wr2
-            assert s.map_table[0] == 0
-            assert ~((s.inst1_lregs.lrd == 0) ^ (s.map_table_wr1 == 0))
-            assert ~((s.inst2_lregs.lrd == 0) ^ (s.map_table_wr2 == 0))
+            # TODO: CL debugging
+            # assert s.map_table[0] == 0
+            # assert ~((s.inst1_lregs.lrd == 0) ^ (s.map_table_wr1 == 0))
+            # assert ~((s.inst2_lregs.lrd == 0) ^ (s.map_table_wr2 == 0))
 
             # # resetting
             if s.reset == 1:

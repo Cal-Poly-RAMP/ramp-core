@@ -36,15 +36,18 @@ class TestDispatch(unittest.TestCase):
         self.dut.in_ @= duop
         self.dut.sim_eval_combinational()
 
-        if duop.uop1.funct_unit != BRANCH_FUNCT_UNIT:
-            self.assertEqual(self.dut.to_rob.uop1, duop.uop1)
-        else:
-            self.assertEqual(self.dut.to_rob.uop1, MicroOp(0))
+        self.assertEqual(self.dut.to_rob.uop1, duop.uop1)
+        self.assertEqual(self.dut.to_rob.uop2, duop.uop2)
 
-        if duop.uop2.funct_unit != BRANCH_FUNCT_UNIT:
-            self.assertEqual(self.dut.to_rob.uop2, duop.uop2)
-        else:
-            self.assertEqual(self.dut.to_rob.uop2, MicroOp(0))
+        # if duop.uop1.funct_unit != BRANCH_FUNCT_UNIT:
+        #     self.assertEqual(self.dut.to_rob.uop1, duop.uop1)
+        # else:
+        #     self.assertEqual(self.dut.to_rob.uop1, MicroOp(0))
+
+        # if duop.uop2.funct_unit != BRANCH_FUNCT_UNIT:
+        #     self.assertEqual(self.dut.to_rob.uop2, duop.uop2)
+        # else:
+        #     self.assertEqual(self.dut.to_rob.uop2, MicroOp(0))
 
     def test_both_to_int(self):
         uop1, uop2 = MicroOp(), MicroOp()

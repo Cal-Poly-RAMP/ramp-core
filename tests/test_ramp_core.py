@@ -1,7 +1,8 @@
-from pymtl3 import DefaultPassGroup, Bits
+from pymtl3 import DefaultPassGroup, Bits, concat
 from pymtl3.stdlib.test_utils import config_model_with_cmdline_opts
 
 from src.cl.ramp_core import RampCore
+from src.fl.util import get_mem
 
 from src.common.interfaces import MicroOp, FetchPacket
 from src.common.consts import (
@@ -11,18 +12,21 @@ from src.common.consts import (
     ALU_ADD,
     ALU_SUB,
     NUM_PHYS_REGS,
+    ICACHE_SIZE
 )
 
 LNTRC = True
+
 def test_system_dual_rtype(cmdline_opts):
     # Configure the model from command line flags
-    dut = RampCore()
+    # add x3, x2, x1
+    # sub x13, x12, x11
+    filename = "tests/input_files/test_system1.bin"
+    dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
+
     dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
     dut.apply(DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core1"))
     dut.sim_reset()
-    # add x3, x2, x1
-    # sub x13, x12, x11
-    dut.fetch_stage.icache.load_file("tests/input_files/test_system1.bin")
 
     # 0 Configure starting state
     dut.decode.register_rename.free_list_next @= 0xFFFFFFFFFFFFFFE0
@@ -163,13 +167,12 @@ def test_system_dual_rtype(cmdline_opts):
 def test_system_iu_type(cmdline_opts):
     # lui x1, 0x000dead0
     # addi x2, x1, 0x000000af
-    dut = RampCore()
+    filename = "tests/input_files/test_system2.bin"
+    dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
+
     dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
     dut.apply(DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core2"))
     dut.sim_reset()
-
-    # Load Program
-    dut.fetch_stage.icache.load_file("tests/input_files/test_system2.bin")
 
     for _ in range(8):
         dut.sim_tick()
@@ -182,14 +185,12 @@ def test_system_multiple(cmdline_opts):
     # slli	t1,	t0,	3   0x00329313
     # slli	t2,	t0,	1   0x00129393
     # add	t0,	t1,	t2  0x007302b3
+    filename = "tests/input_files/test_system3.bin"
+    dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
 
-    dut = RampCore()
     dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
     dut.apply(DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core3"))
     dut.sim_reset()
-
-    # Load Program
-    dut.fetch_stage.icache.load_file("tests/input_files/test_system3.bin")
 
     for _ in range(12):
         dut.sim_tick()
@@ -215,13 +216,12 @@ def test_system_multiple2(cmdline_opts):
 
     # srai	t0,	t0,	1
 
-    dut = RampCore()
+    filename = "tests/input_files/test_system4.bin"
+    dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
+
     dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
     dut.apply(DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core4"))
     dut.sim_reset()
-
-    # Load Program
-    dut.fetch_stage.icache.load_file("tests/input_files/test_system4.bin")
 
     for _ in range(22):
         dut.sim_tick()
@@ -232,13 +232,12 @@ def test_system_multiple2(cmdline_opts):
 def test_system5(cmdline_opts):
     # Program to multiply by 314
 
-    dut = RampCore()
+    filename = "tests/input_files/test_system5.bin"
+    dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
+
     dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
     dut.apply(DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core5"))
     dut.sim_reset()
-
-    # Load Program
-    dut.fetch_stage.icache.load_file("tests/input_files/test_system5.bin")
 
     for _ in range(17):
         dut.sim_tick()
@@ -248,13 +247,13 @@ def test_system5(cmdline_opts):
 
 def test_store(cmdline_opts):
     # Stores the number 42 to memory
-    dut = RampCore()
+
+    filename = "tests/input_files/test_store.bin"
+    dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
+
     dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
     dut.apply(DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core_store"))
     dut.sim_reset()
-
-    # Load Program
-    dut.fetch_stage.icache.load_file("tests/input_files/test_store.bin")
 
     for _ in range(10):
         dut.sim_tick()
@@ -265,13 +264,15 @@ def test_store(cmdline_opts):
 
 def test_load(cmdline_opts):
     # reads 0xdeadbeef from memory
-    dut = RampCore()
+
+    filename = "tests/input_files/test_load.bin"
+    dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
+
     dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
     dut.apply(DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core_load"))
     dut.sim_reset()
 
     # load program
-    dut.fetch_stage.icache.load_file("tests/input_files/test_load.bin")
     dut.memory_unit.dram.mem[2] <<= 0xDEADBEEF
 
     for _ in range(10):
@@ -284,13 +285,13 @@ def test_load(cmdline_opts):
 
 def test_load_store(cmdline_opts):
     # Stores the number 42 to memory, then loads it back into registers and adds
-    dut = RampCore()
+
+    filename = "tests/input_files/test_load_store.bin"
+    dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
+
     dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
     dut.apply(DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core_load_store"))
     dut.sim_reset()
-
-    # Load Program
-    dut.fetch_stage.icache.load_file("tests/input_files/test_load_store.bin")
 
     for _ in range(16):
         dut.sim_tick()
@@ -305,18 +306,17 @@ def test_load_store(cmdline_opts):
     assert dut.register_file.regs[pr4] == 84
     assert dut.memory_unit.dram.mem[1] == 42
 
-
 def test_ls_subwords(cmdline_opts):
     # tests lb, lh, lbu, lhu, sb, sh
-    dut = RampCore()
+
+    filename = "tests/input_files/test_ls_subwords.bin"
+    dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
+
     dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
     dut.apply(
         DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core_ls_subwords")
     )
     dut.sim_reset()
-
-    # Load Program
-    dut.fetch_stage.icache.load_file("tests/input_files/test_ls_subwords.bin")
 
     for i in range(50):
         dut.sim_tick()
@@ -343,13 +343,13 @@ def test_ls_subwords(cmdline_opts):
 
 def test_bge(cmdline_opts):
     # test always take bge without worrying about register renaming
-    dut = RampCore()
+
+    filename = "tests/input_files/test_bge.bin"
+    dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
+
     dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
     dut.apply(DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core_bge"))
     dut.sim_reset()
-
-    # Load Program - endless fibonacci loop
-    dut.fetch_stage.icache.load_file("tests/input_files/test_bge.bin")
 
     for x in range(100):
         dut.sim_tick()
@@ -363,15 +363,14 @@ def test_bge(cmdline_opts):
 
 def test_jal(cmdline_opts):
     # test always take unconditional jump without worrying about register renaming
-    dut = RampCore()
+
+    filename = "tests/input_files/test_jal.bin"
+    dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
+
     dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
     dut.apply(DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core_jal"))
     dut.sim_reset()
 
-    # Load Program - endless fibonacci loop
-    dut.fetch_stage.icache.load_file("tests/input_files/test_jal.bin")
-
-    lr1 = 1
     for x in range(100):
         dut.sim_tick()
 
@@ -388,13 +387,13 @@ def test_jal(cmdline_opts):
 
 def test_beq(cmdline_opts):
     # test beq take half the time, don't worry about caching register renaming
-    dut = RampCore()
+
+    filename = "tests/input_files/test_beq.bin"
+    dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
+
     dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
     dut.apply(DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core_beq"))
     dut.sim_reset()
-
-    # Load Program - sum odds and evens from 0 to 10
-    dut.fetch_stage.icache.load_file("tests/input_files/test_beq.bin")
 
     # running program
     for x in range(30):

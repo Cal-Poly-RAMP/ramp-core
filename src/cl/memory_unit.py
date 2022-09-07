@@ -40,7 +40,8 @@ class MemoryUnit(Component):
         s, queue_size=16, memory_size=256, window_size=2, reset_value=0
     ):
         # checking that addresses work
-        assert memory_size < (2**32)
+        # TODO: CL debugging
+        # assert memory_size < (2**32)
 
         # from dispatch
         s.allocate_in = RecvIfcRTL(WINDOW_SIZE)

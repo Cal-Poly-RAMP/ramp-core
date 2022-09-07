@@ -1,23 +1,12 @@
+import os
 import traceback
 
 from pymtl3 import *
 from pymtl3.passes.backends.verilog import *
 
-from src.cl import (
-    decode,
-    dispatch,
-    fetch_stage,
-    front_end,
-    icache,
-    memory,
-    ramp_core,
-    register_rename,
-    reorder_buffer,
-    issue_queue,
-    alu,
-)
+from src import *
 
-import os
+from src.common.consts import ICACHE_SIZE
 
 GREEN = "\x1B[32m"
 RED = "\x1B[31m"
@@ -43,17 +32,21 @@ def synthesize(model):
 
 if __name__ == "__main__":
     models = [
-        ramp_core.RampCore(),
+        ramp_core.RampCore(data=[0]*ICACHE_SIZE),
+        alu.ALU(mk_bits(32)),
+        branch_allocate.BranchAllocate(),
+        branch_fu.BranchFU(),
+        buffers.MultiInputRdyCircularBuffer(mk_bits(32)),
+        commit_unit.CommitUnit(),
         decode.Decode(),
         dispatch.Dispatch(),
-        fetch_stage.FetchStage(),
-        front_end.FrontEnd(),
-        # icache.ICache(),
-        # memory.Memory(),
+        dram.DRAM(mk_bits(32)),
+        fetch_stage.FetchStage(data=[0]*ICACHE_SIZE),
+        issue_queue.IssueQueue(),
+        load_store_fu.LoadStoreFU(),
+        memory_unit.MemoryUnit(),
         register_rename.RegisterRename(),
         reorder_buffer.ReorderBuffer(),
-        issue_queue.IssueQueue(),
-        alu.ALU(mk_bits(32)),
     ]
     failed = []
     size = os.get_terminal_size().columns

@@ -1,0 +1,28 @@
+57,64c57,64
+<         # restoring state upon branch mispredict
+<         if s.br_update.en & s.br_update.msg.mispredict:
+<             # breakpoint()
+<             m = s.state_cache[s.br_update.msg.tag].map_table
+<             c = 31
+<             for i in range(0, m.nbits, clog2(NUM_PHYS_REGS)):
+<                 s.map_table[c] <<= Bits(clog2(NUM_PHYS_REGS), m[i:i+clog2(NUM_PHYS_REGS)])
+<                 c = c - 1
+---
+>         # # restoring state upon branch mispredict
+>         # if s.br_update.en & s.br_update.msg.mispredict:
+>         #     # breakpoint()
+>         #     m = s.state_cache[s.br_update.msg.tag].map_table
+>         #     c = 31
+>         #     for i in range(0, m.nbits, clog2(NUM_PHYS_REGS)):
+>         #         s.map_table[c] <<= Bits(clog2(NUM_PHYS_REGS), m[i:i+clog2(NUM_PHYS_REGS)])
+>         #         c = c - 1
+66,67c66,67
+<             s.busy_table <<= 0 #s.state_cache[s.br_update.msg.tag].busy_table
+<             s.free_list <<= s.state_cache[s.br_update.msg.tag].free_list | s.free_list_next
+---
+>         #     s.busy_table <<= 0 #s.state_cache[s.br_update.msg.tag].busy_table
+>         #     s.free_list <<= s.state_cache[s.br_update.msg.tag].free_list | s.free_list_next
+5040c5040
+< ======================= 1 failed, 11 deselected in 1.06s =======================
+---
+> ======================= 1 failed, 11 deselected in 0.98s =======================

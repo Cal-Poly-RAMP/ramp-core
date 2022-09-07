@@ -1,6 +1,6 @@
 import unittest
 from pymtl3 import DefaultPassGroup, concat
-from src.cl.front_end import FrontEnd
+from fl.front_end import FrontEnd
 
 from src.common.interfaces import MicroOp, FetchPacket
 from src.common.consts import (

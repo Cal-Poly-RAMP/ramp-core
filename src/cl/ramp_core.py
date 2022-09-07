@@ -26,10 +26,10 @@ from src.common.interfaces import MicroOp, DualMicroOp, NO_OP
 
 
 class RampCore(Component):
-    def construct(s, memory_size=MEM_SIZE, data=None):
+    def construct(s, data, memory_size=MEM_SIZE):
         # FRONT END
         # (1) Fetch stage
-        s.fetch_stage = FetchStage()
+        s.fetch_stage = FetchStage(data=data)
 
         # pipeline register 1 - between fetch and decode
         s.pr1 = RegEnRst(FetchPacket, reset_value=FetchPacket(0, 0, 0, 0))

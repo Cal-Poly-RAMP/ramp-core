@@ -1,5 +1,5 @@
 $date
-  Wed Aug 31 14:44:24 2022
+  Wed Sep  7 12:08:46 2022
 $end
 $version
   PyMTL 3 (Mamba)
@@ -9,68 +9,601 @@ $timescale
 $end
 
 $scope module top $end
-  $var reg 36 $ br_update.msg $end
-  $var reg 32 % pc $end
-  $var reg 64 & icache_data $end
-  $var reg 1 " reset $end
-  $var reg 1 ' br_update.en $end
-  $var reg 1 # br_update.rdy $end
-  $var reg 1 ! clk $end
-  $var reg 98 ( fetch_packet $end
-  $var reg 32 ) pc_next $end
+  $var reg 98 #h fetch_packet $end
+  $var reg 32 #i pc $end
+  $var reg 1 w clk $end
+  $var reg 1 #j br_update.en $end
+  $var reg 1 } reset $end
+  $var reg 1 "* br_update.rdy $end
+  $var reg 36 #k br_update.msg $end
+  $var reg 32 #l pc_next $end
   $scope module icache $end
-    $var reg 1 ! clk $end
-    $var reg 1 " reset $end
-    $var reg 8 * addr $end
-    $var reg 64 + data_out $end
-    $scope module memory $end
-      $var reg 1 ! clk $end
-      $var reg 1 " reset $end
-    $upscope $end
+    $var reg 8 $ mem(131) $end
+    $var reg 8 % mem(25) $end
+    $var reg 8 ! mem(89) $end
+    $var reg 8 " mem(68) $end
+    $var reg 8 # mem(194) $end
+    $var reg 8 & mem(26) $end
+    $var reg 8 ' mem(195) $end
+    $var reg 8 ( mem(132) $end
+    $var reg 8 ) mem(90) $end
+    $var reg 8 * mem(69) $end
+    $var reg 8 + mem(27) $end
+    $var reg 8 - mem(91) $end
+    $var reg 8 . mem(70) $end
+    $var reg 8 / mem(196) $end
+    $var reg 8 , mem(133) $end
+    $var reg 8 0 mem(28) $end
+    $var reg 8 1 mem(197) $end
+    $var reg 8 2 mem(134) $end
+    $var reg 8 3 mem(92) $end
+    $var reg 8 4 mem(71) $end
+    $var reg 8 5 mem(29) $end
+    $var reg 8 6 mem(198) $end
+    $var reg 8 7 mem(135) $end
+    $var reg 8 8 mem(93) $end
+    $var reg 8 9 mem(72) $end
+    $var reg 8 : mem(30) $end
+    $var reg 8 ; mem(199) $end
+    $var reg 8 < mem(136) $end
+    $var reg 8 = mem(94) $end
+    $var reg 8 > mem(73) $end
+    $var reg 8 ? mem(31) $end
+    $var reg 8 @ mem(200) $end
+    $var reg 8 A mem(137) $end
+    $var reg 8 B mem(95) $end
+    $var reg 8 C mem(74) $end
+    $var reg 8 D mem(32) $end
+    $var reg 8 E mem(201) $end
+    $var reg 8 F mem(138) $end
+    $var reg 8 G mem(96) $end
+    $var reg 8 H mem(75) $end
+    $var reg 8 I mem(33) $end
+    $var reg 8 J mem(202) $end
+    $var reg 8 K mem(139) $end
+    $var reg 8 L mem(97) $end
+    $var reg 8 M mem(76) $end
+    $var reg 8 N mem(34) $end
+    $var reg 8 O mem(203) $end
+    $var reg 8 P mem(140) $end
+    $var reg 8 Q mem(98) $end
+    $var reg 8 R mem(77) $end
+    $var reg 8 S mem(35) $end
+    $var reg 8 U mem(99) $end
+    $var reg 8 V mem(36) $end
+    $var reg 8 X mem(204) $end
+    $var reg 8 W mem(141) $end
+    $var reg 8 T mem(78) $end
+    $var reg 8 Y mem(205) $end
+    $var reg 8 Z mem(142) $end
+    $var reg 8 [ mem(100) $end
+    $var reg 8 \ mem(79) $end
+    $var reg 8 ] mem(37) $end
+    $var reg 8 ^ mem(206) $end
+    $var reg 8 _ mem(143) $end
+    $var reg 8 ` mem(101) $end
+    $var reg 8 a mem(80) $end
+    $var reg 8 b mem(38) $end
+    $var reg 8 c mem(207) $end
+    $var reg 8 d mem(144) $end
+    $var reg 8 e mem(102) $end
+    $var reg 8 f mem(81) $end
+    $var reg 8 g mem(39) $end
+    $var reg 8 h mem(208) $end
+    $var reg 8 i mem(145) $end
+    $var reg 8 j mem(103) $end
+    $var reg 8 k mem(82) $end
+    $var reg 8 l mem(40) $end
+    $var reg 8 m mem(209) $end
+    $var reg 8 n mem(146) $end
+    $var reg 8 o mem(104) $end
+    $var reg 8 p mem(83) $end
+    $var reg 8 q mem(41) $end
+    $var reg 8 r mem(210) $end
+    $var reg 8 s mem(147) $end
+    $var reg 8 t mem(105) $end
+    $var reg 8 u mem(84) $end
+    $var reg 8 v mem(42) $end
+    $var reg 8 x mem(211) $end
+    $var reg 8 y mem(148) $end
+    $var reg 8 z mem(106) $end
+    $var reg 8 { mem(85) $end
+    $var reg 8 | mem(43) $end
+    $var reg 8 ~ mem(212) $end
+    $var reg 8 "! mem(149) $end
+    $var reg 8 "" mem(107) $end
+    $var reg 8 "# mem(86) $end
+    $var reg 8 "$ mem(44) $end
+    $var reg 1 w clk $end
+    $var reg 8 "% mem(213) $end
+    $var reg 8 "& mem(150) $end
+    $var reg 8 "' mem(108) $end
+    $var reg 8 "( mem(87) $end
+    $var reg 8 ") mem(45) $end
+    $var reg 1 } reset $end
+    $var reg 8 "+ mem(214) $end
+    $var reg 8 ", mem(151) $end
+    $var reg 8 "- mem(109) $end
+    $var reg 8 ". mem(88) $end
+    $var reg 8 "/ mem(46) $end
+    $var reg 8 "0 mem(236) $end
+    $var reg 8 "1 mem(215) $end
+    $var reg 8 "2 mem(173) $end
+    $var reg 8 "3 mem(152) $end
+    $var reg 8 "4 mem(110) $end
+    $var reg 8 "5 mem(47) $end
+    $var reg 8 "6 mem(237) $end
+    $var reg 8 "7 mem(216) $end
+    $var reg 8 "8 mem(174) $end
+    $var reg 8 "9 mem(153) $end
+    $var reg 8 ": mem(111) $end
+    $var reg 8 "; mem(48) $end
+    $var reg 64 #m rdata(0) $end
+    $var reg 8 #n raddr(0) $end
+    $var reg 8 "< mem(0) $end
+    $var reg 8 "= mem(238) $end
+    $var reg 8 "> mem(217) $end
+    $var reg 8 "? mem(175) $end
+    $var reg 8 "@ mem(154) $end
+    $var reg 8 "A mem(112) $end
+    $var reg 8 "B mem(49) $end
+    $var reg 8 "C mem(239) $end
+    $var reg 8 "D mem(218) $end
+    $var reg 8 "E mem(176) $end
+    $var reg 8 "F mem(155) $end
+    $var reg 8 "G mem(113) $end
+    $var reg 8 "H mem(50) $end
+    $var reg 8 "I mem(1) $end
+    $var reg 8 "J mem(2) $end
+    $var reg 8 "K mem(240) $end
+    $var reg 8 "L mem(219) $end
+    $var reg 8 "M mem(177) $end
+    $var reg 8 "N mem(156) $end
+    $var reg 8 "O mem(114) $end
+    $var reg 8 "P mem(51) $end
+    $var reg 8 "Q mem(3) $end
+    $var reg 8 "R mem(241) $end
+    $var reg 8 "S mem(220) $end
+    $var reg 8 "T mem(178) $end
+    $var reg 8 "U mem(157) $end
+    $var reg 8 "V mem(115) $end
+    $var reg 8 "W mem(52) $end
+    $var reg 8 "X mem(4) $end
+    $var reg 8 "Y mem(242) $end
+    $var reg 8 "Z mem(221) $end
+    $var reg 8 "[ mem(179) $end
+    $var reg 8 "\ mem(158) $end
+    $var reg 8 "] mem(116) $end
+    $var reg 8 "^ mem(53) $end
+    $var reg 8 "_ mem(5) $end
+    $var reg 8 "` mem(6) $end
+    $var reg 8 "a mem(243) $end
+    $var reg 8 "b mem(222) $end
+    $var reg 8 "c mem(180) $end
+    $var reg 8 "d mem(159) $end
+    $var reg 8 "e mem(117) $end
+    $var reg 8 "f mem(54) $end
+    $var reg 8 "g mem(7) $end
+    $var reg 8 "h mem(244) $end
+    $var reg 8 "i mem(223) $end
+    $var reg 8 "j mem(181) $end
+    $var reg 8 "k mem(160) $end
+    $var reg 8 "l mem(118) $end
+    $var reg 8 "m mem(55) $end
+    $var reg 8 "n mem(8) $end
+    $var reg 8 "o mem(245) $end
+    $var reg 8 "p mem(224) $end
+    $var reg 8 "q mem(182) $end
+    $var reg 8 "r mem(161) $end
+    $var reg 8 "s mem(119) $end
+    $var reg 8 "t mem(56) $end
+    $var reg 8 "u mem(9) $end
+    $var reg 8 "v mem(10) $end
+    $var reg 8 "w mem(225) $end
+    $var reg 8 "x mem(246) $end
+    $var reg 8 "y mem(183) $end
+    $var reg 8 "z mem(162) $end
+    $var reg 8 "{ mem(120) $end
+    $var reg 8 "| mem(57) $end
+    $var reg 8 "} mem(11) $end
+    $var reg 8 "~ mem(247) $end
+    $var reg 8 #! mem(226) $end
+    $var reg 8 #" mem(184) $end
+    $var reg 8 ## mem(163) $end
+    $var reg 8 #$ mem(121) $end
+    $var reg 8 #% mem(58) $end
+    $var reg 8 #& mem(12) $end
+    $var reg 8 #' mem(248) $end
+    $var reg 8 #( mem(227) $end
+    $var reg 8 #) mem(185) $end
+    $var reg 8 #* mem(164) $end
+    $var reg 8 #+ mem(122) $end
+    $var reg 8 #, mem(59) $end
+    $var reg 8 #- mem(13) $end
+    $var reg 8 #. mem(14) $end
+    $var reg 8 #/ mem(249) $end
+    $var reg 8 #0 mem(228) $end
+    $var reg 8 #1 mem(186) $end
+    $var reg 8 #2 mem(165) $end
+    $var reg 8 #3 mem(123) $end
+    $var reg 8 #4 mem(60) $end
+    $var reg 8 #5 mem(15) $end
+    $var reg 8 #6 mem(250) $end
+    $var reg 8 #7 mem(229) $end
+    $var reg 8 #8 mem(187) $end
+    $var reg 8 #9 mem(166) $end
+    $var reg 8 #: mem(124) $end
+    $var reg 8 #; mem(61) $end
+    $var reg 8 #< mem(16) $end
+    $var reg 8 #= mem(251) $end
+    $var reg 8 #> mem(230) $end
+    $var reg 8 #? mem(188) $end
+    $var reg 8 #@ mem(167) $end
+    $var reg 8 #A mem(125) $end
+    $var reg 8 #B mem(62) $end
+    $var reg 8 #C mem(17) $end
+    $var reg 8 #D mem(18) $end
+    $var reg 8 #E mem(252) $end
+    $var reg 8 #F mem(231) $end
+    $var reg 8 #G mem(189) $end
+    $var reg 8 #H mem(168) $end
+    $var reg 8 #I mem(126) $end
+    $var reg 8 #J mem(63) $end
+    $var reg 8 #K mem(19) $end
+    $var reg 8 #L mem(253) $end
+    $var reg 8 #M mem(232) $end
+    $var reg 8 #N mem(190) $end
+    $var reg 8 #O mem(169) $end
+    $var reg 8 #P mem(127) $end
+    $var reg 8 #Q mem(64) $end
+    $var reg 8 #R mem(20) $end
+    $var reg 8 #S mem(254) $end
+    $var reg 8 #T mem(233) $end
+    $var reg 8 #U mem(191) $end
+    $var reg 8 #V mem(170) $end
+    $var reg 8 #W mem(128) $end
+    $var reg 8 #X mem(65) $end
+    $var reg 8 #Y mem(21) $end
+    $var reg 8 #Z mem(22) $end
+    $var reg 8 #[ mem(255) $end
+    $var reg 8 #\ mem(234) $end
+    $var reg 8 #] mem(192) $end
+    $var reg 8 #^ mem(171) $end
+    $var reg 8 #_ mem(129) $end
+    $var reg 8 #` mem(66) $end
+    $var reg 8 #a mem(23) $end
+    $var reg 8 #b mem(235) $end
+    $var reg 8 #c mem(193) $end
+    $var reg 8 #d mem(172) $end
+    $var reg 8 #e mem(24) $end
+    $var reg 8 #f mem(130) $end
+    $var reg 8 #g mem(67) $end
   $upscope $end
 $upscope $end
 $enddefinitions $end
 
-b0b0 !
-b0b0 "
-b0b0 #
-b0b000000000000000000000000000000000000 $
-b0b00000000000000000000000000000000 %
-b0b0000000000000000000000000000000000000000000000000000000000000000 &
-b0b0 '
-b0b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 (
-b0b00000000000000000000000000000000 )
+b0b00000000 !
+b0b00000000 "
+b0b00000000 #
+b0b00000000 $
+b0b00000000 %
+b0b00000000 &
+b0b00000000 '
+b0b00000000 (
+b0b00000000 )
 b0b00000000 *
-b0b0000000000000000000000000000000000000000000000000000000000000000 +
+b0b00000000 +
+b0b00000000 ,
+b0b00000000 -
+b0b00000000 .
+b0b00000000 /
+b0b00000000 0
+b0b00000000 1
+b0b00000000 2
+b0b00000000 3
+b0b00000000 4
+b0b00000000 5
+b0b00000000 6
+b0b00000000 7
+b0b00000000 8
+b0b00000000 9
+b0b00000000 :
+b0b00000000 ;
+b0b00000000 <
+b0b00000000 =
+b0b00000000 >
+b0b00000000 ?
+b0b00000000 @
+b0b00000000 A
+b0b00000000 B
+b0b00000000 C
+b0b00000000 D
+b0b00000000 E
+b0b00000000 F
+b0b00000000 G
+b0b00000000 H
+b0b00000000 I
+b0b00000000 J
+b0b00000000 K
+b0b00000000 L
+b0b00000000 M
+b0b00000000 N
+b0b00000000 O
+b0b00000000 P
+b0b00000000 Q
+b0b00000000 R
+b0b00000000 S
+b0b00000000 T
+b0b00000000 U
+b0b00000000 V
+b0b00000000 W
+b0b00000000 X
+b0b00000000 Y
+b0b00000000 Z
+b0b00000000 [
+b0b00000000 \
+b0b00000000 ]
+b0b00000000 ^
+b0b00000000 _
+b0b00000000 `
+b0b00000000 a
+b0b00000000 b
+b0b00000000 c
+b0b00000000 d
+b0b00000000 e
+b0b00000000 f
+b0b00000000 g
+b0b00000000 h
+b0b00000000 i
+b0b00000000 j
+b0b00000000 k
+b0b00000000 l
+b0b00000000 m
+b0b00000000 n
+b0b00000000 o
+b0b00000000 p
+b0b00000000 q
+b0b00000000 r
+b0b00000000 s
+b0b00000000 t
+b0b00000000 u
+b0b00000000 v
+b0b0 w
+b0b00000000 x
+b0b00000000 y
+b0b00000000 z
+b0b00000000 {
+b0b00000000 |
+b0b0 }
+b0b00000000 ~
+b0b00000000 "!
+b0b00000000 ""
+b0b00000000 "#
+b0b00000000 "$
+b0b00000000 "%
+b0b00000000 "&
+b0b00000000 "'
+b0b00000000 "(
+b0b00000000 ")
+b0b0 "*
+b0b00000000 "+
+b0b00000000 ",
+b0b00000000 "-
+b0b00000000 ".
+b0b00000000 "/
+b0b00000000 "0
+b0b00000000 "1
+b0b00000000 "2
+b0b00000000 "3
+b0b00000000 "4
+b0b00000000 "5
+b0b00000000 "6
+b0b00000000 "7
+b0b00000000 "8
+b0b00000000 "9
+b0b00000000 ":
+b0b00000000 ";
+b0b00000000 "<
+b0b00000000 "=
+b0b00000000 ">
+b0b00000000 "?
+b0b00000000 "@
+b0b00000000 "A
+b0b00000000 "B
+b0b00000000 "C
+b0b00000000 "D
+b0b00000000 "E
+b0b00000000 "F
+b0b00000000 "G
+b0b00000000 "H
+b0b00000000 "I
+b0b00000000 "J
+b0b00000000 "K
+b0b00000000 "L
+b0b00000000 "M
+b0b00000000 "N
+b0b00000000 "O
+b0b00000000 "P
+b0b00000000 "Q
+b0b00000000 "R
+b0b00000000 "S
+b0b00000000 "T
+b0b00000000 "U
+b0b00000000 "V
+b0b00000000 "W
+b0b00000000 "X
+b0b00000000 "Y
+b0b00000000 "Z
+b0b00000000 "[
+b0b00000000 "\
+b0b00000000 "]
+b0b00000000 "^
+b0b00000000 "_
+b0b00000000 "`
+b0b00000000 "a
+b0b00000000 "b
+b0b00000000 "c
+b0b00000000 "d
+b0b00000000 "e
+b0b00000000 "f
+b0b00000000 "g
+b0b00000000 "h
+b0b00000000 "i
+b0b00000000 "j
+b0b00000000 "k
+b0b00000000 "l
+b0b00000000 "m
+b0b00000000 "n
+b0b00000000 "o
+b0b00000000 "p
+b0b00000000 "q
+b0b00000000 "r
+b0b00000000 "s
+b0b00000000 "t
+b0b00000000 "u
+b0b00000000 "v
+b0b00000000 "w
+b0b00000000 "x
+b0b00000000 "y
+b0b00000000 "z
+b0b00000000 "{
+b0b00000000 "|
+b0b00000000 "}
+b0b00000000 "~
+b0b00000000 #!
+b0b00000000 #"
+b0b00000000 ##
+b0b00000000 #$
+b0b00000000 #%
+b0b00000000 #&
+b0b00000000 #'
+b0b00000000 #(
+b0b00000000 #)
+b0b00000000 #*
+b0b00000000 #+
+b0b00000000 #,
+b0b00000000 #-
+b0b00000000 #.
+b0b00000000 #/
+b0b00000000 #0
+b0b00000000 #1
+b0b00000000 #2
+b0b00000000 #3
+b0b00000000 #4
+b0b00000000 #5
+b0b00000000 #6
+b0b00000000 #7
+b0b00000000 #8
+b0b00000000 #9
+b0b00000000 #:
+b0b00000000 #;
+b0b00000000 #<
+b0b00000000 #=
+b0b00000000 #>
+b0b00000000 #?
+b0b00000000 #@
+b0b00000000 #A
+b0b00000000 #B
+b0b00000000 #C
+b0b00000000 #D
+b0b00000000 #E
+b0b00000000 #F
+b0b00000000 #G
+b0b00000000 #H
+b0b00000000 #I
+b0b00000000 #J
+b0b00000000 #K
+b0b00000000 #L
+b0b00000000 #M
+b0b00000000 #N
+b0b00000000 #O
+b0b00000000 #P
+b0b00000000 #Q
+b0b00000000 #R
+b0b00000000 #S
+b0b00000000 #T
+b0b00000000 #U
+b0b00000000 #V
+b0b00000000 #W
+b0b00000000 #X
+b0b00000000 #Y
+b0b00000000 #Z
+b0b00000000 #[
+b0b00000000 #\
+b0b00000000 #]
+b0b00000000 #^
+b0b00000000 #_
+b0b00000000 #`
+b0b00000000 #a
+b0b00000000 #b
+b0b00000000 #c
+b0b00000000 #d
+b0b00000000 #e
+b0b00000000 #f
+b0b00000000 #g
+b0b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 #h
+b0b00000000000000000000000000000000 #i
+b0b0 #j
+b0b000000000000000000000000000000000000 #k
+b0b00000000000000000000000000000000 #l
+b0b0000000000000000000000000000000000000000000000000000000000000000 #m
+b0b00000000 #n
 
 #0
-b0b1 !
+b0b1 w
 
-b0b1 "
-b0b1 #
-b0b000000000000000000000000000000000000 $
-b0b00000000000000000000000000000000 %
-b0b0000000000000000000000000000000000000000000000000000000000000000 &
-b0b0 '
-b0b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 (
-b0b00000000000000000000000000001000 )
-b0b00000000 *
-b0b0000000000000000000000000000000000000000000000000000000000000000 +
+b0b00000000 x
+b0b1 }
+b0b00000000 ~
+b0b1 "*
+b0b00000000 "+
+b0b10010011 "<
+b0b10000000 "J
+b0b00010011 "X
+b0b00000001 "_
+b0b10100000 "`
+b0b00000010 "g
+b0b00100011 "n
+b0b10101110 "u
+b0b00100000 "v
+b0b11111110 "}
+b0b10000011 #&
+b0b10100001 #-
+b0b11000000 #.
+b0b11111111 #5
+b0b00110011 #<
+b0b00000010 #C
+b0b00110001 #D
+b0b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 #h
+b0b00000000000000000000000000000000 #i
+b0b0 #j
+b0b000000000000000000000000000000000000 #k
+b0b00000000000000000000000000001000 #l
+b0b0000001010100000000000010001001100000000100000000000000010010011 #m
+b0b00000000 #n
 
 #50
-b0b0 !
+b0b0 w
 #100
-b0b1 !
+b0b1 w
 
+b0b00000000000000000000000000000000000000000100000000000000010010011000000101010000000000001000100111 #h
 
 #150
-b0b0 !
+b0b0 w
 #200
-b0b1 !
+b0b1 w
 
 
 #250
-b0b0 !
+b0b0 w
 #300
-b0b1 !
+b0b1 w
+
+b0b0 }
+
+#350
+b0b0 w
+#400
+b0b1 w
 

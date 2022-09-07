@@ -29,8 +29,10 @@ class DRAM(Component):
         @update
         def up_rf_read():
             for i in range(rd_ports):
-                assert not (s.raddr[i] % (Type.nbits // 8)), f"Address must be {Type.nbits // 8}-byte aligned"
-                s.rdata[i] @= s.mem[s.raddr[i]//(Type.nbits // 8)]
+                # TODO: CL debugging
+                # assert not (s.raddr[i] % (Type.nbits // 8)), f"Address must be {Type.nbits // 8}-byte aligned"
+                # byte addressable
+                s.rdata[i] @= s.mem[s.raddr[i] // (Type.nbits // 8)]
 
         @update_ff
         def up_rf_write():
@@ -40,7 +42,8 @@ class DRAM(Component):
             else:
                 for i in range(wr_ports):
                     if s.wen[i]:
-                        assert not (s.waddr[i] % (Type.nbits // 8)), f"Address must be {Type.nbits // 8}-byte aligned"
+                        # TODO: CL debugging
+                        # assert not (s.waddr[i] % (Type.nbits // 8)), f"Address must be {Type.nbits // 8}-byte aligned"
                         s.mem[s.waddr[i]//(Type.nbits // 8)] <<= s.wdata[i]
 
     def line_trace(s):

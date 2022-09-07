@@ -41,6 +41,7 @@ class MultiInputRdyCircularBuffer(Component):
 
         s.tail = OutPort(clog2(size))
         s.tail_next = Wire(clog2(size))
+        s.tail_nbits = clog2(size)
         s.head = Wire(clog2(size))
         s.head_next = Wire(clog2(size))
 
@@ -48,6 +49,7 @@ class MultiInputRdyCircularBuffer(Component):
         s.empty = Wire()
         s.n_elements = OutPort(clog2(size) + 1)
         s.n_elements_next = Wire(clog2(size) + 1)
+        s.n_elements_nbits = clog2(size) + 1
 
         @update
         def updt_comb():
@@ -79,7 +81,8 @@ class MultiInputRdyCircularBuffer(Component):
                     # forwarding update inputs
                     for i in range(num_inports):
                         # ensuring that update data has a corresponding index
-                        assert ~(s.update_idx_in[i].en ^ s.update_in[i].en)
+                        # TODO: CL debugging
+                        # assert ~(s.update_idx_in[i].en ^ s.update_in[i].en)
                         if s.update_idx_in[i].en & (s.update_idx_in[i].msg == s.head):
                             # checking that index has valid corresponding data
                             s.out_next @= s.update_in[i].msg
@@ -90,10 +93,12 @@ class MultiInputRdyCircularBuffer(Component):
                 # updating tail with elements allocated
                 if s.allocate_in.en == 1:
                     s.tail_next @= trunc(
-                        zext(s.tail, clog2(size) + 1) + s.allocate_in.msg, clog2(size)
+                        zext(s.tail, s.n_elements_nbits) + s.allocate_in.msg,
+                        s.tail_nbits
                     )
                     s.n_elements_next @= s.n_elements_next + zext(
-                        s.allocate_in.msg, clog2(size) + 1
+                        s.allocate_in.msg,
+                        s.n_elements_nbits
                     )
 
         @update_ff
@@ -105,16 +110,18 @@ class MultiInputRdyCircularBuffer(Component):
                     s.buffer_rdy[i] <<= 0
 
             # setting newely allocated elements to 0
-            if s.allocate_in.en:
-                for i in range(s.allocate_in.msg):
-                    s.buffer_rdy[s.tail + i] <<= 0
+            # if s.allocate_in.en:
+            #     for i in range(num_inports):
+            #         if (i > s.tail_next) & (i < s.head_next):
+            #             s.buffer_rdy[i] <<= 0
 
             # updating data, and setting ready bit
             for i in range(num_inports):
                 # ensuring that update data has a corresponding index
-                assert ~(
-                    s.update_idx_in[i].en ^ s.update_in[i].en
-                ), f"update idx[{i}] en: {s.update_idx_in[i].en}, update[{i}] en: {s.update_in[i].en}"
+                # TODO: CL debugging
+                # assert ~(
+                #     s.update_idx_in[i].en ^ s.update_in[i].en
+                # ), f"update idx[{i}] en: {s.update_idx_in[i].en}, update[{i}] en: {s.update_in[i].en}"
                 if s.update_idx_in[i].en:
                     s.buffer[s.update_idx_in[i].msg] <<= s.update_in[i].msg
                     s.buffer_rdy[s.update_idx_in[i].msg] <<= 1

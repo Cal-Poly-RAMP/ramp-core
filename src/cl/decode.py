@@ -188,9 +188,9 @@ class Decode(Component):
             # connecting branch update signals
             s.br_update.rdy @= s.branch_allocate.br_update.rdy & s.register_rename.br_update.rdy
 
-            for i in range(2):
-                if s.branch_allocate.br_tag[i].rdy ^ s.branch_allocate.br_tag[i].en:
-                    assert "could not allocate branch tags"
+            # TODO: FOR CL MODEL
+            # for i in range(2):
+            #     assert ~(s.branch_allocate.br_tag[i].rdy ^ s.branch_allocate.br_tag[i].en)
 
     def line_trace(s):
         return (

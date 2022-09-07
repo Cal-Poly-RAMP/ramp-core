@@ -1,5 +1,6 @@
 from pymtl3 import Bits
 import csv
+import numpy as np
 
 
 def one_hot(n: int, i: int) -> Bits:
@@ -15,27 +16,10 @@ def one_hot(n: int, i: int) -> Bits:
 
     return Bits(n, 1) << i
 
+def get_mem(filename, size):
+    with open(filename, "rb") as f:
+        mem = np.fromfile(f, dtype="u1", count=size)
+        mem = np.pad(mem, (0, size - mem.size), "constant", constant_values=(0))
+        mem = [Bits(8, x) for x in mem]
 
-def csv_to_vector(csv_file: str) -> list:
-    """
-    Convert a CSV file to a list of lists.
-    """
-    with open("tests/input_files/test_ramp_core_vector.csv") as f:
-        csvreader = csv.reader(f)
-        header = [h.strip() for h in next(csvreader) if h]
-        rows = []
-        for row in csvreader:
-            rows.append([_to_int(r) for r in row if r])
-
-    return [header] + rows
-
-
-def _to_int(x):
-    if x.strip() == "?":
-        return "?"
-    elif "x" in x:
-        return int(x, 16)
-    elif "b" in x:
-        return int(x, 2)
-    else:
-        return int(x)
+    return mem

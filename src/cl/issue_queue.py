@@ -52,14 +52,14 @@ class IssueQueue(Component):
                 s.tail_next @= 0
                 s.queue_full_next @= 0
                 s.queue_empty_next @= 1
-                s.uop_out_next @= MicroOp(0)
+                s.uop_out_next @= NO_OP
                 for i in range(ISSUE_QUEUE_DEPTH):
-                    s.queue_next[i] @= MicroOp(0)
+                    s.queue_next[i] @= NO_OP
             else:
                 # APPENDING new uops to queue, if valid
                 for i in range(ISSUE_QUEUE_DEPTH):
                     s.queue_next[i] @= s.queue[i]
-                s.uop_out_next @= MicroOp(0)
+                s.uop_out_next @= NO_OP
                 s.tail_next @= s.tail
                 s.queue_full_next @= s.queue_full
                 s.queue_empty_next @= s.queue_empty
@@ -137,7 +137,7 @@ class IssueQueue(Component):
 
                 if collapse:
                     s.queue_empty_next @= (s.tail_next - 1) == 0
-                    s.queue_next[ISSUE_QUEUE_DEPTH - 1] @= MicroOp(0)
+                    s.queue_next[ISSUE_QUEUE_DEPTH - 1] @= NO_OP
 
         @update_ff
         def ff():

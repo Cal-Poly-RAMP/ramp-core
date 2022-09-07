@@ -22,7 +22,6 @@ class CommitUnit(Component):
         s.reg_wb_addr = [OutPort(clog2(NUM_PHYS_REGS)) for _ in range(width)]
         s.reg_wb_data = [OutPort(32) for _ in range(width)]
         s.reg_wb_en = [OutPort(1) for _ in range(width)]
-
         s.store_out = [SendIfcRTL(LoadStoreEntry) for _ in range(width)]
         # for updating freelist
         s.stale_out = [OutPort(clog2(NUM_PHYS_REGS)) for _ in range(width)]
@@ -50,11 +49,10 @@ class CommitUnit(Component):
             # first uop that is a branch is the one that is committed
             s.br_update.en @= 0
             for x in range(width):
-                if s.commit_units[x].br_update.en:
+                if s.commit_units[x].br_update.en & ~s.br_update.en:
                     s.br_update.en @= 1
                     s.br_update.msg @= s.commit_units[x].br_update.msg
                     s.commit_units[x].br_update.rdy @= s.br_update.rdy
-                    break
 
 # For each uop in rob entry
 class SingleCommit(Component):

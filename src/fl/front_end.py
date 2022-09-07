@@ -9,9 +9,9 @@ from src.common.interfaces import FetchPacket, DualMicroOp
 
 
 class FrontEnd(Component):
-    def construct(s):
+    def construct(s, data):
         # (1) Fetch stage
-        s.fetch_stage = FetchStage()
+        s.fetch_stage = FetchStage(data=data)
 
         # Pipeline register
         s.pipeline_reg_fetch_decode = RegEnRst(

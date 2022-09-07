@@ -2,6 +2,7 @@ from pymtl3 import Bits
 
 # fetch
 ICACHE_ADDR_WIDTH = 8
+ICACHE_SIZE = 2 ** ICACHE_ADDR_WIDTH
 INSTR_WIDTH = 32
 DATA_WIDTH = 32
 
