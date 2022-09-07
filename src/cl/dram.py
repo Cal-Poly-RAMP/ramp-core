@@ -10,6 +10,8 @@ from pymtl3 import (
     Bits1,
 )
 
+# TODO: make byte addressable
+
 class DRAM(Component):
     def construct(
         s, Type, num_entries=32, rd_ports=1, wr_ports=1, reset_value=0
@@ -25,13 +27,16 @@ class DRAM(Component):
 
         s.mem = [Wire(Type) for _ in range(num_entries)]
 
+        # for byte addressable memory
+        addr_shift = clog2(Type.nbits >> 3)
+
         @update
         def up_rf_read():
             for i in range(rd_ports):
                 # TODO: CL debugging
                 # assert not (s.raddr[i] % (Type.nbits // 8)), f"Address must be {Type.nbits // 8}-byte aligned"
                 # byte addressable
-                s.rdata[i] @= s.mem[s.raddr[i] // (Type.nbits // 8)]
+                s.rdata[i] @= s.mem[s.raddr[i] >> addr_shift]
 
         @update_ff
         def up_rf_write():
@@ -43,7 +48,7 @@ class DRAM(Component):
                     if s.wen[i]:
                         # TODO: CL debugging
                         # assert not (s.waddr[i] % (Type.nbits // 8)), f"Address must be {Type.nbits // 8}-byte aligned"
-                        s.mem[s.waddr[i]//(Type.nbits // 8)] <<= s.wdata[i]
+                        s.mem[s.waddr[i] >> addr_shift] <<= s.wdata[i]
 
     def line_trace(s):
         nshown = min(32, len(s.mem))

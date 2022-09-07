@@ -168,11 +168,13 @@ class TestReorderBuffer(unittest.TestCase):
             s.dut.sim_tick()
             s.assertFalse(s.dut.bank_empty)
 
-        # overflow
-        with s.assertRaises(OverflowError):
-            s.assertFalse(s.dut.bank_empty)
-            s.dut.sim_tick()
-            s.assertFalse(s.dut.bank_full)
+        # TODO: only for CL
+        # # overflow
+        # with s.assertRaises(OverflowError):
+        #     s.assertFalse(s.dut.bank_empty)
+        #     s.dut.sim_tick()
+        #     s.assertFalse(s.dut.bank_full)
+        s.dut.sim_tick()
 
         # emptying rob
         s.dut.write_in @= DualMicroOp.from_bits(Bits(DualMicroOp.nbits, 0))

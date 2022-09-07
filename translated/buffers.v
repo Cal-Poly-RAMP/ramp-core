@@ -27,6 +27,7 @@ module MultiInputRdyCircularBuffer
   output logic [0:0] update_in__rdy [0:1] 
 );
   localparam logic [4:0] __const__size_at_updt_comb  = 5'd16;
+  localparam logic [31:0] __const__type_reset_val_at_updt_comb  = 32'd0;
   localparam logic [1:0] __const__num_inports_at_updt_comb  = 2'd2;
   localparam logic [1:0] __const__num_inports_at_updt_ff  = 2'd2;
   logic [31:0] buffer [0:15];
@@ -41,7 +42,7 @@ module MultiInputRdyCircularBuffer
   logic [3:0] tail_next;
 
   // PyMTL Update Block Source
-  // At /Users/curtisbucher/Desktop/ramp-core/src/cl/buffers.py:54
+  // At /Users/curtisbucher/Desktop/ramp-core/src/cl/buffers.py:56
   // @update
   // def updt_comb():
   //     s.full @= s.n_elements == size
@@ -50,7 +51,7 @@ module MultiInputRdyCircularBuffer
   // 
   //     # reset
   //     if s.reset:
-  //         s.out_next @= Type(0)
+  //         s.out_next @= type_reset_val
   //         s.head_next @= 0
   //         s.tail_next @= 0
   //         s.n_elements_next @= 0
@@ -97,7 +98,7 @@ module MultiInputRdyCircularBuffer
     empty = n_elements == 5'd0;
     allocate_in__rdy = ~full;
     if ( reset ) begin
-      out_next = 32'd0;
+      out_next = 32'( __const__type_reset_val_at_updt_comb );
       head_next = 4'd0;
       tail_next = 4'd0;
       n_elements_next = 5'd0;
@@ -130,7 +131,7 @@ module MultiInputRdyCircularBuffer
   end
 
   // PyMTL Update Block Source
-  // At /Users/curtisbucher/Desktop/ramp-core/src/cl/buffers.py:104
+  // At /Users/curtisbucher/Desktop/ramp-core/src/cl/buffers.py:106
   // @update_ff
   // def updt_ff():
   //     # reset

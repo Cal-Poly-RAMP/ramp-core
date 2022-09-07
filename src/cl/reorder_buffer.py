@@ -14,7 +14,8 @@ from pymtl3 import (
     update_ff,
     clog2,
     Bits,
-    zext
+    zext,
+    trunc
 )
 from pymtl3.stdlib.ifcs import RecvIfcRTL, SendIfcRTL
 
@@ -62,10 +63,16 @@ class ReorderBuffer(Component):
         s.br_update = RecvIfcRTL(BranchUpdate)
         s.br_update.rdy //= Bits(1, 1)
 
+        rob_addr_nbits = clog2(ROB_SIZE)
+        instr_bank_addr_nbits = clog2(ROB_SIZE) - 1
+        empty_rob_entry = ROBEntryUop(0)
+
+        one = Bits(1, 1)
+
         @update
         def comb_():
             # indexed so that uop1 is at odd indices and uop2 is at even indices
-            s.rob_tail @= sext(s.internal_rob_tail, clog2(ROB_SIZE)) << 1
+            s.rob_tail @= sext(s.internal_rob_tail, rob_addr_nbits) << 1
 
             # bank full if head == tail and value is busy
             s.bank_full @= (
@@ -83,52 +90,50 @@ class ReorderBuffer(Component):
             # defaults
             s.internal_rob_head_next @= s.internal_rob_head
             s.internal_rob_tail_next @= s.internal_rob_tail
-            s.uop1_entry_next @= ROBEntryUop(0)
-            s.uop1_entry_next @= ROBEntryUop(0)
-            for i in range(ROB_SIZE // 2):
+            s.uop1_entry_next @= empty_rob_entry
+            s.uop1_entry_next @= empty_rob_entry
+            for i in range(ROB_SIZE >> 1):
                 s.instr_bank_next[i] @= s.instr_bank[i]
-
-            # ASYNCHRONOUS RESET
-            if s.reset:
-                s.internal_rob_head_next @= 0
-                s.internal_rob_tail_next @= 0
-                for i in range(ROB_SIZE >> 1):
-                    s.instr_bank_next[i].uop1_entry.valid @= 0
-                    s.instr_bank_next[i].uop2_entry.valid @= 0
-                    s.instr_bank_next[i].uop1_entry.busy @= 0
-                    s.instr_bank_next[i].uop2_entry.busy @= 0
-                return
 
             # WRITING TO ROB
             # if either of the uops is valid, and there is room in the buffer,
             # write both to the ROB
             if s.write_in.uop1.valid | s.write_in.uop2.valid:
                 # if the circular buffer is not full
-                if ~s.bank_full:
-                    s.instr_bank_next[s.internal_rob_tail] @= ROBEntry(
-                        pc=s.write_in.uop1.pc,
-                        uop1_entry=ROBEntryUop(
-                            valid=s.write_in.uop1.valid,
-                            busy=s.write_in.uop1.valid,  # busy if valid
-                            optype=s.write_in.uop1.optype,
-                            prd=s.write_in.uop1.prd,
-                            stale=s.write_in.uop1.stale,
-                            store_addr=0,
-                            br_mask=s.write_in.uop1.br_mask,
-                        ),
-                        uop2_entry=ROBEntryUop(
-                            valid=s.write_in.uop2.valid,
-                            busy=s.write_in.uop1.valid,  # busy if valid
-                            optype=s.write_in.uop2.optype,
-                            prd=s.write_in.uop2.prd,
-                            stale=s.write_in.uop2.stale,
-                            store_addr=0,
-                            br_mask=s.write_in.uop2.br_mask,
-                        ),
-                    )
-                    s.internal_rob_tail_next @= s.internal_rob_tail + 1  # wrap around
-                else:
-                    raise OverflowError("ROB is full, and tried to write")
+                # TODO: assert for CL
+                # assert ~s.bank_full, "ROB is full and tried to write"
+                s.instr_bank_next[s.internal_rob_tail] @= ROBEntry(
+                    s.write_in.uop1.pc,                 # PC
+                    ROBEntryUop(                        # uop1
+                        s.write_in.uop1.valid,          # valid
+                        s.write_in.uop1.valid,          # busy
+                        s.write_in.uop1.optype,         # optype
+                        s.write_in.uop1.prd,            # prd
+                        s.write_in.uop1.stale,          # stale
+                        0,                              # data
+                        0,                              # mem_q_idx
+                        0,                              # store_addr
+                        0,                              # br_target
+                        0,                              # br_tag
+                        0,                              # br_mispredict
+                        s.write_in.uop1.br_mask,        # br_mask
+                    ),
+                    ROBEntryUop(                        # uop2
+                        s.write_in.uop2.valid,          # valid
+                        s.write_in.uop2.valid,          # busy
+                        s.write_in.uop2.optype,         # optype
+                        s.write_in.uop2.prd,            # prd
+                        s.write_in.uop2.stale,          # stale
+                        0,                              # data
+                        0,                              # mem_q_idx
+                        0,                              # store_addr
+                        0,                              # br_target
+                        0,                              # br_tag
+                        0,                              # br_mispredict
+                        s.write_in.uop2.br_mask,        # br_mask
+                    ),
+                )
+                s.internal_rob_tail_next @= s.internal_rob_tail + 1  # wrap around
 
             # UPDATING COMPLETED UOPS
             # even though actual instruction bank is 2 wide,
@@ -136,7 +141,7 @@ class ReorderBuffer(Component):
             # rob indices must be calculated from these indices in the uop
 
             # INTEGER UPDATES
-            internal_int_rob_addr = s.op_complete.int_rob_idx >> 1
+            internal_int_rob_addr = trunc(s.op_complete.int_rob_idx >> 1, instr_bank_addr_nbits)
             if s.op_complete.int_rob_complete:
                 if s.op_complete.int_rob_idx % 2 == 0:
                     # even index, uop1 is completed
@@ -152,7 +157,7 @@ class ReorderBuffer(Component):
                     ].uop2_entry.data @= s.op_complete.int_data
 
             # LOAD UPDATES
-            internal_load_rob_addr = s.op_complete.load_rob_idx >> 1
+            internal_load_rob_addr = trunc(s.op_complete.load_rob_idx >> 1, instr_bank_addr_nbits)
             if s.op_complete.load_rob_complete:
                 if s.op_complete.load_rob_idx % 2 == 0:
                     # even index, uop1 is completed
@@ -168,7 +173,7 @@ class ReorderBuffer(Component):
                     ].uop2_entry.data @= s.op_complete.load_data
 
             # STORE UPDATES
-            internal_store_rob_addr = s.op_complete.store_rob_idx >> 1
+            internal_store_rob_addr = trunc(s.op_complete.store_rob_idx >> 1, instr_bank_addr_nbits)
             if s.op_complete.store_rob_complete:
                 if s.op_complete.store_rob_idx % 2 == 0:
                     # even index, uop1 is completed
@@ -196,7 +201,7 @@ class ReorderBuffer(Component):
                     ].uop2_entry.mem_q_idx @= s.op_complete.store_mem_q_idx
 
             # BRANCH UPDATES
-            internal_br_rob_addr = s.op_complete.br_rob_idx >> 1
+            internal_br_rob_addr = trunc(s.op_complete.br_rob_idx >> 1, instr_bank_addr_nbits)
             if s.op_complete.br_rob_complete:
                 if s.op_complete.br_rob_idx % 2 == 0:
                     # even index, uop1 is completed
@@ -224,8 +229,7 @@ class ReorderBuffer(Component):
                     ].uop2_entry.br_mispredict @= s.op_complete.br_mispredict
 
             # BRANCH PREDICTION UPDATES (updating tags with branch outcomes)
-            tag_mask = Bits(NUM_BRANCHES)
-            tag_mask @= Bits(NUM_BRANCHES, 1) << zext(s.br_update.msg.tag, NUM_BRANCHES)
+            tag_mask = zext(one, NUM_BRANCHES) << zext(s.br_update.msg.tag, NUM_BRANCHES)
 
             if s.br_update.en:
                 for i in range(ROB_SIZE >> 1):
@@ -263,7 +267,7 @@ class ReorderBuffer(Component):
                 s.instr_bank_next[s.internal_rob_head_next].uop1_entry.valid @= 0
             # otherwise do not commit it
             else:
-                s.uop1_entry_next @= ROBEntryUop(0)
+                s.uop1_entry_next @= empty_rob_entry
             # if the ROB's head entry uop2 is valid and not busy, commit it
             if (
                 s.instr_bank_next[s.internal_rob_head_next].uop2_entry.valid
@@ -276,7 +280,7 @@ class ReorderBuffer(Component):
                 s.instr_bank_next[s.internal_rob_head_next].uop2_entry.valid @= 0
             # otherwise do not commit it
             else:
-                s.uop2_entry_next @= ROBEntryUop(0)
+                s.uop2_entry_next @= empty_rob_entry
 
             # if the ROB's head entry is not busy (committed), deallocate it
             if (
@@ -289,13 +293,27 @@ class ReorderBuffer(Component):
                 # else:
                 #     raise Exception("ROB is empty, and tried to deallocate")
 
+
+            # ASYNCHRONOUS RESET
+            if s.reset:
+                s.internal_rob_head_next @= 0
+                s.internal_rob_tail_next @= 0
+                s.uop1_entry_next @= empty_rob_entry
+                s.uop1_entry_next @= empty_rob_entry
+
+                for i in range(ROB_SIZE >> 1):
+                    s.instr_bank_next[i].uop1_entry.valid @= 0
+                    s.instr_bank_next[i].uop2_entry.valid @= 0
+                    s.instr_bank_next[i].uop1_entry.busy @= 0
+                    s.instr_bank_next[i].uop2_entry.busy @= 0
+
         @update_ff
         def sync_():
             s.internal_rob_head <<= s.internal_rob_head_next
             s.internal_rob_tail <<= s.internal_rob_tail_next
             s.uop1_entry <<= s.uop1_entry_next
             s.uop2_entry <<= s.uop2_entry_next
-            for i in range(ROB_SIZE // 2):
+            for i in range(ROB_SIZE >> 1):
                 s.instr_bank[i] <<= s.instr_bank_next[i]
 
     def line_trace(s):
@@ -359,5 +377,5 @@ class ExecToROB:
     br_mispredict: mk_bits(1) # whether the branch was mispredicted
     br_tag: mk_bits(clog2(NUM_BRANCHES)) # the tag of the branch
 
-    def __str__(self) -> str:
-        return f"Int: {self.int_rob_idx}|{self.int_rob_complete}|{self.int_data} Load: {self.load_rob_idx}|{self.load_rob_complete}|{self.load_data} Store: {self.store_rob_idx}|{self.store_mem_q_idx}|{self.store_rob_complete}|{self.store_addr}|{self.store_data}"
+    # def __str__(self) -> str:
+    #     return f"Int: {self.int_rob_idx}|{self.int_rob_complete}|{self.int_data} Load: {self.load_rob_idx}|{self.load_rob_complete}|{self.load_data} Store: {self.store_rob_idx}|{self.store_mem_q_idx}|{self.store_rob_complete}|{self.store_addr}|{self.store_data}"

@@ -51,6 +51,8 @@ class MultiInputRdyCircularBuffer(Component):
         s.n_elements_next = Wire(clog2(size) + 1)
         s.n_elements_nbits = clog2(size) + 1
 
+        type_reset_val = Type(0)
+
         @update
         def updt_comb():
             s.full @= s.n_elements == size
@@ -59,7 +61,7 @@ class MultiInputRdyCircularBuffer(Component):
 
             # reset
             if s.reset:
-                s.out_next @= Type(0)
+                s.out_next @= type_reset_val
                 s.head_next @= 0
                 s.tail_next @= 0
                 s.n_elements_next @= 0
