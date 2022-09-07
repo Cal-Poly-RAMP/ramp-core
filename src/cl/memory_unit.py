@@ -70,17 +70,20 @@ class MemoryUnit(Component):
             reset_value=reset_value,
         )
 
+        queue_addr_nbits = clog2(queue_size) + 1
+        mem_addr_nbits = clog2(memory_size)
+
         @update
         def connect_():
             # connecting input to queue
             s.ls_queue.out.rdy @= 1
-            s.ls_queue.allocate_in.msg @= zext(s.allocate_in.msg, clog2(queue_size) + 1)
+            s.ls_queue.allocate_in.msg @= zext(s.allocate_in.msg, queue_addr_nbits)
             s.ls_queue.allocate_in.en @= s.allocate_in.en
             s.allocate_in.rdy @= s.ls_queue.allocate_in.rdy
 
             # connecting memory to queue
-            s.dram.raddr[0] @= trunc(s.ls_queue.out.msg.addr, clog2(memory_size))
-            s.dram.waddr[0] @= trunc(s.ls_queue.out.msg.addr, clog2(memory_size))
+            s.dram.raddr[0] @= trunc(s.ls_queue.out.msg.addr, mem_addr_nbits)
+            s.dram.waddr[0] @= trunc(s.ls_queue.out.msg.addr, mem_addr_nbits)
             # slicing and signing happens in execution
             s.dram.wdata[0] @= s.ls_queue.out.msg.data
 

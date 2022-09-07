@@ -9,7 +9,6 @@ from pymtl3 import (
     mk_bits,
     Bits1,
 )
-from pymtl3.stdlib.ifcs import RecvIfcRTL, SendIfcRTL
 
 class DRAM(Component):
     def construct(

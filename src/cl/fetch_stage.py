@@ -46,6 +46,8 @@ class FetchStage(Component):
         s.br_update = RecvIfcRTL(BranchUpdate)
         s.br_update.rdy //= Bits(1, 1)
 
+        s.addr_width = clog2(size)
+
         @update_ff
         def on_tick():
             # updating pc
@@ -62,14 +64,14 @@ class FetchStage(Component):
                 s.pc_next @= s.br_update.msg.target
 
             # calculating input address (converting from byte addr to word addr)
-            s.icache.raddr[0] @= trunc(s.pc, clog2(size))
+            s.icache.raddr[0] @= trunc(s.pc, s.addr_width)
 
             s.fetch_packet @= FetchPacket(
-                inst1=s.icache.rdata[0][0:INSTR_WIDTH],
-                inst2=s.icache.rdata[0][INSTR_WIDTH : window_size * INSTR_WIDTH],
-                pc=s.pc,
-                branch_taken=0,  # TODO: branch prediction
-                valid=1,
+                s.pc,   # pc
+                0,      # branch_taken TODO: branch prediction
+                s.icache.rdata[0][0:INSTR_WIDTH],                           # instr1
+                s.icache.rdata[0][INSTR_WIDTH : window_size * INSTR_WIDTH], # instr2
+                1,      # valid
             )
 
     def line_trace(s):
@@ -90,4 +92,12 @@ class CombByteAddrROMRTL( Component ):
     @update
     def up_read_rom():
       for i in range(num_ports):
-        s.rdata[i] @= concat(*s.mem[ s.raddr[i] : s.raddr[i] + bpw ][::-1])
+        # TODO: generalize for any instruction window size
+        s.rdata[i] @= concat(s.mem[ s.raddr[i] + 7],
+                            s.mem[ s.raddr[i] + 6],
+                            s.mem[ s.raddr[i] + 5],
+                            s.mem[ s.raddr[i] + 4],
+                            s.mem[ s.raddr[i] + 3],
+                            s.mem[ s.raddr[i] + 2],
+                            s.mem[ s.raddr[i] + 1],
+                            s.mem[ s.raddr[i] + 0])
