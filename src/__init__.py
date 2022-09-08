@@ -1,5 +1,5 @@
 # from .fl import front_end, icache, memory
-from .cl import (
+from src.cl import (
     alu,
     branch_allocate,
     branch_fu,
@@ -16,5 +16,5 @@ from .cl import (
     register_rename,
     reorder_buffer
 )
-from .common import *
-from .rtl import *
+from src.common import *
+from src.rtl import *
