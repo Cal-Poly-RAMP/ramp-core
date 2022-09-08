@@ -349,8 +349,8 @@ class ROBEntry:
     uop1_entry: ROBEntryUop
     uop2_entry: ROBEntryUop
 
-    def __str__(s):
-        return f"{s.pc}|{s.uop1_entry}|{s.uop2_entry}"
+    # def __str__(s):
+    #     return f"{s.pc}|{s.uop1_entry}|{s.uop2_entry}"
 
 
 # TODO: replace with array of ROBEntryUOPs

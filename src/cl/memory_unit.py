@@ -75,6 +75,7 @@ class MemoryUnit(Component):
 
         @update
         def connect_():
+            # defaults
             # connecting input to queue
             s.ls_queue.out.rdy @= 1
             s.ls_queue.allocate_in.msg @= zext(s.allocate_in.msg, queue_addr_nbits)

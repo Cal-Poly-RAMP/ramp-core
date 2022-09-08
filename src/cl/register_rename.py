@@ -74,6 +74,12 @@ class RegisterRename(Component):
             # and getting physical dest registers from free list
             # TODO: add assert statements for when physical registers are full
 
+            # DEFAULTS
+            s.free_list_next @= s.free_list
+            s.busy_table_next @= s.busy_table
+            s.map_table_wr1 @= s.map_table[s.inst1_lregs.lrd]
+            s.map_table_wr2 @= s.map_table[s.inst2_lregs.lrd]
+
             # *combinatorially* getting dest registers, but not updating tables
             # pdst1, pdst2 = cascading_priority_encoder(2, s.free_list_next)
             s.pdst1 @= 0
@@ -117,7 +123,7 @@ class RegisterRename(Component):
                 s.inst2_pregs_busy.prs1 @= 1
             else:
                 s.inst2_pregs.prs1 @= s.map_table[s.inst2_lregs.lrs1]
-                s.inst2_pregs_busy.prs1 @= s.busy_table[s.inst2_pregs.prs2]
+                s.inst2_pregs_busy.prs1 @= s.busy_table[s.inst2_pregs.prs1]
 
             if (s.inst2_lregs.lrs2 == s.inst1_lregs.lrd) & (s.inst1_lregs.lrd != 0):
                 # inst2 dependent on inst1. inst2 prs2 = pdst1 and is busy
@@ -161,10 +167,6 @@ class RegisterRename(Component):
                     )
                     s.map_table_wr1 @= s.pdst1
                     s.map_table_wr2 @= s.pdst2
-                else:
-                    s.busy_table_next @= s.busy_table
-                    s.map_table_wr1 @= s.map_table[s.inst1_lregs.lrd]
-                    s.map_table_wr2 @= s.map_table[s.inst2_lregs.lrd]
 
             # updating free_list, busy_table
             for i in range(2):

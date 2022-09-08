@@ -48,14 +48,16 @@ class IssueQueue(Component):
 
         @update
         def comb():
-            if s.reset:
-                s.tail_next @= 0
-                s.queue_full_next @= 0
-                s.queue_empty_next @= 1
-                s.uop_out_next @= NO_OP
-                for i in range(ISSUE_QUEUE_DEPTH):
-                    s.queue_next[i] @= NO_OP
-            else:
+            # reset
+            collapse = 0
+            s.tail_next @= 0
+            s.queue_full_next @= 0
+            s.queue_empty_next @= 1
+            s.uop_out_next @= NO_OP
+            for i in range(ISSUE_QUEUE_DEPTH):
+                s.queue_next[i] @= NO_OP
+
+            if ~s.reset:
                 # APPENDING new uops to queue, if valid
                 for i in range(ISSUE_QUEUE_DEPTH):
                     s.queue_next[i] @= s.queue[i]
@@ -95,7 +97,6 @@ class IssueQueue(Component):
                         s.queue_full_next @= 1
 
                 # ISSUING uops from queue, if ready
-                collapse = 0
                 for i in range(ISSUE_QUEUE_DEPTH):
                     # s.queue_next[i] @= s.queue[i]
                     # if instruction has already been issued, collapse queue to fill in

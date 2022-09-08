@@ -60,12 +60,13 @@ class MultiInputRdyCircularBuffer(Component):
             s.allocate_in.rdy @= ~s.full
 
             # reset
-            if s.reset:
-                s.out_next @= type_reset_val
-                s.head_next @= 0
-                s.tail_next @= 0
-                s.n_elements_next @= 0
-            else:
+            s.out_next @= type_reset_val
+            s.head_next @= 0
+            s.tail_next @= 0
+            s.n_elements_next @= 0
+            s.out_en_next @= 0
+
+            if ~s.reset:
                 # default values
                 s.out_en_next @= 0
                 s.head_next @= s.head

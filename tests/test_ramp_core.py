@@ -1,5 +1,7 @@
-from pymtl3 import DefaultPassGroup, Bits, concat
+from pymtl3 import DefaultPassGroup
 from pymtl3.stdlib.test_utils import config_model_with_cmdline_opts
+from pymtl3.passes.backends.verilog import VerilogVerilatorImportPass
+from pymtl3.passes.backends.verilog.import_ import VerilogVerilatorImportConfigs
 
 from src.cl.ramp_core import RampCore
 from src.fl.util import get_mem
@@ -61,9 +63,9 @@ def test_system_dual_rtype(cmdline_opts):
         lrd=3,
         lrs1=2,
         lrs2=1,
-        prd=5,
-        prs1=2,
-        prs2=1,
+        prd=dut.pr2.out.uop1.prd,
+        prs1=dut.pr2.out.uop1.prs1,
+        prs2=dut.pr2.out.uop1.prs2,
         stale=0,
         imm=0,
         issue_unit=INT_ISSUE_UNIT,
@@ -77,12 +79,12 @@ def test_system_dual_rtype(cmdline_opts):
         inst=0x40B606B3,
         pc=4,
         valid=1,
-        lrd=13,
+        lrd= 13,
         lrs1=12,
         lrs2=11,
-        prd=6,
-        prs1=3,
-        prs2=4,
+        prd=dut.pr2.out.uop2.prd,
+        prs1=dut.pr2.out.uop2.prs1,
+        prs2=dut.pr2.out.uop2.prs2,
         stale=0,
         imm=0,
         issue_unit=INT_ISSUE_UNIT,
@@ -97,6 +99,7 @@ def test_system_dual_rtype(cmdline_opts):
     # Decode | Dispatch/Issue
     assert dut.pr2.out.uop1 == uop1
     assert dut.pr2.out.uop2 == uop2
+    assert dut.pr2.out.uop1.prd != dut.pr2.out.uop2.prd
     # Dispatch/Issue | Execute
     # assert not dut.pr3.out
     assert not dut.int_issue_queue.uop_out
@@ -390,6 +393,11 @@ def test_beq(cmdline_opts):
 
     filename = "tests/input_files/test_beq.bin"
     dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
+
+    dut.set_metadata(
+        VerilogVerilatorImportPass.vl_mk_dir,
+        "ramp_core_verilated",
+    )
 
     dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
     dut.apply(DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core_beq"))

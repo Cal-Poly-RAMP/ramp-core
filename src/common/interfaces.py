@@ -73,8 +73,8 @@ class DualMicroOp:
     uop1: MicroOp
     uop2: MicroOp
 
-    def __str__(s):
-        return f"{s.uop1}\n\t{s.uop2}"
+    # def __str__(s):
+    #     return f"{s.uop1}\n\t{s.uop2}"
 
     def __bool__(self):
         return bool(self.uop1) or bool(self.uop2)

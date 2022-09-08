@@ -67,5 +67,5 @@ class Memory(Component):
             for i in range(len(s.mem)):
                 f.write(str(int(s.mem[i])) + ",")
 
-    def __str__(s):
-        return str(s.mem)
+    # def __str__(s):
+    #     return str(s.mem)

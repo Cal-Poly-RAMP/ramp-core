@@ -48,7 +48,9 @@ class CommitUnit(Component):
             # handling single branch prediction output, with multiple uops
             # first uop that is a branch is the one that is committed
             s.br_update.en @= 0
+            s.br_update.msg @= BranchUpdate(0, 0, 0)
             for x in range(width):
+                s.commit_units[x].br_update.rdy @= 0
                 if s.commit_units[x].br_update.en & ~s.br_update.en:
                     s.br_update.en @= 1
                     s.br_update.msg @= s.commit_units[x].br_update.msg
