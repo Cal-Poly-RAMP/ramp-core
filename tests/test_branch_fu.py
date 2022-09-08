@@ -31,7 +31,7 @@ def branch_input(draw, op):
 
 
 # See Verilog debugging for a more inclusive testcase
-class TestALU(unittest.TestCase):
+class TestBranchFU(unittest.TestCase):
     def setUp(s) -> None:
         # runs before every test
         if not hasattr(s, "dut"):
@@ -100,8 +100,8 @@ class TestALU(unittest.TestCase):
     @given(branch_input(BFU_BLT))
     def test_blt(s, branch_input):
         uop, rs1, rs2 = branch_input
-        s.dut.rs1_din @= rs1
-        s.dut.rs2_din @= rs2
+        s.dut.rs1_din @= rs1 >> 1 # removing sign
+        s.dut.rs2_din @= rs2 >> 1 # removing sign
         s.dut.uop @= uop
 
         s.dut.sim_tick()
@@ -126,8 +126,8 @@ class TestALU(unittest.TestCase):
     @given(branch_input(BFU_BGE))
     def test_bge(s, branch_input):
         uop, rs1, rs2 = branch_input
-        s.dut.rs1_din @= rs1
-        s.dut.rs2_din @= rs2
+        s.dut.rs1_din @= rs1 >> 1 # removing sign
+        s.dut.rs2_din @= rs2 >> 1 # removing sign
         s.dut.uop @= uop
 
         s.dut.sim_tick()

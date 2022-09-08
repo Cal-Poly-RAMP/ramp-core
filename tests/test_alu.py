@@ -137,8 +137,8 @@ class TestALU(unittest.TestCase):
             s.assertEqual(s.dut.out, (Bits(BITWIDTH, a) >> b_sub))
 
     @given(
-        st.integers(min_value=-(2 ** (BITWIDTH - 1)), max_value=2 ** (BITWIDTH - 1)),
-        st.integers(min_value=-(2 ** (BITWIDTH - 1)), max_value=2 ** (BITWIDTH - 1)),
+        st.integers(min_value=-(2 ** (BITWIDTH - 2)), max_value=2 ** (BITWIDTH - 2)),
+        st.integers(min_value=-(2 ** (BITWIDTH - 2)), max_value=2 ** (BITWIDTH - 2)),
     )
     def test_slt(s, a, b):
         s.dut.a @= a
