@@ -72,7 +72,7 @@ class ReorderBuffer(Component):
         @update
         def comb_():
             # indexed so that uop1 is at odd indices and uop2 is at even indices
-            s.rob_tail @= sext(s.internal_rob_tail, rob_addr_nbits) << 1
+            s.rob_tail @= zext(s.internal_rob_tail, rob_addr_nbits) << 1
 
             # bank full if head == tail and value is busy
             s.bank_full @= (
