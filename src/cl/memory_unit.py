@@ -31,12 +31,13 @@ from src.common.consts import (
     MEM_LBU,
     MEM_LHU,
 )
+from src.common.interfaces import IOEntry
 from src.cl.buffers import MultiInputRdyCircularBuffer
 from pymtl3.stdlib.ifcs import RecvIfcRTL, SendIfcRTL
 
 class MemoryUnit(Component):
     def construct(
-        s, queue_size=16, memory_size=256, window_size=2, reset_value=0
+        s, queue_size=16, memory_size=256, window_size=2, reset_value=0, mmio_start=0x11000000, mmio_size=0xff
     ):
         # checking that addresses work
         assert memory_size < (2**32)
@@ -46,6 +47,9 @@ class MemoryUnit(Component):
         s.update_in = [RecvIfcRTL(LoadStoreEntry) for _ in range(window_size)]
         s.load_out = SendIfcRTL(LoadEntry)  # to ROB
         s.mem_q_tail = OutPort(clog2(MEM_Q_SIZE))
+        # MMIO
+        s.io_bus_out = SendIfcRTL(IOEntry)
+        s.io_bus_in = RecvIfcRTL(IOEntry)
 
         # load store buffer (FIFO for now)
         s.ls_queue = MultiInputRdyCircularBuffer(
@@ -73,41 +77,68 @@ class MemoryUnit(Component):
 
         @update
         def connect_():
-            # defaults
             # connecting input to queue
             s.ls_queue.out.rdy @= 1
             s.ls_queue.allocate_in.msg @= zext(s.allocate_in.msg, queue_addr_nbits)
             s.ls_queue.allocate_in.en @= s.allocate_in.en
             s.allocate_in.rdy @= s.ls_queue.allocate_in.rdy
 
-            # connecting memory to queue
-            s.dram.raddr[0] @= trunc(s.ls_queue.out.msg.addr, mem_addr_nbits)
-            s.dram.waddr[0] @= trunc(s.ls_queue.out.msg.addr, mem_addr_nbits)
-            # slicing and signing happens in execution
-            s.dram.wdata[0] @= s.ls_queue.out.msg.data
+            # connecting MMIO to queue (in-order)
+            if (s.ls_queue.out.msg.addr >= mmio_start) & (s.ls_queue.out.msg.addr < (mmio_start + mmio_size)):
+                # connecting MMIO output from queue store
+                s.io_bus_out.msg @= s.ls_queue.out.msg.data
+                s.io_bus_out.en @= (s.ls_queue.out.msg.op & MEM_FLAG) == MEM_STORE
 
-            s.dram.wen[0] @= s.ls_queue.out.en & (
-                (s.ls_queue.out.msg.op & MEM_FLAG) == MEM_STORE
-            )
+                # connecting MMIO input from queue load
+                if s.ls_queue.out.msg.op == MEM_LW:
+                    s.load_out.msg.data @= s.io_bus_in.msg.data
+                elif s.ls_queue.out.msg.op == MEM_LH:
+                    s.load_out.msg.data @= sext(s.io_bus_in.msg.data[0:16], 32)
+                elif s.ls_queue.out.msg.op == MEM_LHU:
+                    s.load_out.msg.data @= zext(s.io_bus_in.msg.data[0:16], 32)
+                elif s.ls_queue.out.msg.op == MEM_LB:
+                    s.load_out.msg.data @= sext(s.io_bus_in.msg.data[0:8], 32)
+                elif s.ls_queue.out.msg.op == MEM_LBU:
+                    s.load_out.msg.data @= zext(s.io_bus_in.msg.data[0:8], 32)
+                else:
+                    s.load_out.msg.data @= s.io_bus_in.msg.data
 
-            # connecting memory to load output
-            if s.ls_queue.out.msg.op == MEM_LW:
-                s.load_out.msg.data @= s.dram.rdata[0]
-            elif s.ls_queue.out.msg.op == MEM_LH:
-                s.load_out.msg.data @= sext(s.dram.rdata[0][0:16], 32)
-            elif s.ls_queue.out.msg.op == MEM_LHU:
-                s.load_out.msg.data @= zext(s.dram.rdata[0][0:16], 32)
-            elif s.ls_queue.out.msg.op == MEM_LB:
-                s.load_out.msg.data @= sext(s.dram.rdata[0][0:8], 32)
-            elif s.ls_queue.out.msg.op == MEM_LBU:
-                s.load_out.msg.data @= zext(s.dram.rdata[0][0:8], 32)
+                s.load_out.msg.rob_idx @= s.ls_queue.out.msg.rob_idx
+                s.load_out.en @= s.ls_queue.out.en & (
+                    (s.ls_queue.out.msg.op & MEM_FLAG) == MEM_LOAD
+                )
+                s.io_bus_in.rdy @= s.load_out.rdy
+
+            # connecting DRAM to queue
             else:
-                s.load_out.msg.data @= s.dram.rdata[0]
+                # connecting dram output from queue store
+                s.dram.raddr[0] @= trunc(s.ls_queue.out.msg.addr, mem_addr_nbits)
+                s.dram.waddr[0] @= trunc(s.ls_queue.out.msg.addr, mem_addr_nbits)
+                # slicing and signing happens in execution
+                s.dram.wdata[0] @= s.ls_queue.out.msg.data
 
-            s.load_out.msg.rob_idx @= s.ls_queue.out.msg.rob_idx
-            s.load_out.en @= s.ls_queue.out.en & (
-                (s.ls_queue.out.msg.op & MEM_FLAG) == MEM_LOAD
-            )
+                s.dram.wen[0] @= s.ls_queue.out.en & (
+                    (s.ls_queue.out.msg.op & MEM_FLAG) == MEM_STORE
+                )
+
+                # connecting dram input from queue load
+                if s.ls_queue.out.msg.op == MEM_LW:
+                    s.load_out.msg.data @= s.dram.rdata[0]
+                elif s.ls_queue.out.msg.op == MEM_LH:
+                    s.load_out.msg.data @= sext(s.dram.rdata[0][0:16], 32)
+                elif s.ls_queue.out.msg.op == MEM_LHU:
+                    s.load_out.msg.data @= zext(s.dram.rdata[0][0:16], 32)
+                elif s.ls_queue.out.msg.op == MEM_LB:
+                    s.load_out.msg.data @= sext(s.dram.rdata[0][0:8], 32)
+                elif s.ls_queue.out.msg.op == MEM_LBU:
+                    s.load_out.msg.data @= zext(s.dram.rdata[0][0:8], 32)
+                else:
+                    s.load_out.msg.data @= s.dram.rdata[0]
+
+                s.load_out.msg.rob_idx @= s.ls_queue.out.msg.rob_idx
+                s.load_out.en @= s.ls_queue.out.en & (
+                    (s.ls_queue.out.msg.op & MEM_FLAG) == MEM_LOAD
+                )
 
     def line_trace(s):
         return s.dram.line_trace() + "\nLoad/Store Buffer\n" + s.ls_queue.line_trace()
@@ -118,7 +149,6 @@ class MemoryUnit(Component):
 class LoadEntry:
     data: mk_bits(32)
     rob_idx: mk_bits(clog2(ROB_SIZE))
-
 
 @bitstruct
 class LoadStoreEntry:

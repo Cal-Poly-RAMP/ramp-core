@@ -109,3 +109,8 @@ class PhysicalRegs:
 class PRegBusy:
     prs1: mk_bits(1)
     prs2: mk_bits(1)
+
+@bitstruct
+class IOEntry:
+    addr: mk_bits(32)
+    data: mk_bits(32)

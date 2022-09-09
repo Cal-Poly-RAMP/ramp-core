@@ -26,6 +26,12 @@ def test_system_dual_rtype(cmdline_opts):
     # Configure the model from command line flags
     # add x3, x2, x1
     # sub x13, x12, x11
+
+    # short circuiting verilog tests, no MMIO
+    if cmdline_opts['test_verilog']:
+        print("Skipping non-verilog test")
+        return
+
     filename = "tests/input_files/test_system1.bin"
     dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
 
@@ -173,6 +179,12 @@ def test_system_dual_rtype(cmdline_opts):
 def test_system_iu_type(cmdline_opts):
     # lui x1, 0x000dead0
     # addi x2, x1, 0x000000af
+
+    # short circuiting verilog tests, no MMIO
+    if cmdline_opts['test_verilog']:
+        print("Skipping non-verilog test")
+        return
+
     filename = "tests/input_files/test_system2.bin"
     dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
 
@@ -191,6 +203,12 @@ def test_system_multiple(cmdline_opts):
     # slli	t1,	t0,	3   0x00329313
     # slli	t2,	t0,	1   0x00129393
     # add	t0,	t1,	t2  0x007302b3
+
+    # short circuiting verilog tests, no MMIO
+    if cmdline_opts['test_verilog']:
+        print("Skipping non-verilog test")
+        return
+
     filename = "tests/input_files/test_system3.bin"
     dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
 
@@ -222,6 +240,11 @@ def test_system_multiple2(cmdline_opts):
 
     # srai	t0,	t0,	1
 
+    # short circuiting verilog tests, no MMIO
+    if cmdline_opts['test_verilog']:
+        print("Skipping non-verilog test")
+        return
+
     filename = "tests/input_files/test_system4.bin"
     dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
 
@@ -237,6 +260,11 @@ def test_system_multiple2(cmdline_opts):
 
 def test_system5(cmdline_opts):
     # Program to multiply by 314
+
+    # short circuiting verilog tests, no MMIO
+    if cmdline_opts['test_verilog']:
+        print("Skipping non-verilog test")
+        return
 
     filename = "tests/input_files/test_system5.bin"
     dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
@@ -254,6 +282,11 @@ def test_system5(cmdline_opts):
 def test_store(cmdline_opts):
     # Stores the number 42 to memory
 
+    # short circuiting verilog tests, no MMIO
+    if cmdline_opts['test_verilog']:
+        print("Skipping non-verilog test")
+        return
+
     filename = "tests/input_files/test_store.bin"
     dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
 
@@ -270,6 +303,11 @@ def test_store(cmdline_opts):
 
 def test_load(cmdline_opts):
     # reads 0xdeadbeef from memory
+
+    # short circuiting verilog tests, no MMIO
+    if cmdline_opts['test_verilog']:
+        print("Skipping non-verilog test")
+        return
 
     filename = "tests/input_files/test_load.bin"
     dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
@@ -291,6 +329,11 @@ def test_load(cmdline_opts):
 
 def test_load_store(cmdline_opts):
     # Stores the number 42 to memory, then loads it back into registers and adds
+
+    # short circuiting verilog tests, no MMIO
+    if cmdline_opts['test_verilog']:
+        print("Skipping non-verilog test")
+        return
 
     filename = "tests/input_files/test_load_store.bin"
     dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
@@ -314,6 +357,11 @@ def test_load_store(cmdline_opts):
 
 def test_ls_subwords(cmdline_opts):
     # tests lb, lh, lbu, lhu, sb, sh
+
+    # short circuiting verilog tests, no MMIO
+    if cmdline_opts['test_verilog']:
+        print("Skipping non-verilog test")
+        return
 
     filename = "tests/input_files/test_ls_subwords.bin"
     dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
@@ -350,6 +398,11 @@ def test_ls_subwords(cmdline_opts):
 def test_bge(cmdline_opts):
     # test always take bge without worrying about register renaming
 
+    # short circuiting verilog tests, no MMIO
+    if cmdline_opts['test_verilog']:
+        print("Skipping non-verilog test")
+        return
+
     filename = "tests/input_files/test_bge.bin"
 
     dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
@@ -370,6 +423,11 @@ def test_bge(cmdline_opts):
 
 def test_jal(cmdline_opts):
     # test always take unconditional jump without worrying about register renaming
+
+    # short circuiting verilog tests, no MMIO
+    if cmdline_opts['test_verilog']:
+        print("Skipping non-verilog test")
+        return
 
     filename = "tests/input_files/test_jal.bin"
     dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
@@ -395,6 +453,11 @@ def test_jal(cmdline_opts):
 def test_beq(cmdline_opts):
     # test beq take half the time, don't worry about caching register renaming
 
+    # short circuiting verilog tests, no MMIO
+    if cmdline_opts['test_verilog']:
+        print("Skipping non-verilog test")
+        return
+
     filename = "tests/input_files/test_beq.bin"
     dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
 
@@ -418,35 +481,6 @@ def test_beq(cmdline_opts):
     assert dut.register_file.regs[even_sum_preg] == 30
 
 
-# def test_scalar_multiply(cmdline_opts):
-#     # test unconditional jump without worrying about register renaming
-#     dut = RampCore(memory_size=1024)
-#     dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
-#     dut.apply(DefaultPassGroup(linetrace=True, vcdwave="vcd/test_ramp_core_scalar_multiply"))
-#     dut.sim_reset()
-
-#     # Load Program - endless fibonacci loop
-#     dut.fetch_stage.icache.load_file("tests/input_files/test_scalar_multiply.bin")
-
-#     # initializing dram
-#     for i in range(1024):
-#         dut.memory_unit.dram.mem[i] <<= i
-
-#     # running program, until it is finished
-#     prd = dut.decode.register_rename.map_table[0x8]
-#     c = 0
-#     while dut.register_file.regs[prd] < 1024:
-#         prd = dut.decode.register_rename.map_table[0x8]
-#         dut.sim_tick()
-#         c += 1
-
-#     # checking results
-#     for i in range(1024):
-#         try:
-#             assert dut.memory_unit.dram.mem[i] == i * 10
-#         except AssertionError:
-#             print([x.uint() for x in dut.memory_unit.dram.mem])
-#             assert dut.memory_unit.dram.mem[i] == i * 10
 
 
 

@@ -22,12 +22,18 @@ from src.common.consts import (
     MEM_SIZE,
     R_TYPE,
     NUM_PHYS_REGS,
+    MMIO_START,
+    MMIO_SIZE,
 )
-from src.common.interfaces import MicroOp, DualMicroOp, NO_OP
+from src.common.interfaces import MicroOp, DualMicroOp, NO_OP, IOEntry
 
 
 class RampCore(Component):
     def construct(s, data, memory_size=MEM_SIZE):
+        # MMIO
+        s.io_bus_out = SendIfcRTL(IOEntry)
+        s.io_bus_in = RecvIfcRTL(IOEntry)
+
         # FRONT END
         # (1) Fetch stage
         s.fetch_stage = FetchStage(data=data)
@@ -118,18 +124,13 @@ class RampCore(Component):
         s.reorder_buffer.br_update.msg //= s.commit_unit.br_update.msg
         s.reorder_buffer.br_update.en //= s.commit_unit.br_update.en
 
-        # DEBUGGING
-        # TODO: develope MMIO for proper testing with verilator
-        s.store_out = [SendIfcRTL(32) for _ in range(2)]
-        s.store_out[0].en //= s.commit_unit.store_out[0].en
-        s.store_out[0].msg //= s.commit_unit.store_out[0].msg.data
-        s.store_out[1].en //= s.commit_unit.store_out[1].en
-        s.store_out[1].msg //= s.commit_unit.store_out[1].msg.data
-        ###########
-
         # Memory
         s.memory_unit = MemoryUnit(
-            queue_size=MEM_Q_SIZE, memory_size=memory_size, window_size=3
+            queue_size=MEM_Q_SIZE,
+            memory_size=memory_size,
+            window_size=3,
+            mmio_start=MMIO_START,
+            mmio_size=MMIO_SIZE
         )
         # allocate space in memory queue in decode unit
         s.memory_unit.allocate_in.msg //= s.decode.mem_q_allocate
@@ -141,6 +142,9 @@ class RampCore(Component):
         s.memory_unit.update_in[2] //= s.commit_unit.store_out[1]
         # for updating mem_q_idx in decode unit
         s.dispatch.mem_q_tail //= s.memory_unit.mem_q_tail
+        # MMIO
+        s.memory_unit.io_bus_in //= s.io_bus_in
+        s.io_bus_out //= s.memory_unit.io_bus_out
 
         # (6) writeback
         # INT writeback
