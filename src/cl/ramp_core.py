@@ -1,6 +1,7 @@
 from pymtl3 import Component, update, mk_bits, OutPort, Bits
 from pymtl3.stdlib.basic_rtl.registers import RegEnRst
 from pymtl3.stdlib.basic_rtl.register_files import RegisterFile
+from pymtl3.stdlib.ifcs import RecvIfcRTL, SendIfcRTL
 
 from src.cl.commit_unit import CommitUnit
 from src.cl.fetch_stage import FetchPacket, FetchStage
@@ -9,7 +10,7 @@ from src.cl.dispatch import Dispatch
 from src.cl.reorder_buffer import ReorderBuffer
 from src.cl.issue_queue import IssueQueue
 from src.cl.alu import ALU
-from src.cl.memory_unit import MemoryUnit
+from src.cl.memory_unit import LoadStoreEntry, MemoryUnit
 from src.cl.load_store_fu import LoadStoreFU
 from src.cl.branch_fu import BranchFU
 
@@ -38,12 +39,6 @@ class RampCore(Component):
         # (2) Decode stage
         s.decode = Decode()
         s.decode.fetch_packet //= s.pr1.out
-
-        s.dual_uop = OutPort(DualMicroOp)
-        s.dual_uop //= s.decode.dual_uop
-
-        s.busy_table = OutPort(NUM_PHYS_REGS)
-        s.busy_table //= s.decode.busy_table
 
         # pipline register - between decode and dispatch
         s.pr2 = RegEnRst(DualMicroOp, reset_value=DualMicroOp(NO_OP, NO_OP))
@@ -123,6 +118,15 @@ class RampCore(Component):
         s.reorder_buffer.br_update.msg //= s.commit_unit.br_update.msg
         s.reorder_buffer.br_update.en //= s.commit_unit.br_update.en
 
+        # DEBUGGING
+        # TODO: develope MMIO for proper testing with verilator
+        s.store_out = [SendIfcRTL(32) for _ in range(2)]
+        s.store_out[0].en //= s.commit_unit.store_out[0].en
+        s.store_out[0].msg //= s.commit_unit.store_out[0].msg.data
+        s.store_out[1].en //= s.commit_unit.store_out[1].en
+        s.store_out[1].msg //= s.commit_unit.store_out[1].msg.data
+        ###########
+
         # Memory
         s.memory_unit = MemoryUnit(
             queue_size=MEM_Q_SIZE, memory_size=memory_size, window_size=3
@@ -196,7 +200,7 @@ class RampCore(Component):
             f"pr2: {s.pr2.line_trace()}\n\n"
             # f"pr3: {s.pr3.line_trace()}\n\n"
             f"register_file:\t{[r.uint() for r in s.register_file.regs]}\n\n"
-            f"busy_table:\t{[b.uint() for b in s.busy_table]}\n\n"
+            f"busy_table:\t{[b.uint() for b in s.decode.busy_table]}\n\n"
             f"map_table: {[b.uint() for b in s.decode.register_rename.map_table]}\n\n"
             f"free_list: {bin(s.decode.register_rename.free_list)}\n\n"
             f"int_issue_queue: {s.int_issue_queue.line_trace()}\n"

@@ -1,7 +1,9 @@
+# https://pymtl3.readthedocs.io/en/latest/ref/passes-import-intro.html
+import os
 from pymtl3 import DefaultPassGroup
 from pymtl3.stdlib.test_utils import config_model_with_cmdline_opts
 from pymtl3.passes.backends.verilog import VerilogVerilatorImportPass
-from pymtl3.passes.backends.verilog.import_ import VerilogVerilatorImportConfigs
+from pymtl3.passes.backends.verilog.translation.VerilogTranslationPass import VerilogTranslationPass
 
 from src.cl.ramp_core import RampCore
 from src.fl.util import get_mem
@@ -18,6 +20,7 @@ from src.common.consts import (
 )
 
 LNTRC = True
+
 
 def test_system_dual_rtype(cmdline_opts):
     # Configure the model from command line flags
@@ -348,6 +351,7 @@ def test_bge(cmdline_opts):
     # test always take bge without worrying about register renaming
 
     filename = "tests/input_files/test_bge.bin"
+
     dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
 
     dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
@@ -394,12 +398,11 @@ def test_beq(cmdline_opts):
     filename = "tests/input_files/test_beq.bin"
     dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
 
-    dut.set_metadata(
-        VerilogVerilatorImportPass.vl_mk_dir,
-        "ramp_core_verilated",
-    )
+    # dut.set_metadata(VerilogVerilatorImportPass.vl_mk_dir, "obj_dir_RampCore")
+    # dut.set_metadata(VerilogTranslationPass.explicit_module_name, "RampCore")
 
     dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
+
     dut.apply(DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core_beq"))
     dut.sim_reset()
 

@@ -5,6 +5,7 @@ from pymtl3 import *
 from pymtl3.passes.backends.verilog import *
 
 from src import *
+from src.fl.util import get_mem
 
 from src.common.consts import ICACHE_SIZE
 
@@ -32,7 +33,7 @@ def synthesize(model):
 
 if __name__ == "__main__":
     models = [
-        ramp_core.RampCore(data=[0]*ICACHE_SIZE),
+        ramp_core.RampCore(data=get_mem("tests/input_files/test_bge.bin", ICACHE_SIZE)),
         # alu.ALU(mk_bits(32)),
         # branch_allocate.BranchAllocate(),
         # branch_fu.BranchFU(),

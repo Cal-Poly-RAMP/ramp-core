@@ -286,7 +286,10 @@ class SingleInstDecode(Component):
                 s.uop.issue_unit @= MEM_ISSUE_UNIT
                 s.uop.funct_unit @= MEM_FUNCT_UNIT
                 s.uop.funct_op @= concat(opcode[5], s.inst[FUNCT3_SLICE])
-                s.uop.imm @= sext(concat(s.inst[25:32], s.inst[7:12]), 32)
+
+                # cannot have concat nested in sext
+                tmp1 = concat(s.inst[25:32], s.inst[7:12])
+                s.uop.imm @= sext(tmp1, 32)
 
                 s.uop.lrd @= 0
             # branches
@@ -295,13 +298,11 @@ class SingleInstDecode(Component):
                 s.uop.issue_unit @= BRANCH_ISSUE_UNIT
                 s.uop.funct_unit @= BRANCH_FUNCT_UNIT
                 s.uop.funct_op @= zext(s.inst[FUNCT3_SLICE], 4)
-                s.uop.imm @= sext(
-                    concat(
-                        s.inst[31], s.inst[7], s.inst[25:31], s.inst[8:12], Bits1(0)
-                    ),
-                    32,
-                )
 
+                tmp2 = concat(
+                        s.inst[31], s.inst[7], s.inst[25:31], s.inst[8:12], Bits1(0)
+                    )
+                s.uop.imm @= sext(tmp2, 32)
                 s.uop.lrd @= 0
             # lui (1), auipc (2)
             elif (opcode == UTYPE_OPCODE1) | (opcode == UTYPE_OPCODE2):
@@ -318,17 +319,16 @@ class SingleInstDecode(Component):
                 s.uop.optype @= J_TYPE
                 s.uop.issue_unit @= BRANCH_ISSUE_UNIT
                 s.uop.funct_unit @= BRANCH_FUNCT_UNIT
-                s.uop.imm @= sext(
-                    concat(
+
+                tmp3 = concat(
                         s.inst[31],
                         s.inst[12:20],
                         s.inst[20],
                         s.inst[25:31],
                         s.inst[21:25],
                         Bits1(0),
-                    ),
-                    32,
-                )
+                    )
+                s.uop.imm @= sext(tmp3, 32)
 
                 s.uop.lrs1 @= 0
                 s.uop.lrs2 @= 0

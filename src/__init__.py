@@ -16,5 +16,4 @@ from src.cl import (
     register_rename,
     reorder_buffer
 )
-from src.common import *
-from src.rtl import *
+
