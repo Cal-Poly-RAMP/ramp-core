@@ -1,4 +1,5 @@
 # summing up all even numbers and odd numbers
+	li	x4,	0x11000000	# MMIO
 	addi	x5,	zero,	0	# counter
 	addi	x6,	zero,	0	# odd counter
 	addi	x7,	zero,	0	# even counter
@@ -15,4 +16,6 @@ EVEN:	add	x7,	x7,	x5
 	addi	x5,	x5,	1
 	andi	x8,	x5,	1
 	j	LOOP
-END:	j	END
+	
+END:	sw	x6,	0(x4)
+	sw	x7,	4(x4)
