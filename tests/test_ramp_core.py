@@ -22,158 +22,158 @@ from src.common.consts import (
 LNTRC = True
 
 
-def test_system_dual_rtype(cmdline_opts):
-    # Configure the model from command line flags
-    # add x3, x2, x1
-    # sub x13, x12, x11
+# def test_system_dual_rtype(cmdline_opts):
+#     # Configure the model from command line flags
+#     # add x3, x2, x1
+#     # sub x13, x12, x11
 
-    # short circuiting verilog tests, no MMIO
-    if cmdline_opts['test_verilog']:
-        print("Skipping non-verilog test")
-        return
+#     # short circuiting verilog tests, no MMIO
+#     if cmdline_opts['test_verilog']:
+#         print("Skipping non-verilog test")
+#         return
 
-    filename = "tests/input_files/test_system1.bin"
-    dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
+#     filename = "tests/input_files/test_system1.bin"
+#     dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
 
-    dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
-    dut.apply(DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core1"))
-    dut.sim_reset()
+#     dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
+#     dut.apply(DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core1"))
+#     dut.sim_reset()
 
-    # 0 Configure starting state
-    dut.decode.register_rename.free_list_next @= 0xFFFFFFFFFFFFFFE0
-    dut.decode.register_rename.map_table[1] <<= 1
-    dut.decode.register_rename.map_table[2] <<= 2
-    dut.decode.register_rename.map_table[12] <<= 3
-    dut.decode.register_rename.map_table[11] <<= 4
-    dut.register_file.regs[1] <<= 30
-    dut.register_file.regs[2] <<= 39
-    dut.register_file.regs[3] <<= 450
-    dut.register_file.regs[4] <<= 30
+#     # 0 Configure starting state
+#     dut.decode.register_rename.free_list_next @= 0xFFFFFFFFFFFFFFE0
+#     dut.decode.register_rename.map_table[1] <<= 1
+#     dut.decode.register_rename.map_table[2] <<= 2
+#     dut.decode.register_rename.map_table[12] <<= 3
+#     dut.decode.register_rename.map_table[11] <<= 4
+#     dut.register_file.regs[1] <<= 30
+#     dut.register_file.regs[2] <<= 39
+#     dut.register_file.regs[3] <<= 450
+#     dut.register_file.regs[4] <<= 30
 
-    # 1 FETCH
-    dut.sim_tick()
-    fp = FetchPacket(inst1=0x001101B3, inst2=0x40B606B3, pc=0, valid=1)
+#     # 1 FETCH
+#     dut.sim_tick()
+#     fp = FetchPacket(inst1=0x001101B3, inst2=0x40B606B3, pc=0, valid=1)
 
-    # Fetch | Decode
-    assert dut.pr1.out == fp
-    # Decode | Dispatch/Issue
-    assert not dut.pr2.out
-    # Dispatch/Issue | Execute
-    # assert not dut.pr3.out
-    assert not dut.int_issue_queue.uop_out
+#     # Fetch | Decode
+#     assert dut.pr1.out == fp
+#     # Decode | Dispatch/Issue
+#     assert not dut.pr2.out
+#     # Dispatch/Issue | Execute
+#     # assert not dut.pr3.out
+#     assert not dut.int_issue_queue.uop_out
 
-    # 2 DECODE
-    dut.sim_tick()
-    uop1 = MicroOp(
-        optype=R_TYPE,
-        inst=0x001101B3,
-        pc=0,
-        valid=1,
-        lrd=3,
-        lrs1=2,
-        lrs2=1,
-        prd=dut.pr2.out.uop1.prd,
-        prs1=dut.pr2.out.uop1.prs1,
-        prs2=dut.pr2.out.uop1.prs2,
-        stale=0,
-        imm=0,
-        issue_unit=INT_ISSUE_UNIT,
-        funct_unit=ALU_FUNCT_UNIT,
-        funct_op=ALU_ADD,
-        rob_idx=0,
-        mem_q_idx=0,
-    )
-    uop2 = MicroOp(
-        optype=R_TYPE,
-        inst=0x40B606B3,
-        pc=4,
-        valid=1,
-        lrd= 13,
-        lrs1=12,
-        lrs2=11,
-        prd=dut.pr2.out.uop2.prd,
-        prs1=dut.pr2.out.uop2.prs1,
-        prs2=dut.pr2.out.uop2.prs2,
-        stale=0,
-        imm=0,
-        issue_unit=INT_ISSUE_UNIT,
-        funct_unit=ALU_FUNCT_UNIT,
-        funct_op=ALU_SUB,
-        rob_idx=0,
-        mem_q_idx=0,
-    )
+#     # 2 DECODE
+#     dut.sim_tick()
+#     uop1 = MicroOp(
+#         optype=R_TYPE,
+#         inst=0x001101B3,
+#         pc=0,
+#         valid=1,
+#         lrd=3,
+#         lrs1=2,
+#         lrs2=1,
+#         prd=dut.pr2.out.uop1.prd,
+#         prs1=dut.pr2.out.uop1.prs1,
+#         prs2=dut.pr2.out.uop1.prs2,
+#         stale=0,
+#         imm=0,
+#         issue_unit=INT_ISSUE_UNIT,
+#         funct_unit=ALU_FUNCT_UNIT,
+#         funct_op=ALU_ADD,
+#         rob_idx=0,
+#         mem_q_idx=0,
+#     )
+#     uop2 = MicroOp(
+#         optype=R_TYPE,
+#         inst=0x40B606B3,
+#         pc=4,
+#         valid=1,
+#         lrd= 13,
+#         lrs1=12,
+#         lrs2=11,
+#         prd=dut.pr2.out.uop2.prd,
+#         prs1=dut.pr2.out.uop2.prs1,
+#         prs2=dut.pr2.out.uop2.prs2,
+#         stale=0,
+#         imm=0,
+#         issue_unit=INT_ISSUE_UNIT,
+#         funct_unit=ALU_FUNCT_UNIT,
+#         funct_op=ALU_SUB,
+#         rob_idx=0,
+#         mem_q_idx=0,
+#     )
 
-    # Fetch | Decode
-    assert dut.pr1.out == FetchPacket(inst1=0, inst2=0, pc=8, valid=1)
-    # Decode | Dispatch/Issue
-    assert dut.pr2.out.uop1 == uop1
-    assert dut.pr2.out.uop2 == uop2
-    assert dut.pr2.out.uop1.prd != dut.pr2.out.uop2.prd
-    # Dispatch/Issue | Execute
-    # assert not dut.pr3.out
-    assert not dut.int_issue_queue.uop_out
+#     # Fetch | Decode
+#     assert dut.pr1.out == FetchPacket(inst1=0, inst2=0, pc=8, valid=1)
+#     # Decode | Dispatch/Issue
+#     assert dut.pr2.out.uop1 == uop1
+#     assert dut.pr2.out.uop2 == uop2
+#     assert dut.pr2.out.uop1.prd != dut.pr2.out.uop2.prd
+#     # Dispatch/Issue | Execute
+#     # assert not dut.pr3.out
+#     assert not dut.int_issue_queue.uop_out
 
-    # 3 EXECUTE
-    dut.sim_tick()
-    uop2.rob_idx @= 1
-    # Fetch | Decode
-    assert dut.pr1.out == FetchPacket(inst1=0, inst2=0, pc=16, valid=1)
-    # Decode | Dispatch/Issue
-    assert not dut.pr2.out.uop1.valid and not dut.pr2.out.uop2.valid
-    # Dispatch/Issue | Execute
-    # assert not dut.pr3.out
-    assert dut.int_issue_queue.uop_out == uop1
+#     # 3 EXECUTE
+#     dut.sim_tick()
+#     uop2.rob_idx @= 1
+#     # Fetch | Decode
+#     assert dut.pr1.out == FetchPacket(inst1=0, inst2=0, pc=16, valid=1)
+#     # Decode | Dispatch/Issue
+#     assert not dut.pr2.out.uop1.valid and not dut.pr2.out.uop2.valid
+#     # Dispatch/Issue | Execute
+#     # assert not dut.pr3.out
+#     assert dut.int_issue_queue.uop_out == uop1
 
-    # dut.sim_tick()
-    # # Fetch | Decode
-    # assert dut.pr1.out == FetchPacket(inst1=0, inst2=0, pc=24, valid=1)
-    # # Decode | Dispatch/Issue
-    # assert not dut.pr2.out.uop1.valid and not dut.pr2.out.uop2.valid
-    # # Dispatch/Issue | Execute
-    # # assert dut.pr3.out == uop1
-    # assert dut.int_issue_queue.uop_out == uop1
+#     # dut.sim_tick()
+#     # # Fetch | Decode
+#     # assert dut.pr1.out == FetchPacket(inst1=0, inst2=0, pc=24, valid=1)
+#     # # Decode | Dispatch/Issue
+#     # assert not dut.pr2.out.uop1.valid and not dut.pr2.out.uop2.valid
+#     # # Dispatch/Issue | Execute
+#     # # assert dut.pr3.out == uop1
+#     # assert dut.int_issue_queue.uop_out == uop1
 
-    # 4 COMMIT
-    dut.sim_tick()
-    # Fetch | Decode
-    assert dut.pr1.out == FetchPacket(inst1=0, inst2=0, pc=24, valid=1)
-    # Decode | Dispatch/Issue
-    assert not dut.pr2.out.uop1.valid and not dut.pr2.out.uop2.valid
-    # Dispatch/Issue | Execute
-    # assert dut.pr3.out == uop2
-    assert dut.int_issue_queue.uop_out == uop2
-    # Commit
-    assert dut.reorder_buffer.commit_out.uop1_entry.data == 69
+#     # 4 COMMIT
+#     dut.sim_tick()
+#     # Fetch | Decode
+#     assert dut.pr1.out == FetchPacket(inst1=0, inst2=0, pc=24, valid=1)
+#     # Decode | Dispatch/Issue
+#     assert not dut.pr2.out.uop1.valid and not dut.pr2.out.uop2.valid
+#     # Dispatch/Issue | Execute
+#     # assert dut.pr3.out == uop2
+#     assert dut.int_issue_queue.uop_out == uop2
+#     # Commit
+#     assert dut.reorder_buffer.commit_out.uop1_entry.data == 69
 
-    # 5 WRITEBACK
-    dut.sim_tick()
-    # Fetch | Decode
-    assert dut.pr1.out == FetchPacket(inst1=0, inst2=0, pc=32, valid=1)
-    # Decode | Dispatch/Issue
-    assert not dut.pr2.out.uop1.valid and not dut.pr2.out.uop2.valid
-    # Dispatch/Issue | Execute
-    # assert not dut.pr3.out
-    assert not dut.int_issue_queue.uop_out
-    # Commit
-    assert dut.reorder_buffer.commit_out.uop2_entry.data == 420
-    # Writeback
-    assert dut.register_file.regs[5] == 69
+#     # 5 WRITEBACK
+#     dut.sim_tick()
+#     # Fetch | Decode
+#     assert dut.pr1.out == FetchPacket(inst1=0, inst2=0, pc=32, valid=1)
+#     # Decode | Dispatch/Issue
+#     assert not dut.pr2.out.uop1.valid and not dut.pr2.out.uop2.valid
+#     # Dispatch/Issue | Execute
+#     # assert not dut.pr3.out
+#     assert not dut.int_issue_queue.uop_out
+#     # Commit
+#     assert dut.reorder_buffer.commit_out.uop2_entry.data == 420
+#     # Writeback
+#     assert dut.register_file.regs[5] == 69
 
-    dut.sim_tick()
-    # Fetch | Decode
-    assert dut.pr1.out == FetchPacket(inst1=0, inst2=0, pc=40, valid=1)
-    # Decode | Dispatch/Issue
-    assert not dut.pr2.out.uop1.valid and not dut.pr2.out.uop2.valid
-    # Dispatch/Issue | Execute
-    # assert not dut.pr3.out
-    assert not dut.int_issue_queue.uop_out
-    # Commit
-    assert not dut.reorder_buffer.commit_out.uop2_entry.data
-    # Writeback
-    assert dut.register_file.regs[5] == 69
-    assert dut.register_file.regs[6] == 420
+#     dut.sim_tick()
+#     # Fetch | Decode
+#     assert dut.pr1.out == FetchPacket(inst1=0, inst2=0, pc=40, valid=1)
+#     # Decode | Dispatch/Issue
+#     assert not dut.pr2.out.uop1.valid and not dut.pr2.out.uop2.valid
+#     # Dispatch/Issue | Execute
+#     # assert not dut.pr3.out
+#     assert not dut.int_issue_queue.uop_out
+#     # Commit
+#     assert not dut.reorder_buffer.commit_out.uop2_entry.data
+#     # Writeback
+#     assert dut.register_file.regs[5] == 69
+#     assert dut.register_file.regs[6] == 420
 
-    # 7 cycles (reset makes 9)
+#     # 7 cycles (reset makes 9)
 
 
 def test_system_iu_type(cmdline_opts):
@@ -480,6 +480,76 @@ def test_beq(cmdline_opts):
     assert dut.register_file.regs[odd_sum_preg] == 25
     assert dut.register_file.regs[even_sum_preg] == 30
 
+# VERILOG TESTS (using MMIO)
+
+def test_bge_verilog(cmdline_opts):
+    # test always take bge without worrying about register renaming
+    # Using MMIO
+    filename = "tests/input_files/test_bge_verilog.bin"
+
+    dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
+
+    dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
+    dut.apply(DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core_bge_verilog"))
+    dut.sim_reset()
+
+    fibo_a = 0
+    fibo_b = 1
+    c = 0x11000000
+    for x in range(100):
+        dut.sim_tick()
+        if dut.io_bus_out.en & (dut.io_bus_out.msg.addr != c):
+            c = c + 4
+            assert dut.io_bus_out.msg.data == fibo_a + fibo_b
+            fibo_a, fibo_b = fibo_b, fibo_a + fibo_b
+    # Checking that output was asserted multiple times
+    assert c > 0x11000010
+
+def test_jal_verilog(cmdline_opts):
+    # test always take unconditional jump without worrying about register renaming
+    # Using MMIO
+
+    filename = "tests/input_files/test_jal_verilog.bin"
+    dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
+
+    dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
+    dut.apply(DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core_jal_verilog"))
+    dut.sim_reset()
+
+    fibo_a = 0
+    fibo_b = 1
+    c = 0x11000000
+    for x in range(100):
+        dut.sim_tick()
+        if dut.io_bus_out.en & (dut.io_bus_out.msg.addr != c):
+            c = c + 4
+            assert dut.io_bus_out.msg.data == fibo_a + fibo_b
+            fibo_a, fibo_b = fibo_b, fibo_a + fibo_b
+    # Checking that output was asserted multiple times
+    assert c > 0x11000010
+
+
+def test_beq_verilog(cmdline_opts):
+    # test beq, using MMIO NOT working rn
+    filename = "tests/input_files/test_beq_verilog.bin"
+    dut = RampCore(data=get_mem(filename, ICACHE_SIZE))
+
+    dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
+
+    dut.apply(DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core_beq_verilog"))
+    dut.sim_reset()
+
+    # running program
+    for x in range(30):
+        dut.sim_tick()
+        if dut.io_bus_out.en:
+            break
+
+    assert dut.io_bus_out.msg == 25
+    assert dut.io_bus_out.addr == 0x11000000
+    dut.sim_tick()
+    assert dut.io_bus_out.msg == 30
+    assert dut.io_bus_out.addr == 0x11000004
 
 
 

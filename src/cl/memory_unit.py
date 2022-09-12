@@ -86,8 +86,10 @@ class MemoryUnit(Component):
             # connecting MMIO to queue (in-order)
             if (s.ls_queue.out.msg.addr >= mmio_start) & (s.ls_queue.out.msg.addr < (mmio_start + mmio_size)):
                 # connecting MMIO output from queue store
-                s.io_bus_out.msg @= s.ls_queue.out.msg.data
-                s.io_bus_out.en @= (s.ls_queue.out.msg.op & MEM_FLAG) == MEM_STORE
+                s.io_bus_out.msg @= IOEntry(s.ls_queue.out.msg.addr, s.ls_queue.out.msg.data)
+                s.io_bus_out.en @= s.ls_queue.out.en & (
+                    ((s.ls_queue.out.msg.op & MEM_FLAG) == MEM_STORE)
+                )
 
                 # connecting MMIO input from queue load
                 if s.ls_queue.out.msg.op == MEM_LW:
@@ -105,7 +107,7 @@ class MemoryUnit(Component):
 
                 s.load_out.msg.rob_idx @= s.ls_queue.out.msg.rob_idx
                 s.load_out.en @= s.ls_queue.out.en & (
-                    (s.ls_queue.out.msg.op & MEM_FLAG) == MEM_LOAD
+                    ((s.ls_queue.out.msg.op & MEM_FLAG) == MEM_LOAD)
                 )
                 s.io_bus_in.rdy @= s.load_out.rdy
 
