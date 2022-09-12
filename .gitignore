@@ -87,3 +87,10 @@ _config.yml
 .DS_Store
 # for expirimentation
 .ipynb
+
+# created by verilator
+*.so
+pymtl_import_config*
+*_pickled.*
+*_v.*
+obj_dir_*/
