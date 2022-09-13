@@ -1,6 +1,6 @@
 
-# ![LOGO](https://avatars.githubusercontent.com/u/110626682?s=75&u=07248cbe600c2763efdb240b7730736435d71ad7&v=4)      Ramp Core
-***In Progress***
+# ![LOGO](https://avatars.githubusercontent.com/u/110626682?s=75&u=07248cbe600c2763efdb240b7730736435d71ad7&v=4) Ramp Core
+***In Progress*** | [Docs](https://ramp-core.readthedocs.io/en/latest/) | [Homepage](https://cal-poly-ramp.github.io/ramp-core/) |  </br>
 
 RAMP's out-of-order RV32G processor core implemented with the [PyMTL3](https://pymtl.github.io) framework.
 
