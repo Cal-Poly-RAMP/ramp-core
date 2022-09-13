@@ -217,9 +217,6 @@ class SingleInstDecode(Component):
         @update
         def decode_comb():
             # defaults
-            tmp1 = 0
-            tmp2 = 0
-            tmp3 = 0
             s.uop.inst @= s.inst
             s.uop.pc @= (s.pc + 4) if s.idx else (s.pc)
             s.uop.branch_taken @= s.branch_taken

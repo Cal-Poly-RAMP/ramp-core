@@ -12,6 +12,7 @@ from pymtl3 import (
     clog2,
 )
 from pymtl3.stdlib.ifcs import RecvIfcRTL, SendIfcRTL
+from pymtl3.stdlib.basic_rtl.encoders import Encoder
 
 from src.common.interfaces import (
     LogicalRegs,
@@ -68,6 +69,10 @@ class RegisterRename(Component):
         s.br_update = RecvIfcRTL(BranchUpdate)
         s.br_update.rdy //= Bits(1,1)
 
+        # for calculating next physical registers
+        s.enc1 = Encoder(NUM_PHYS_REGS, clog2(NUM_PHYS_REGS))
+        s.enc2 = Encoder(NUM_PHYS_REGS, clog2(NUM_PHYS_REGS))
+
         @update
         def rename_comb():
             # Combinatorially getting physical source registers from map table
@@ -82,16 +87,21 @@ class RegisterRename(Component):
 
             # *combinatorially* getting dest registers, but not updating tables
             # pdst1, pdst2 = cascading_priority_encoder(2, s.free_list_next)
-            s.pdst1 @= 0
-            s.pdst2 @= 0
-            for i in range(NUM_PHYS_REGS):
-                if s.free_list[i]:
-                    if s.pdst1 == 0:
-                        s.pdst1 @= i
-                    elif s.pdst2 == 0:
-                        s.pdst2 @= i
+
+            # s.pdst1 @= 0
+            # s.pdst2 @= 0
+            # for i in range(NUM_PHYS_REGS):
+            #     if s.free_list[i]:
+            #         if s.pdst1 == 0:
+            #             s.pdst1 @= i
+            #         elif s.pdst2 == 0:
+            #             s.pdst2 @= i
             # making sure that there are free registers
             # assert s.pdst1 != 0 or s.pdst2 != 0
+            s.enc1.in_ @= s.free_list_next
+            s.enc2.in_ @= s.free_list_next & ~(s.ONE << zext(s.enc1.out, NUM_PHYS_REGS))
+            s.pdst1 @= s.enc1.out
+            s.pdst2 @= s.enc2.out
 
             if s.inst1_lregs.lrd:
                 s.inst1_pregs.prd @= s.pdst1
