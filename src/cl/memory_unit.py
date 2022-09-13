@@ -77,6 +77,21 @@ class MemoryUnit(Component):
 
         @update
         def connect_():
+            # defaults
+            s.io_bus_out.msg.addr @= 0
+            s.io_bus_out.msg.data @= 0
+            s.io_bus_out.en @= 0
+            s.io_bus_in.rdy @= 1
+
+            s.load_out.msg.data @= 0
+            s.load_out.msg.rob_idx @= 0
+            s.load_out.en @= 0
+
+            s.dram.raddr[0] @= 0
+            s.dram.waddr[0] @= 0
+            s.dram.wdata[0] @= 0
+            s.dram.wen[0] @= 0
+
             # connecting input to queue
             s.ls_queue.out.rdy @= 1
             s.ls_queue.allocate_in.msg @= zext(s.allocate_in.msg, queue_addr_nbits)
@@ -92,6 +107,7 @@ class MemoryUnit(Component):
                 )
 
                 # connecting MMIO input from queue load
+                # TODO: need to wait for input to be enabled
                 if s.ls_queue.out.msg.op == MEM_LW:
                     s.load_out.msg.data @= s.io_bus_in.msg.data
                 elif s.ls_queue.out.msg.op == MEM_LH:
