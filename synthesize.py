@@ -32,23 +32,7 @@ def synthesize(model):
     return  filename
 
 if __name__ == "__main__":
-    models = [
-        ramp_core.RampCore(data=get_mem("tests/input_files/test_bge.bin", ICACHE_SIZE)),
-        # alu.ALU(mk_bits(32)),
-        # branch_allocate.BranchAllocate(),
-        # branch_fu.BranchFU(),
-        # buffers.MultiInputRdyCircularBuffer(mk_bits(32)),
-        # commit_unit.CommitUnit(),
-        # decode.Decode(),
-        # dispatch.Dispatch(),
-        # dram.DRAM(mk_bits(32)),
-        # fetch_stage.FetchStage(data=[0]*ICACHE_SIZE),
-        # issue_queue.IssueQueue(),
-        # load_store_fu.LoadStoreFU(),
-        # memory_unit.MemoryUnit(),
-        # register_rename.RegisterRename(),
-        # reorder_buffer.ReorderBuffer(),
-    ]
+    models = [ramp_core.RampCore(data=get_mem("tests/input_files/test_bge.bin", ICACHE_SIZE))]
     failed = []
     size = os.get_terminal_size().columns
 
@@ -59,7 +43,8 @@ if __name__ == "__main__":
         try:
             model.elaborate()
             filename = synthesize(model)
-            print(GREEN, model.__class__.__name__, "synthesized successfully:", filename + ".v", END)
+            print(GREEN, model.__class__.__name__, "synthesized successfully:", filename + ".sv", END)
+            os.rename(filename + ".v", filename + ".sv")
         except Exception as e:
             print(RED, model.__class__.__name__, "synthesizing failed:", END)
             failed.append((model.__class__.__name__, traceback.format_exc(limit=-1)))

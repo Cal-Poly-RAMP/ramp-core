@@ -1,18 +1,13 @@
 from pymtl3 import *
 from src.cl.ramp_core import RampCore
+from src.common.consts import MEM_SIZE
+from src.fl.util import get_mem
 
 def scalar_multiply(niter):
     # test unconditional jump without worrying about register renaming
-    dut = RampCore(memory_size=niter)
+    dut = RampCore(data=get_mem("tests/input_files/test_scalar_multiply.bin", MEM_SIZE), memory_size=MEM_SIZE)
     dut.apply(DefaultPassGroup(linetrace=False, vcdwave="vcd/test_ramp_core_scalar_multiply"))
     dut.sim_reset()
-
-    # Load Program - endless fibonacci loop
-    dut.fetch_stage.icache.load_file("tests/input_files/test_scalar_multiply.bin")
-
-    # initializing dram
-    for i in range(niter):
-        dut.memory_unit.dram.mem[i] <<= i
 
     # running program, until it is finished
     idx_reg = dut.decode.register_rename.map_table[0x8]

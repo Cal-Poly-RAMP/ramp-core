@@ -144,6 +144,7 @@ class RampCore(Component):
         s.dispatch.mem_q_tail //= s.memory_unit.mem_q_tail
         # MMIO
         s.memory_unit.io_bus_in //= s.io_bus_in
+
         s.io_bus_out //= s.memory_unit.io_bus_out
 
         # (6) writeback

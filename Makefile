@@ -13,12 +13,12 @@ format:
 synthesis:
 	python synthesize.py
 
-test-synthesis:
-	make synthesis
-	make clean
-
-# removing translated files, logfiles and verilator files
+#removing translated files, logfiles.
 clean:
-	rm translated/* ; rm vcd/* ; rm -r *RampCore__* ;
+	rm translated/* ; rm vcd/* ;
+
+# cleaning up verilator files
+clean-verilator:
+	 rm -r *RampCore__* ;
 
 .PHONY: test test-verilog synthesis
