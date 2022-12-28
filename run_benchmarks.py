@@ -13,6 +13,7 @@ def scalar_multiply(niter):
     idx_reg = dut.decode.register_rename.map_table[0x8]
     val_reg = dut.decode.register_rename.map_table[0x6]
     c = 0
+    c_bp = 0
     try:
         while dut.register_file.regs[idx_reg] < niter*4:
             # print("cycle:", c,
@@ -23,6 +24,8 @@ def scalar_multiply(niter):
             idx_reg = dut.decode.register_rename.map_table[0x8]
             val_reg = dut.decode.register_rename.map_table[0x6]
             dut.sim_tick()
+            if dut.fetch_stage.pc < 0x28:
+                c_bp += 1
             c += 1
     except:
         # while not input("continue: \r"):
@@ -36,6 +39,8 @@ def scalar_multiply(niter):
                 print([x.uint() for x in dut.memory_unit.dram.mem])
                 print(c)
                 assert dut.memory_unit.dram.mem[i] == i * 10
+
+    print(f"\n\ntotal cycles: {c}\n branch prediction cycles: {c_bp}\n iterations: {niter}")
 
 if __name__ == "__main__":
     scalar_multiply(1024)
