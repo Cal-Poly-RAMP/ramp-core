@@ -18,7 +18,6 @@ test-synthesis:
 	make clean
 
 clean:
-	rm translated/*
-	rm vcd/*
+	rm translated/* & rm vcd/*
 
 .PHONY: test test-verilog synthesis

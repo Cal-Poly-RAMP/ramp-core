@@ -439,4 +439,26 @@ def test_beq(cmdline_opts):
 #             assert dut.memory_unit.dram.mem[i] == i * 10
 
 
+def test_testall_noHaz(cmdline_opts):
+    # load /src/mem/testall_noHaz.bin and run, make sure doesn't fail
+    dut = RampCore()
+    dut = config_model_with_cmdline_opts(dut, cmdline_opts, duts=[])
+    dut.apply(DefaultPassGroup(linetrace=LNTRC, vcdwave="vcd/test_ramp_core_testall_noHaz"))
+    dut.sim_reset()
 
+    # Load Program - testall_noHaz
+    dut.fetch_stage.icache.load_file("src/mem/testAll_noHaz_mod.bin")
+
+    # running program
+    FAIL_ADDR = 0x4b0
+    START_ADDR = 0x005
+
+    # setup
+    while dut.fetch_stage.pc < START_ADDR:
+        dut.sim_tick()
+
+    # running through loop once
+    while (dut.fetch_stage.pc < FAIL_ADDR) and (dut.fetch_stage.pc > START_ADDR):
+        dut.sim_tick()
+
+    assert dut.fetch_stage.pc != FAIL_ADDR
